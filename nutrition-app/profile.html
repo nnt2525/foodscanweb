@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรไฟล์ - NutriTrack</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <main class="main-content">
+            <div class="container fade-in" style="max-width: 600px;">
+                <h1 class="text-3xl font-bold mb-6">โปรไฟล์</h1>
+
+                <!-- Profile Card -->
+                <div class="card text-center mb-6">
+                    <div class="text-6xl mb-4">👤</div>
+                    <h2 class="text-2xl font-bold" id="userName"></h2>
+                    <p class="text-gray" id="userEmail"></p>
+                    <p class="text-sm text-gray mt-2">สมาชิกตั้งแต่: <span id="joinDate"></span></p>
+                </div>
+
+                <!-- Profile Form -->
+                <div class="card mb-6">
+                    <h2 class="text-xl font-bold mb-4">ข้อมูลสุขภาพ</h2>
+                    <form id="profileForm" onsubmit="saveProfile(event)">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="form-label">น้ำหนัก (kg)</label>
+                                <input type="number" id="weight" class="form-input" placeholder="60">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">ส่วนสูง (cm)</label>
+                                <input type="number" id="height" class="form-input" placeholder="170">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">อายุ</label>
+                                <input type="number" id="age" class="form-input" placeholder="25">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">เพศ</label>
+                                <select id="gender" class="form-input">
+                                    <option value="">เลือก</option>
+                                    <option value="male">ชาย</option>
+                                    <option value="female">หญิง</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">เป้าหมาย</label>
+                            <select id="goal" class="form-input">
+                                <option value="">เลือก</option>
+                                <option value="lose">ลดน้ำหนัก</option>
+                                <option value="maintain">รักษาน้ำหนัก</option>
+                                <option value="gain">เพิ่มน้ำหนัก</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">บันทึก</button>
+                    </form>
+                </div>
+
+                <!-- BMI Result -->
+                <div class="card mb-6" id="bmiCard" style="display:none;">
+                    <h2 class="text-xl font-bold mb-4">ค่า BMI ของคุณ</h2>
+                    <div class="text-center">
+                        <div class="text-4xl font-bold" id="bmiValue"></div>
+                        <div id="bmiStatus" class="badge mt-2"></div>
+                    </div>
+                </div>
+
+                <!-- Logout -->
+                <button onclick="logout()" class="btn btn-secondary btn-block">
+                    🚪 ออกจากระบบ
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        if (!requireAuth()) throw new Error('Not authorized');
+
+        const user = getCurrentUser();
+        document.getElementById('userName').textContent = user.name;
+        document.getElementById('userEmail').textContent = user.email;
+        document.getElementById('joinDate').textContent = new Date(user.createdAt).toLocaleDateString('th-TH');
+
+        // Load existing profile
+        if (user.profile) {
+            document.getElementById('weight').value = user.profile.weight || '';
+            document.getElementById('height').value = user.profile.height || '';
+            document.getElementById('age').value = user.profile.age || '';
+            document.getElementById('gender').value = user.profile.gender || '';
+            document.getElementById('goal').value = user.profile.goal || '';
+            updateBMI();
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+            const data = {
+                weight: parseFloat(document.getElementById('weight').value),
+                height: parseFloat(document.getElementById('height').value),
+                age: parseInt(document.getElementById('age').value),
+                gender: document.getElementById('gender').value,
+                goal: document.getElementById('goal').value
+            };
+
+            updateProfile(data);
+            updateBMI();
+            showNotification('บันทึกข้อมูลแล้ว!', 'success');
+        }
+
+        function updateBMI() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+
+            if (weight && height) {
+                const bmi = calculateBMI(weight, height);
+                const status = getBMIStatus(bmi);
+
+                document.getElementById('bmiCard').style.display = 'block';
+                document.getElementById('bmiValue').textContent = bmi;
+                document.getElementById('bmiStatus').textContent = status.label;
+                document.getElementById('bmiStatus').style.background = status.color;
+                document.getElementById('bmiStatus').style.color = 'white';
+            }
+        }
+    </script>
+</body>
+
+</html>

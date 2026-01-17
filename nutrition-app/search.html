@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหาอาหาร - NutriTrack</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <main class="main-content">
+            <div class="container fade-in">
+                <h1 class="text-3xl font-bold mb-6">ค้นหาอาหาร</h1>
+
+                <!-- Search Bar -->
+                <div class="mb-6">
+                    <input type="text" id="searchInput" class="form-input"
+                        placeholder="🔍 ค้นหาอาหาร เช่น ข้าวผัด, สลัด, ไก่..." oninput="filterFoods()"
+                        style="font-size: 1.125rem; padding: 1rem 1.5rem;">
+                </div>
+
+                <!-- Category Filter -->
+                <div class="flex gap-2 mb-6" style="flex-wrap: wrap;" id="categoryFilters">
+                    <!-- Categories will be rendered here -->
+                </div>
+
+                <!-- Results Count -->
+                <p class="text-gray mb-4" id="resultsCount">แสดงอาหาร 8 รายการ</p>
+
+                <!-- Foods Grid -->
+                <div class="grid-responsive" id="foodsGrid">
+                    <!-- Foods will be rendered here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        let activeCategory = 'ทั้งหมด';
+
+        // Render categories
+        function renderCategories() {
+            const container = document.getElementById('categoryFilters');
+            container.innerHTML = categories.map(cat => `
+                <button 
+                    class="btn ${cat === activeCategory ? 'btn-primary' : 'btn-secondary'} btn-sm btn-rounded"
+                    onclick="filterByCategory('${cat}')"
+                >
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        // Render foods
+        function renderFoods(foods) {
+            const grid = document.getElementById('foodsGrid');
+            document.getElementById('resultsCount').textContent = `แสดงอาหาร ${foods.length} รายการ`;
+
+            if (foods.length === 0) {
+                grid.innerHTML = `
+                    <div class="text-center" style="grid-column: 1 / -1; padding: 3rem;">
+                        <div class="text-4xl mb-4">🔍</div>
+                        <p class="text-gray">ไม่พบอาหารที่ค้นหา</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = foods.map(food => `
+                <a href="food-detail.html?id=${food.id}" class="food-card">
+                    <img src="${food.image}" alt="${food.name}" class="food-card-image">
+                    <div class="food-card-content">
+                        <h3 class="food-card-title">${food.name}</h3>
+                        <p class="food-card-category">${food.category}</p>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="food-card-calories">${food.calories} kcal</span>
+                            <span class="text-gray text-sm">${food.servingSize}g</span>
+                        </div>
+                        <div class="flex gap-2 mt-3" style="flex-wrap: wrap;">
+                            ${food.tags.slice(0, 2).map(tag => `
+                                <span class="badge badge-green">${tag}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // Filter by search
+        function filterFoods() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = mockFoods;
+
+            if (activeCategory !== 'ทั้งหมด') {
+                filtered = filtered.filter(f => f.category === activeCategory);
+            }
+
+            if (query) {
+                filtered = filtered.filter(f =>
+                    f.name.toLowerCase().includes(query) ||
+                    f.nameEn.toLowerCase().includes(query) ||
+                    f.category.toLowerCase().includes(query) ||
+                    f.tags.some(t => t.toLowerCase().includes(query))
+                );
+            }
+
+            renderFoods(filtered);
+        }
+
+        // Filter by category
+        function filterByCategory(category) {
+            activeCategory = category;
+            renderCategories();
+            filterFoods();
+        }
+
+        // Initialize
+        renderCategories();
+        renderFoods(mockFoods);
+    </script>
+</body>
+
+</html>
