@@ -248,6 +248,13 @@ const mockProgressData = {
     fat: [60, 70, 65, 75, 58, 68, 66]
 };
 
+// Mock Daily Intake Data (Calories per meal)
+const mockDailyIntake = {
+    labels: ['เช้า', 'กลางวัน', 'เย็น', 'ของว่าง'],
+    calories: [450, 650, 500, 250],
+    colors: ['#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6']
+};
+
 // Mock Community Posts
 const mockPosts = [
     {

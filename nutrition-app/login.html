@@ -29,8 +29,13 @@
                             <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="password">รหัสผ่าน</label>
-                            <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+                            <div class="flex justify-between items-center">
+                                <label class="form-label" for="password" style="margin-bottom: 0;">รหัสผ่าน</label>
+                                <a href="#" onclick="alert('ขออภัย ระบบกู้คืนรหัสผ่านยังไม่เปิดให้บริการในขณะนี้')"
+                                    class="text-primary font-semibold" style="font-size: 0.875rem;">ลืมรหัสผ่าน?</a>
+                            </div>
+                            <input type="password" id="password" class="form-input" placeholder="••••••••" required
+                                style="margin-top: 0.5rem;">
                         </div>
                         <div id="errorMessage" class="form-error mb-4 hidden"></div>
                         <button type="submit" class="btn btn-primary btn-block btn-lg">เข้าสู่ระบบ</button>

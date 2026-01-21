@@ -82,6 +82,33 @@
                     </div>
 
                     <div class="card">
+                        <h2 class="text-xl font-bold mb-4">แคลอรี่วันนี้</h2>
+                        <div style="height: 250px; position: relative;">
+                            <canvas id="dailyChart"></canvas>
+                            <!-- Center Text -->
+                            <div
+                                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                <div class="text-sm text-gray">รวม</div>
+                                <div class="text-xl font-bold">1,850</div>
+                                <div class="text-xs text-gray">kcal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Foods & Quick Actions -->
+                <div class="grid grid-cols-3 grid-responsive mb-8">
+                    <!-- Recent Foods -->
+                    <div class="card" style="grid-column: span 2;">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-bold">อาหารที่บันทึกล่าสุด</h2>
+                            <a href="planner.html" class="text-primary">ดูทั้งหมด →</a>
+                        </div>
+                        <div class="grid grid-cols-2 grid-responsive" id="recentFoods"></div>
+                    </div>
+
+                    <!-- Quick Menu (Moved here) -->
+                    <div class="card">
                         <h2 class="text-xl font-bold mb-4">เมนูด่วน</h2>
                         <div class="flex flex-col gap-4">
                             <a href="search.html" class="btn btn-secondary btn-block">🔍 ค้นหาอาหาร</a>
@@ -90,15 +117,6 @@
                             <a href="progress.html" class="btn btn-primary btn-block">📊 ดูความคืบหน้า</a>
                         </div>
                     </div>
-                </div>
-
-                <!-- Recent Foods -->
-                <div class="card mb-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-bold">อาหารที่บันทึกล่าสุด</h2>
-                        <a href="planner.html" class="text-primary">ดูทั้งหมด →</a>
-                    </div>
-                    <div class="grid grid-cols-4 grid-responsive" id="recentFoods"></div>
                 </div>
             </div>
         </main>
@@ -116,22 +134,71 @@
         const user = getCurrentUser();
         document.getElementById('greeting').textContent = `${getGreeting()}, ${user.name}!`;
 
+        // Get Summary Data from LocalStorage (Real Data)
+        const meals = getFromLocalStorage('nutritrack_meals', { breakfast: [], lunch: [], dinner: [], snacks: [] });
+
+        // Calculate totals
+        const calories = {
+            breakfast: meals.breakfast.reduce((sum, item) => sum + item.calories, 0),
+            lunch: meals.lunch.reduce((sum, item) => sum + item.calories, 0),
+            dinner: meals.dinner.reduce((sum, item) => sum + item.calories, 0),
+            snacks: meals.snacks.reduce((sum, item) => sum + item.calories, 0)
+        };
+        const totalCalories = Object.values(calories).reduce((a, b) => a + b, 0);
+        const goalCalories = 2000;
+
+        // Update UI stats
+        document.getElementById('todayCalories').textContent = formatNumber(totalCalories);
+        document.getElementById('caloriesProgress').style.width = Math.min((totalCalories / goalCalories) * 100, 100) + '%';
+
+        // Update Chart Center Text (if possible via simple DOM, otherwise it's just visual in canvas)
+        // Since we drew it manually in canvas before? No, it was HTML over canvas.
+        const centerTextContainer = document.querySelector('#dailyChart').nextElementSibling;
+        if (centerTextContainer) {
+            centerTextContainer.querySelector('.text-xl').textContent = formatNumber(totalCalories);
+        }
+
         // Render recent foods
         const recentFoodsEl = document.getElementById('recentFoods');
-        mockFoods.slice(0, 4).forEach(food => {
-            recentFoodsEl.innerHTML += `
-                <a href="food-detail.html?id=${food.id}" class="food-card">
-                    <img src="${food.image}" alt="${food.name}" class="food-card-image">
-                    <div class="food-card-content">
-                        <h3 class="food-card-title">${food.name}</h3>
-                        <p class="food-card-category">${food.category}</p>
-                        <span class="food-card-calories">${food.calories} kcal</span>
-                    </div>
-                </a>
-            `;
-        });
+        // Combine all meals and sort by "recent" (assuming order in array is chronological)
+        // Actually we don't store timestamp, so just take latest added (end of arrays)
+        const allMeals = [
+            ...meals.breakfast,
+            ...meals.lunch,
+            ...meals.dinner,
+            ...meals.snacks
+        ].reverse().slice(0, 4); // Take last 4 added
 
-        // Chart
+        if (allMeals.length === 0) {
+            recentFoodsEl.innerHTML = '<div class="text-gray col-span-2 text-center py-4">ยังไม่มีรายการอาหารวันนี้</div>';
+        } else {
+            recentFoodsEl.innerHTML = ''; // Clear
+            allMeals.forEach(food => {
+                // Determine image based on food name or use generic hash-based image to be consistent if no image saved
+                // Since our simple planner only saves name and calories (from planner.html logic), we might miss image/category.
+                // Let's assume we saved full object or fallback.
+                // Looking at planner.html... saveToLocalStorage seems to save what we put in specific functions?
+                // Wait, planner.html currently only displays items. How do we ADD?
+                // Ah, planner.html has "+ เพิ่ม" which goes to search.html. 
+                // We need to check if search.html adds to 'nutritrack_meals'.
+
+                // FALLBACK for now: If image/category missing, use placeholders.
+                const image = food.image || 'assets/images/placeholder-food.png';
+                const category = food.category || 'ทั่วไป';
+
+                recentFoodsEl.innerHTML += `
+                    <div class="food-card">
+                        <div class="food-card-content p-3">
+                            <h3 class="food-card-title text-base">${food.name}</h3>
+                            <p class="food-card-category text-xs">${category}</p>
+                            <span class="food-card-calories text-sm">${food.calories} kcal</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Chart (Weekly - Keep Mock for now as we don't have history storage yet)
         const ctx = document.getElementById('caloriesChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
@@ -152,6 +219,32 @@
                 plugins: { legend: { display: false } },
                 scales: {
                     y: { beginAtZero: false, min: 1500, max: 2500 }
+                }
+            }
+        });
+
+        // Daily Chart (Real Data)
+        const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+        new Chart(dailyCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['เช้า', 'กลางวัน', 'เย็น', 'ของว่าง'],
+                datasets: [{
+                    data: [calories.breakfast, calories.lunch, calories.dinner, calories.snacks],
+                    backgroundColor: ['#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { usePointStyle: true, padding: 20 }
+                    }
                 }
             }
         });

@@ -2,14 +2,15 @@
 // Navigation Component for NutriTrack
 // ========================================
 
-// Menu items configuration
+// Menu items configuration - เรียงจากซ้ายไปขวา
 const menuItems = [
-    { href: 'dashboard.html', label: 'หน้าหลัก', icon: '🏠', requiresAuth: true },
-    { href: 'search.html', label: 'ค้นหาอาหาร', icon: '🔍', requiresAuth: false },
-    { href: 'scanner.html', label: 'สแกนอาหาร', icon: '📸', requiresAuth: true },
-    { href: 'planner.html', label: 'วางแผนอาหาร', icon: '📅', requiresAuth: true },
-    { href: 'progress.html', label: 'ความคืบหน้า', icon: '📊', requiresAuth: true },
-    { href: 'community.html', label: 'ชุมชน', icon: '👥', requiresAuth: false }
+    { href: 'index.html', label: 'หน้าหลัก', icon: '🏠' },
+    { href: 'search.html', label: 'ค้นหาอาหาร', icon: '🔍' },
+    { href: 'scanner.html', label: 'สแกนอาหาร', icon: '📸' },
+    { href: 'planner.html', label: 'วางแผนอาหาร', icon: '📅' },
+    { href: 'progress.html', label: 'ความคืบหน้า', icon: '📊' },
+    { href: 'community.html', label: 'ชุมชน', icon: '👥' },
+    { href: 'profile.html', label: 'โปรไฟล์', icon: '👤' }
 ];
 
 // Get current page name
@@ -34,7 +35,7 @@ function renderNavigation() {
             </a>
             
             <ul class="navbar-menu" id="navMenu">
-                ${menuItems.filter(item => !item.requiresAuth || loggedIn).map(item => `
+                ${menuItems.map(item => `
                     <li>
                         <a href="${item.href}" class="navbar-link ${currentPage === item.href ? 'active' : ''}">
                             ${item.label}
@@ -45,12 +46,9 @@ function renderNavigation() {
             
             <div class="navbar-actions">
                 ${loggedIn ? `
-                    <a href="profile.html" class="navbar-link ${currentPage === 'profile.html' ? 'active' : ''}">
-                        👤 ${user.name}
-                    </a>
                     <button onclick="logout()" class="btn btn-outline btn-sm">ออกจากระบบ</button>
                 ` : `
-                    <a href="login.html" class="btn btn-ghost">เข้าสู่ระบบ</a>
+                    <a href="login.html" class="btn btn-secondary btn-sm btn-rounded">เข้าสู่ระบบ</a>
                     <a href="register.html" class="btn btn-primary btn-sm btn-rounded">สมัครสมาชิก</a>
                 `}
             </div>
@@ -64,7 +62,7 @@ function renderNavigation() {
         
         <div id="mobileMenu" class="mobile-menu">
             <ul class="mobile-menu-list">
-                ${menuItems.filter(item => !item.requiresAuth || loggedIn).map(item => `
+                ${menuItems.map(item => `
                     <li>
                         <a href="${item.href}" class="mobile-menu-link ${currentPage === item.href ? 'active' : ''}">
                             ${item.icon} ${item.label}
@@ -72,7 +70,6 @@ function renderNavigation() {
                     </li>
                 `).join('')}
                 ${loggedIn ? `
-                    <li><a href="profile.html" class="mobile-menu-link">👤 โปรไฟล์</a></li>
                     <li><a href="#" onclick="logout()" class="mobile-menu-link">🚪 ออกจากระบบ</a></li>
                 ` : `
                     <li><a href="login.html" class="mobile-menu-link">🔑 เข้าสู่ระบบ</a></li>

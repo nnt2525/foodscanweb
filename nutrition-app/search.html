@@ -123,7 +123,15 @@
 
         // Initialize
         renderCategories();
-        renderFoods(mockFoods);
+
+        // Check for search query from URL
+        const urlQuery = getQueryParam('q');
+        if (urlQuery) {
+            document.getElementById('searchInput').value = urlQuery;
+            filterFoods();
+        } else {
+            renderFoods(mockFoods);
+        }
     </script>
 </body>
 
