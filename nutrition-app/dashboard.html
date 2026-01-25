@@ -72,24 +72,29 @@
                     </div>
                 </div>
 
-                <!-- Chart & Quick Actions -->
-                <div class="grid grid-cols-3 grid-responsive mb-8">
-                    <div class="card" style="grid-column: span 2;">
-                        <h2 class="text-xl font-bold mb-4">แคลอรี่ย้อนหลัง 7 วัน</h2>
-                        <div style="height: 250px;">
+                <!-- Charts Section -->
+                <div class="grid mb-8" style="grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+                    <!-- Weekly Chart (Main Focus) -->
+                    <div class="card" style="padding: 1.5rem 2rem;">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-bold">📈 แคลอรี่ย้อนหลัง 7 วัน</h2>
+                            <span class="badge badge-green">สัปดาห์นี้</span>
+                        </div>
+                        <div style="height: 320px;">
                             <canvas id="caloriesChart"></canvas>
                         </div>
                     </div>
 
-                    <div class="card">
-                        <h2 class="text-xl font-bold mb-4">แคลอรี่วันนี้</h2>
-                        <div style="height: 250px; position: relative;">
+                    <!-- Daily Chart (Side Panel) -->
+                    <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column;">
+                        <h2 class="text-lg font-bold mb-4 text-center">🔥 สัดส่วนมื้ออาหาร</h2>
+                        <div style="flex: 1; position: relative; min-height: 280px;">
                             <canvas id="dailyChart"></canvas>
                             <!-- Center Text -->
                             <div
-                                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                                <div class="text-sm text-gray">รวม</div>
-                                <div class="text-xl font-bold">1,850</div>
+                                style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                <div class="text-xs text-gray">รวมวันนี้</div>
+                                <div class="text-3xl font-bold text-primary" id="dailyChartCenter">0</div>
                                 <div class="text-xs text-gray">kcal</div>
                             </div>
                         </div>
@@ -151,41 +156,24 @@
         document.getElementById('todayCalories').textContent = formatNumber(totalCalories);
         document.getElementById('caloriesProgress').style.width = Math.min((totalCalories / goalCalories) * 100, 100) + '%';
 
-        // Update Chart Center Text (if possible via simple DOM, otherwise it's just visual in canvas)
-        // Since we drew it manually in canvas before? No, it was HTML over canvas.
-        const centerTextContainer = document.querySelector('#dailyChart').nextElementSibling;
-        if (centerTextContainer) {
-            centerTextContainer.querySelector('.text-xl').textContent = formatNumber(totalCalories);
-        }
+        // Update doughnut center text
+        document.getElementById('dailyChartCenter').textContent = formatNumber(totalCalories);
 
         // Render recent foods
         const recentFoodsEl = document.getElementById('recentFoods');
-        // Combine all meals and sort by "recent" (assuming order in array is chronological)
-        // Actually we don't store timestamp, so just take latest added (end of arrays)
         const allMeals = [
             ...meals.breakfast,
             ...meals.lunch,
             ...meals.dinner,
             ...meals.snacks
-        ].reverse().slice(0, 4); // Take last 4 added
+        ].reverse().slice(0, 4);
 
         if (allMeals.length === 0) {
             recentFoodsEl.innerHTML = '<div class="text-gray col-span-2 text-center py-4">ยังไม่มีรายการอาหารวันนี้</div>';
         } else {
-            recentFoodsEl.innerHTML = ''; // Clear
+            recentFoodsEl.innerHTML = '';
             allMeals.forEach(food => {
-                // Determine image based on food name or use generic hash-based image to be consistent if no image saved
-                // Since our simple planner only saves name and calories (from planner.html logic), we might miss image/category.
-                // Let's assume we saved full object or fallback.
-                // Looking at planner.html... saveToLocalStorage seems to save what we put in specific functions?
-                // Wait, planner.html currently only displays items. How do we ADD?
-                // Ah, planner.html has "+ เพิ่ม" which goes to search.html. 
-                // We need to check if search.html adds to 'nutritrack_meals'.
-
-                // FALLBACK for now: If image/category missing, use placeholders.
-                const image = food.image || 'assets/images/placeholder-food.png';
                 const category = food.category || 'ทั่วไป';
-
                 recentFoodsEl.innerHTML += `
                     <div class="food-card">
                         <div class="food-card-content p-3">
@@ -205,20 +193,56 @@
             data: {
                 labels: mockProgressData.labels,
                 datasets: [{
-                    label: 'แคลอรี่',
+                    label: 'แคลอรี่ (kcal)',
                     data: mockProgressData.calories,
                     borderColor: '#22c55e',
-                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.15)',
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#22c55e',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 7
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: { size: 14, weight: '500' },
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 13 },
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
                 scales: {
-                    y: { beginAtZero: false, min: 1500, max: 2500 }
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 12 } }
+                    },
+                    y: {
+                        beginAtZero: false,
+                        min: 1500,
+                        max: 2500,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: {
+                            font: { size: 12 },
+                            callback: value => value.toLocaleString() + ' kcal'
+                        }
+                    }
                 }
             }
         });
@@ -228,22 +252,38 @@
         new Chart(dailyCtx, {
             type: 'doughnut',
             data: {
-                labels: ['เช้า', 'กลางวัน', 'เย็น', 'ของว่าง'],
+                labels: ['🌅 เช้า', '☀️ กลางวัน', '🌙 เย็น', '🍿 ของว่าง'],
                 datasets: [{
                     data: [calories.breakfast, calories.lunch, calories.dinner, calories.snacks],
                     backgroundColor: ['#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6'],
-                    borderWidth: 0,
-                    hoverOffset: 4
+                    borderWidth: 2,
+                    borderColor: '#fff',
+                    hoverOffset: 8
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '70%',
+                cutout: '65%',
                 plugins: {
                     legend: {
                         position: 'bottom',
-                        labels: { usePointStyle: true, padding: 20 }
+                        labels: {
+                            font: { size: 13, weight: '500' },
+                            usePointStyle: true,
+                            padding: 15,
+                            boxWidth: 12
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleFont: { size: 14 },
+                        bodyFont: { size: 13 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: ctx => ctx.label + ': ' + ctx.parsed + ' kcal'
+                        }
                     }
                 }
             }
