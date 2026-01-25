@@ -113,8 +113,8 @@ function renderFooter() {
                 <div>
                     <h4 class="footer-title">ติดต่อ</h4>
                     <ul class="footer-links">
-                        <li>📧 support@nutritrack.com</li>
-                        <li>📱 02-123-4567</li>
+                        <li>📧 nont4388@gmail.com</li>
+                        <li>📱 062-002-2525</li>
                     </ul>
                 </div>
             </div>
