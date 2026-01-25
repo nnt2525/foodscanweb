@@ -80,56 +80,12 @@
             scanBtn.textContent = 'กำลังสแกน...';
 
             // Simulate scanning delay
+            // Simulate scanning delay
             setTimeout(() => {
-                scanning.classList.add('hidden');
-                scanBtn.disabled = false;
-                scanBtn.textContent = '📷 สแกนอีกครั้ง';
-
-                // Random food
-                const food = mockFoods[Math.floor(Math.random() * mockFoods.length)];
-
-                result.classList.remove('hidden');
-                result.innerHTML = `
-                    <div class="slide-in">
-                        <div class="flex items-center gap-2 mb-4">
-                            <span class="text-2xl">✅</span>
-                            <span class="font-bold text-primary">พบอาหาร!</span>
-                        </div>
-                        
-                        <div class="flex gap-4 items-start" style="padding:1rem;background:var(--gray-50);border-radius:0.75rem;">
-                            <img src="${food.image}" alt="${food.name}" style="width:80px;height:80px;object-fit:cover;border-radius:0.5rem;">
-                            <div>
-                                <h3 class="font-bold text-lg">${food.name}</h3>
-                                <p class="text-sm text-gray mb-2">${food.category}</p>
-                                <div class="flex gap-4 text-sm">
-                                    <span class="text-primary font-semibold">${food.calories} kcal</span>
-                                    <span class="text-gray">${food.servingSize}g</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-4 mt-4 text-center">
-                            <div style="padding:0.75rem;background:var(--gray-50);border-radius:0.5rem;">
-                                <div class="font-bold text-primary">${food.nutrition.carbohydrates.total}g</div>
-                                <div class="text-xs text-gray">คาร์บ</div>
-                            </div>
-                            <div style="padding:0.75rem;background:var(--gray-50);border-radius:0.5rem;">
-                                <div class="font-bold text-primary">${food.nutrition.protein.total}g</div>
-                                <div class="text-xs text-gray">โปรตีน</div>
-                            </div>
-                            <div style="padding:0.75rem;background:var(--gray-50);border-radius:0.5rem;">
-                                <div class="font-bold text-primary">${food.nutrition.fat.total}g</div>
-                                <div class="text-xs text-gray">ไขมัน</div>
-                            </div>
-                        </div>
-
-                        <div class="flex gap-2 mt-4">
-                            <a href="food-detail.html?id=${food.id}" class="btn btn-secondary flex-1">ดูรายละเอียด</a>
-                            <button onclick="addScannedFood(${food.id})" class="btn btn-primary flex-1">+ เพิ่มลงมื้อ</button>
-                        </div>
-                    </div>
-                `;
-            }, 2500);
+                // Random food ID (1-8 based on mockFoods)
+                const randomId = Math.floor(Math.random() * 8) + 1;
+                window.location.href = `scan-result.html?id=${randomId}`;
+            }, 2000);
         }
 
         function addScannedFood(id) {
