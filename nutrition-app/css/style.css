@@ -1108,6 +1108,17 @@ select {
     gap: 1.5rem;
     grid-template-columns: 1fr;
     /* Mobile Default */
+    width: 100%;
+}
+
+.grid-chart-layout .card {
+    /* Critical for preventing chart overflow on mobile */
+    min-width: 0;
+    overflow: hidden;
+}
+
+.grid-chart-layout canvas {
+    max-width: 100%;
 }
 
 @media (min-width: 1024px) {
