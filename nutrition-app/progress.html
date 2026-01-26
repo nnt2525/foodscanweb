@@ -40,15 +40,29 @@
                     </div>
                 </div>
 
-                <!-- Charts -->
-                <div class="grid grid-cols-2 grid-responsive gap-6 mb-8">
-                    <div class="card">
-                        <h2 class="text-xl font-bold mb-4">แคลอรี่ 7 วันล่าสุด</h2>
-                        <div style="height:250px;"><canvas id="caloriesChart"></canvas></div>
+                <!-- Charts Section -->
+                <div class="grid mb-8" style="grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+                    <!-- Weekly Bar Chart (Main) -->
+                    <div class="card" style="padding: 1.5rem 2rem;">
+                        <h2 class="text-xl font-bold mb-6">📊 แคลอรี่ 7 วันล่าสุด</h2>
+                        <div style="height: 320px;">
+                            <canvas id="caloriesChart"></canvas>
+                        </div>
                     </div>
-                    <div class="card">
-                        <h2 class="text-xl font-bold mb-4">สารอาหาร</h2>
-                        <div style="height:250px;"><canvas id="nutrientsChart"></canvas></div>
+
+                    <!-- Nutrients Chart (Side) -->
+                    <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column;">
+                        <h2 class="text-lg font-bold mb-4 text-center">🍎 สัดส่วนสารอาหาร</h2>
+                        <div style="flex: 1; position: relative; min-height: 280px;">
+                            <canvas id="nutrientsChart"></canvas>
+                            <!-- Center Text -->
+                            <div
+                                style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                <div class="text-xs text-gray">เฉลี่ย</div>
+                                <div class="text-3xl font-bold text-primary">Good</div>
+                                <div class="text-xs text-gray">Health</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -68,40 +82,87 @@
     <script>
         if (!requireAuth()) throw new Error('Not authorized');
 
-        // Calories Chart
-        new Chart(document.getElementById('caloriesChart'), {
+        // Calories Chart (Bar)
+        const barCtx = document.getElementById('caloriesChart').getContext('2d');
+        const barGradient = barCtx.createLinearGradient(0, 0, 0, 400);
+        barGradient.addColorStop(0, '#22c55e');
+        barGradient.addColorStop(1, 'rgba(34, 197, 94, 0.6)');
+
+        new Chart(barCtx, {
             type: 'bar',
             data: {
                 labels: mockProgressData.labels,
                 datasets: [{
                     label: 'แคลอรี่',
                     data: mockProgressData.calories,
-                    backgroundColor: 'rgba(34, 197, 94, 0.7)',
-                    borderRadius: 8
+                    backgroundColor: barGradient,
+                    borderRadius: 8,
+                    barThickness: 40
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: false, min: 1500 } }
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1f2937',
+                        bodyColor: '#22c55e',
+                        bodyFont: { size: 14, weight: 'bold' },
+                        padding: 12,
+                        cornerRadius: 12,
+                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                        callbacks: {
+                            label: ctx => ctx.parsed.y + ' kcal'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: "'Inter', sans-serif" } }
+                    },
+                    y: {
+                        beginAtZero: false,
+                        min: 1000,
+                        grid: { color: '#f3f4f6', borderDash: [5, 5] },
+                        border: { display: false }
+                    }
+                }
             }
         });
 
-        // Nutrients Chart
+        // Nutrients Chart (Doughnut)
         new Chart(document.getElementById('nutrientsChart'), {
             type: 'doughnut',
             data: {
                 labels: ['คาร์โบไฮเดรต', 'โปรตีน', 'ไขมัน'],
                 datasets: [{
                     data: [265, 49, 66],
-                    backgroundColor: ['#f59e0b', '#3b82f6', '#8b5cf6']
+                    backgroundColor: ['#f59e0b', '#3b82f6', '#8b5cf6'],
+                    borderWidth: 0,
+                    hoverOffset: 15
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom' } }
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { size: 12, family: "'Inter', sans-serif", weight: '500' },
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            boxWidth: 8
+                        }
+                    },
+                    tooltip: { enabled: false }
+                },
+                layout: { padding: 20 }
             }
         });
 

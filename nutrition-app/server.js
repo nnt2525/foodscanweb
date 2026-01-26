@@ -5,7 +5,11 @@ const app = express();
 const PORT = 3000;
 
 // Serve static files from current directory
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Start server
 app.listen(PORT, () => {
