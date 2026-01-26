@@ -1102,6 +1102,21 @@ select {
     }
 }
 
+/* Custom Chart Layout */
+.grid-chart-layout {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    /* Mobile Default */
+}
+
+@media (min-width: 1024px) {
+    .grid-chart-layout {
+        grid-template-columns: 2fr 1fr;
+        /* Desktop 2:1 */
+    }
+}
+
 /* ========================================
    16. Print Styles
    ======================================== */
