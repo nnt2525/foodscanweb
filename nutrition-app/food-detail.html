@@ -85,6 +85,15 @@
                         </div>
                         
                         ${isLoggedIn() ? `
+                            <div class="form-group mb-4">
+                                <label class="form-label">เลือกมื้ออาหาร</label>
+                                <select id="mealSelect" class="form-input">
+                                    <option value="breakfast">มื้อเช้า</option>
+                                    <option value="lunch">มื้อเที่ยง</option>
+                                    <option value="dinner">มื้อเย็น</option>
+                                    <option value="snacks">ของว่าง</option>
+                                </select>
+                            </div>
                             <button onclick="addToMeal()" class="btn btn-primary btn-block btn-lg">
                                 + เพิ่มลงมื้ออาหาร
                             </button>
@@ -129,19 +138,36 @@
                     </div>
                 </div>
             `;
+
+            // Set default meal based on time
+            if (isLoggedIn()) {
+                const now = new Date().getHours();
+                let defaultMeal = 'snacks';
+                if (now < 10) defaultMeal = 'breakfast';
+                else if (now < 14) defaultMeal = 'lunch';
+                else if (now < 20) defaultMeal = 'dinner';
+
+                // Use setTimeout to ensure DOM is ready
+                setTimeout(() => {
+                    const select = document.getElementById('mealSelect');
+                    if (select) select.value = defaultMeal;
+                }, 0);
+            }
         }
 
         function addToMeal() {
             const meals = getFromLocalStorage('nutritrack_meals', { breakfast: [], lunch: [], dinner: [], snacks: [] });
-            const now = new Date().getHours();
-            let mealType = 'snacks';
-            if (now < 10) mealType = 'breakfast';
-            else if (now < 14) mealType = 'lunch';
-            else if (now < 20) mealType = 'dinner';
+            const mealType = document.getElementById('mealSelect').value;
+            const mealNames = {
+                breakfast: 'มื้อเช้า',
+                lunch: 'มื้อเที่ยง',
+                dinner: 'มื้อเย็น',
+                snacks: 'ของว่าง'
+            };
 
             meals[mealType].push({ ...food, addedAt: new Date().toISOString() });
             saveToLocalStorage('nutritrack_meals', meals);
-            showNotification(`เพิ่ม ${food.name} ลงในมื้ออาหารแล้ว!`, 'success');
+            showNotification(`เพิ่ม ${food.name} ลงใน${mealNames[mealType]}แล้ว!`, 'success');
         }
     </script>
 </body>

@@ -91,6 +91,38 @@ function getBMIStatus(bmi) {
     return { label: 'อ้วน', color: '#ef4444' };
 }
 
+// Calculate BMR (Mifflin-St Jeor Equation)
+function calculateBMR(weight, height, age, gender) {
+    // Men: 10W + 6.25H - 5A + 5
+    // Women: 10W + 6.25H - 5A - 161
+    let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+    return gender === 'male' ? bmr + 5 : bmr - 161;
+}
+
+// Activity Level Multipliers
+const ACTIVITY_LEVELS = {
+    sedentary: 1.2,      // Little or no exercise
+    light: 1.375,        // Light exercise 1-3 days/week
+    moderate: 1.55,      // Moderate exercise 3-5 days/week
+    active: 1.725,       // Hard exercise 6-7 days/week
+    very_active: 1.9     // Very hard exercise & physical job
+};
+
+// Calculate TDEE (Total Daily Energy Expenditure)
+function calculateTDEE(bmr, activityLevel) {
+    const multiplier = ACTIVITY_LEVELS[activityLevel] || 1.2;
+    return Math.round(bmr * multiplier);
+}
+
+// Calculate Recommended Calories based on Goal
+function calculateRecommendedCalories(tdee, goal) {
+    switch (goal) {
+        case 'lose': return tdee - 500;
+        case 'gain': return tdee + 500;
+        default: return tdee; // maintain
+    }
+}
+
 // Get greeting based on time
 function getGreeting() {
     const hour = new Date().getHours();

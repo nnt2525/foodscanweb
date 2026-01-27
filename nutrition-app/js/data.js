@@ -211,6 +211,32 @@ const mockFoods = [
         image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400',
         tags: ['โปรตีนสูง', 'โปรไบโอติก', 'แคลเซียม'],
         benefits: ['โปรไบโอติก', 'บำรุงกระดูก', 'โปรตีนสูง']
+    },
+    {
+        id: 9,
+        name: 'ก๋วยเตี๋ยวน้ำตกหมู',
+        nameEn: 'Pork Nam Tok Noodles',
+        category: 'อาหารจานเดียว',
+        description: 'ก๋วยเตี๋ยวน้ำซุปเข้มข้น ใส่เนื้อหมูและลูกชิ้น',
+        servingSize: 350,
+        calories: 350,
+        nutrition: {
+            carbohydrates: { total: 45, fiber: 2, sugar: 4 },
+            protein: { total: 20, quality: 'ปานกลาง' },
+            fat: { total: 12, saturated: 4, unsaturated: 7, trans: 0 },
+            vitamins: {
+                vitaminA: 50, vitaminB1: 0.2, vitaminB2: 0.3,
+                vitaminB3: 4, vitaminB6: 0.5, vitaminB12: 1.5,
+                vitaminC: 5, vitaminD: 0, vitaminE: 1, vitaminK: 8, folate: 20
+            },
+            minerals: {
+                calcium: 35, iron: 3.5, magnesium: 40, phosphorus: 160,
+                potassium: 300, sodium: 1200, zinc: 2.5, selenium: 25
+            }
+        },
+        image: 'https://img.wongnai.com/p/1920x0/2020/01/20/0e4c6a1ca489437985a9636f29bec582.jpg',
+        tags: ['รสจัด', 'โปรตีน', 'ยอดนิยม'],
+        benefits: ['ธาตุเหล็กสูง', 'ให้พลังงาน', 'รสชาติจัดจ้าน']
     }
 ];
 

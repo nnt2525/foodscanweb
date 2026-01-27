@@ -50,24 +50,45 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="form-label">ระดับกิจกรรม</label>
+                            <select id="activity" class="form-input">
+                                <option value="sedentary">ไม่ออกกำลังกาย (ทำงานนั่งโต๊ะ)</option>
+                                <option value="light">ออกกำลังกายเบาๆ (1-3 วัน/สัปดาห์)</option>
+                                <option value="moderate">ออกกำลังกายปานกลาง (3-5 วัน/สัปดาห์)</option>
+                                <option value="active">ออกกำลังกายหนัก (6-7 วัน/สัปดาห์)</option>
+                                <option value="very_active">ออกกำลังกายหนักมาก (นักกีฬา)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label class="form-label">เป้าหมาย</label>
                             <select id="goal" class="form-input">
-                                <option value="">เลือก</option>
                                 <option value="lose">ลดน้ำหนัก</option>
                                 <option value="maintain">รักษาน้ำหนัก</option>
                                 <option value="gain">เพิ่มน้ำหนัก</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">บันทึก</button>
+                        <button type="submit" class="btn btn-primary btn-block mb-6">บันทึก</button>
                     </form>
-                </div>
 
-                <!-- BMI Result -->
-                <div class="card mb-6" id="bmiCard" style="display:none;">
-                    <h2 class="text-xl font-bold mb-4">ค่า BMI ของคุณ</h2>
-                    <div class="text-center">
-                        <div class="text-4xl font-bold" id="bmiValue"></div>
-                        <div id="bmiStatus" class="badge mt-2"></div>
+                    <!-- Results Grid -->
+                    <div class="grid grid-cols-1 gap-4" id="resultsSection" style="display:none;">
+                        <!-- BMI Result -->
+                        <div class="stat-card text-center fade-in bg-gray-50 border border-gray-200">
+                            <div class="stat-card-icon mb-2">⚖️</div>
+                            <div class="stat-card-label mb-1">BMI ของคุณ</div>
+                            <div class="stat-card-value mb-2" id="bmiValue">--</div>
+                            <div id="bmiStatus" class="badge">--</div>
+                        </div>
+
+                        <!-- Calorie Result -->
+                        <div class="stat-card text-center fade-in bg-gray-50 border border-gray-200"
+                            style="border-left-color: #f97316;">
+                            <div class="stat-card-icon mb-2">🔥</div>
+                            <div class="stat-card-label mb-1">แคลอรี่ต่อวัน</div>
+                            <div class="stat-card-value text-primary mb-1" id="calorieValue" style="color: #f97316;">--
+                            </div>
+                            <div class="text-xs text-gray">กิโลแคลอรี่</div>
+                        </div>
                     </div>
                 </div>
 
@@ -97,8 +118,9 @@
             document.getElementById('height').value = user.profile.height || '';
             document.getElementById('age').value = user.profile.age || '';
             document.getElementById('gender').value = user.profile.gender || '';
-            document.getElementById('goal').value = user.profile.goal || '';
-            updateBMI();
+            document.getElementById('activity').value = user.profile.activity || 'sedentary';
+            document.getElementById('goal').value = user.profile.goal || 'maintain';
+            updateStats();
         }
 
         function saveProfile(e) {
@@ -108,27 +130,40 @@
                 height: parseFloat(document.getElementById('height').value),
                 age: parseInt(document.getElementById('age').value),
                 gender: document.getElementById('gender').value,
+                activity: document.getElementById('activity').value,
                 goal: document.getElementById('goal').value
             };
 
             updateProfile(data);
-            updateBMI();
+            updateStats();
             showNotification('บันทึกข้อมูลแล้ว!', 'success');
         }
 
-        function updateBMI() {
+        function updateStats() {
             const weight = parseFloat(document.getElementById('weight').value);
             const height = parseFloat(document.getElementById('height').value);
+            const age = parseInt(document.getElementById('age').value);
+            const gender = document.getElementById('gender').value;
+            const activity = document.getElementById('activity').value;
+            const goal = document.getElementById('goal').value;
 
-            if (weight && height) {
+            if (weight && height && age && gender) {
+                // BMI
                 const bmi = calculateBMI(weight, height);
-                const status = getBMIStatus(bmi);
+                const bmiStatus = getBMIStatus(bmi);
 
-                document.getElementById('bmiCard').style.display = 'block';
+                document.getElementById('resultsSection').style.display = 'grid';
                 document.getElementById('bmiValue').textContent = bmi;
-                document.getElementById('bmiStatus').textContent = status.label;
-                document.getElementById('bmiStatus').style.background = status.color;
+                document.getElementById('bmiStatus').textContent = bmiStatus.label;
+                document.getElementById('bmiStatus').style.background = bmiStatus.color;
                 document.getElementById('bmiStatus').style.color = 'white';
+
+                // Calories
+                const bmr = calculateBMR(weight, height, age, gender);
+                const tdee = calculateTDEE(bmr, activity);
+                const recommended = calculateRecommendedCalories(tdee, goal);
+
+                document.getElementById('calorieValue').textContent = formatNumber(recommended);
             }
         }
     </script>
