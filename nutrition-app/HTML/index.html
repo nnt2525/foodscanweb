@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NutriTrack - ระบบติดตามโภชนาการอาหารที่ช่วยให้คุณดูแลสุขภาพได้ง่ายขึ้น">
+    <title>NutriTrack - ระบบติดตามโภชนาการอาหาร</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <!-- Navigation will be inserted by JS -->
+
+        <main class="main-content">
+            <!-- Hero Section -->
+            <section class="hero container">
+                <div class="fade-in">
+                    <h1 class="hero-title">
+                        ดูแลสุขภาพด้วย<br>
+                        <span class="hero-title-accent">NutriTrack</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        ระบบติดตามโภชนาการอาหารที่ช่วยให้คุณรู้จักอาหารที่ทาน
+                        วางแผนมื้ออาหาร และบรรลุเป้าหมายสุขภาพ
+                    </p>
+                    <div class="hero-actions">
+                        <a href="register.html" class="btn btn-primary btn-lg btn-rounded">
+                            เริ่มต้นใช้งานฟรี
+                        </a>
+                        <a href="search.html" class="btn btn-secondary btn-lg btn-rounded">
+                            ค้นหาอาหาร
+                        </a>
+                    </div>
+
+                    <!-- Search Box -->
+                    <div class="mt-8" style="max-width: 500px; margin-left: auto; margin-right: auto;">
+                        <form action="search.html" method="GET" class="flex gap-2">
+                            <input type="text" name="q" class="form-input"
+                                placeholder="🔍 ค้นหาอาหาร เช่น ข้าวผัด, สลัด, ไก่ย่าง..." style="flex: 1;">
+                            <button type="submit" class="btn btn-primary">ค้นหา</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="container mt-8">
+                <h2 class="text-2xl font-bold text-center mb-8">ฟีเจอร์หลัก</h2>
+                <div class="grid grid-responsive">
+                    <div class="card text-center fade-in">
+                        <div class="text-4xl mb-4">🔍</div>
+                        <h3 class="text-lg font-bold mb-2">ค้นหาอาหาร</h3>
+                        <p class="text-gray">ค้นหาข้อมูลโภชนาการของอาหารกว่า 1,000+ รายการ</p>
+                        <a href="search.html" class="btn btn-ghost mt-4">ดูเพิ่มเติม →</a>
+                    </div>
+                    <div class="card text-center fade-in">
+                        <div class="text-4xl mb-4">📸</div>
+                        <h3 class="text-lg font-bold mb-2">สแกนอาหาร</h3>
+                        <p class="text-gray">ถ่ายรูปอาหารเพื่อวิเคราะห์สารอาหารอัตโนมัติ</p>
+                        <a href="scanner.html" class="btn btn-ghost mt-4">ดูเพิ่มเติม →</a>
+                    </div>
+                    <div class="card text-center fade-in">
+                        <div class="text-4xl mb-4">📊</div>
+                        <h3 class="text-lg font-bold mb-2">ติดตามความคืบหน้า</h3>
+                        <p class="text-gray">ดูสถิติและแนวโน้มโภชนาการของคุณ</p>
+                        <a href="progress.html" class="btn btn-ghost mt-4">ดูเพิ่มเติม →</a>
+                    </div>
+                    <div class="card text-center fade-in">
+                        <div class="text-4xl mb-4">📅</div>
+                        <h3 class="text-lg font-bold mb-2">วางแผนอาหาร</h3>
+                        <p class="text-gray">จัดมื้ออาหารล่วงหน้าเพื่อควบคุมแคลอรี่และสารอาหาร</p>
+                        <a href="planner.html" class="btn btn-ghost mt-4">ดูเพิ่มเติม →</a>
+                    </div>
+                    <div class="card text-center fade-in">
+                        <div class="text-4xl mb-4">👥</div>
+                        <h3 class="text-lg font-bold mb-2">ชุมชน</h3>
+                        <p class="text-gray">แบ่งปันประสบการณ์และเคล็ดลับสุขภาพกับเพื่อนๆ</p>
+                        <a href="community.html" class="btn btn-ghost mt-4">ดูเพิ่มเติม →</a>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- Stats Section -->
+            <section class="container mt-8 mb-8">
+                <div class="card card-glass" style="background: var(--gradient-primary); color: white;">
+                    <div class="grid grid-cols-4 grid-responsive text-center" style="gap: 2rem;">
+                        <div>
+                            <div class="text-3xl font-bold">500+</div>
+                            <div style="opacity: 0.9;">รายการอาหาร</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold">1,000+</div>
+                            <div style="opacity: 0.9;">ผู้ใช้งาน</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold">98%</div>
+                            <div style="opacity: 0.9;">ความพึงพอใจ</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold">24/7</div>
+                            <div style="opacity: 0.9;">พร้อมใช้งาน</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- CTA Section -->
+            <section class="container mb-8 text-center">
+                <div class="card" style="background: var(--primary-50);">
+                    <h2 class="text-2xl font-bold mb-4">พร้อมเริ่มต้นดูแลสุขภาพ?</h2>
+                    <p class="text-gray mb-6">สมัครสมาชิกฟรีวันนี้ และเริ่มติดตามโภชนาการของคุณ</p>
+                    <a href="register.html" class="btn btn-primary btn-lg btn-rounded">
+                        สมัครสมาชิกฟรี
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer will be inserted by JS -->
+    </div>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/navigation.js"></script>
+</body>
+
+</html>

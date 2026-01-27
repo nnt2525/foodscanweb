@@ -234,7 +234,7 @@ const mockFoods = [
                 potassium: 300, sodium: 1200, zinc: 2.5, selenium: 25
             }
         },
-        image: 'https://img.wongnai.com/p/1920x0/2020/01/20/0e4c6a1ca489437985a9636f29bec582.jpg',
+        image: 'https://img.wongnai.com/p/1920x0/2020/01/20/0e4c6a1ca489437985a9636f29bec582.jpg    ',
         tags: ['รสจัด', 'โปรตีน', 'ยอดนิยม'],
         benefits: ['ธาตุเหล็กสูง', 'ให้พลังงาน', 'รสชาติจัดจ้าน']
     }

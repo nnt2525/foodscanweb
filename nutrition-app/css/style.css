@@ -857,6 +857,14 @@ select {
     color: var(--primary-600);
 }
 
+.text-primarys {
+    color: var(--primary-600);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
 .text-gray {
     color: var(--gray-500);
 }
