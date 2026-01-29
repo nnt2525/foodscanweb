@@ -5,7 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>วางแผนอาหาร - NutriTrack</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/planner.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
@@ -19,20 +25,19 @@
                 </div>
 
                 <!-- Daily Summary -->
-                <div class="card mb-6" style="background: var(--gradient-primary); color: white;">
+                <div class="card mb-6 summary-card">
                     <div class="flex items-center justify-between">
                         <div>
-                            <div class="text-sm" style="opacity: 0.9;">แคลอรี่รวมวันนี้</div>
+                            <div class="text-sm text-muted">แคลอรี่รวมวันนี้</div>
                             <div class="text-3xl font-bold" id="totalCalories">0</div>
                         </div>
                         <div class="text-right">
-                            <div class="text-sm" style="opacity: 0.9;">เป้าหมาย</div>
+                            <div class="text-sm text-muted">เป้าหมาย</div>
                             <div class="text-xl font-bold">2,000 kcal</div>
                         </div>
                     </div>
-                    <div class="progress-bar mt-4" style="background: rgba(255,255,255,0.3);">
-                        <div id="caloriesProgress"
-                            style="height:100%;background:white;border-radius:9999px;transition:width 0.3s;"></div>
+                    <div class="progress-bar mt-4 summary-progress">
+                        <div id="caloriesProgress" class="summary-progress-fill"></div>
                     </div>
                 </div>
 
@@ -86,66 +91,7 @@
     <script src="../js/utils.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/navigation.js"></script>
-    <script>
-        if (!requireAuth()) throw new Error('Not authorized');
-
-        document.getElementById('todayDate').textContent = formatDate(new Date());
-
-        function renderMeals() {
-            const meals = getFromLocalStorage('nutritrack_meals', { breakfast: [], lunch: [], dinner: [], snacks: [] });
-            let total = 0;
-
-            ['breakfast', 'lunch', 'dinner', 'snacks'].forEach(type => {
-                const list = document.getElementById(type + 'List');
-                const items = meals[type] || [];
-
-                if (items.length === 0) {
-                    list.innerHTML = '<p class="text-gray text-sm">ยังไม่มีรายการ</p>';
-                } else {
-                    list.innerHTML = items.map((item, i) => {
-                        total += item.calories;
-                        return `
-                            <div class="flex items-center justify-between" style="padding:0.5rem;background:var(--gray-50);border-radius:0.5rem;">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm">${item.name}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm text-primary">${item.calories} kcal</span>
-                                    <button onclick="removeMeal('${type}', ${i})" class="text-gray" style="cursor:pointer;">✕</button>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            });
-
-            document.getElementById('totalCalories').textContent = formatNumber(total);
-            document.getElementById('caloriesProgress').style.width = Math.min((total / 2000) * 100, 100) + '%';
-        }
-
-        function removeMeal(type, index) {
-            const meals = getFromLocalStorage('nutritrack_meals', {});
-            meals[type].splice(index, 1);
-            saveToLocalStorage('nutritrack_meals', meals);
-            renderMeals();
-            showNotification('ลบรายการแล้ว', 'info');
-        }
-
-        function clearAllMeals() {
-            if (confirm('ต้องการล้างรายการทั้งหมด?')) {
-                saveToLocalStorage('nutritrack_meals', { breakfast: [], lunch: [], dinner: [], snacks: [] });
-                renderMeals();
-                showNotification('ล้างรายการทั้งหมดแล้ว', 'success');
-            }
-        }
-
-        renderMeals();
-    </script>
-    <style>
-        .space-y-2>*+* {
-            margin-top: 0.5rem;
-        }
-    </style>
+    <script src="../js/planner.js"></script>
 </body>
 
 </html>

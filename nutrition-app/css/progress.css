@@ -1,0 +1,61 @@
+/* ========================================
+   NutriTrack - Progress Page Styles
+   ======================================== */
+
+/* Stat Value Colors */
+.stat-value-blue {
+    color: #3b82f6;
+}
+
+.stat-value-green {
+    color: #22c55e;
+}
+
+.stat-value-orange {
+    color: #f59e0b;
+}
+
+/* Chart Card */
+.chart-card {
+    padding: 1.5rem 2rem;
+}
+
+.chart-container {
+    height: 320px;
+}
+
+/* Nutrients Chart Card */
+.nutrients-chart-card {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.nutrients-chart-wrapper {
+    flex: 1;
+    position: relative;
+    min-height: 280px;
+}
+
+.nutrients-chart-center {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+/* Achievement Card */
+.achievement-card {
+    padding: 1.5rem;
+    border-radius: 1rem;
+}
+
+.achievement-card.unlocked {
+    background: var(--primary-50);
+}
+
+.achievement-card.locked {
+    background: var(--gray-100);
+    opacity: 0.5;
+}

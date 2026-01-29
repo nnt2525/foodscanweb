@@ -5,14 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ชุมชน - NutriTrack</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/community.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div class="page-wrapper">
         <main class="main-content">
-            <div class="container fade-in" style="max-width: 700px;">
+            <div class="container fade-in community-container">
                 <h1 class="text-3xl font-bold mb-6">ชุมชน</h1>
 
                 <!-- New Post -->
@@ -40,80 +46,7 @@
     <script src="../js/utils.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/navigation.js"></script>
-    <script>
-        let posts = getFromLocalStorage('nutritrack_posts', [...mockPosts]);
-
-        function renderPosts() {
-            document.getElementById('postsList').innerHTML = posts.map(p => `
-                <div class="card mb-4">
-                    <div class="flex items-start gap-3">
-                        <div class="text-3xl">${p.avatar}</div>
-                        <div class="flex-1">
-                            <h3 class="font-bold">${p.author}</h3>
-                            <p class="text-sm text-gray mb-3">${p.timestamp}</p>
-                            <p class="mb-4">${p.content}</p>
-                            <div class="flex gap-6">
-                                <button onclick="toggleLike(${p.id})" class="flex items-center gap-1 ${p.liked ? 'text-primary' : 'text-gray'}" style="cursor:pointer;background:none;border:none;">
-                                    ${p.liked ? '❤️' : '🤍'} ${p.likes}
-                                </button>
-                                <span class="flex items-center gap-1 text-gray">💬 ${p.comments}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function toggleLike(id) {
-            const post = posts.find(p => p.id === id);
-            if (post) {
-                post.liked = !post.liked;
-                post.likes += post.liked ? 1 : -1;
-                saveToLocalStorage('nutritrack_posts', posts);
-                renderPosts();
-            }
-        }
-
-        function showNewPost() {
-            if (!isLoggedIn()) {
-                showNotification('กรุณาเข้าสู่ระบบก่อน', 'warning');
-                setTimeout(() => window.location.href = 'login.html', 1000);
-                return;
-            }
-            document.getElementById('newPostCard').style.display = 'block';
-            document.getElementById('showPostBtn').style.display = 'none';
-        }
-
-        function cancelPost() {
-            document.getElementById('newPostCard').style.display = 'none';
-            document.getElementById('showPostBtn').style.display = 'block';
-            document.getElementById('postContent').value = '';
-        }
-
-        function submitPost() {
-            const content = document.getElementById('postContent').value.trim();
-            if (!content) return showNotification('กรุณาใส่เนื้อหา', 'warning');
-
-            const user = getCurrentUser();
-            posts.unshift({
-                id: Date.now(),
-                author: user.name,
-                avatar: '👤',
-                content,
-                likes: 0,
-                comments: 0,
-                timestamp: 'เมื่อสักครู่',
-                liked: false
-            });
-
-            saveToLocalStorage('nutritrack_posts', posts);
-            cancelPost();
-            renderPosts();
-            showNotification('โพสต์สำเร็จ!', 'success');
-        }
-
-        renderPosts();
-    </script>
+    <script src="../js/community.js"></script>
 </body>
 
 </html>

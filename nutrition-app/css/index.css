@@ -1,0 +1,39 @@
+/* ========================================
+   NutriTrack - Index Page Styles
+   Hero Section
+   ======================================== */
+
+.hero {
+    padding: var(--space-12) 0;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: var(--font-size-4xl);
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: var(--space-4);
+    line-height: 1.2;
+}
+
+.hero-title-accent {
+    color: var(--primary-600);
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: var(--font-size-xl);
+    color: var(--gray-600);
+    max-width: 600px;
+    margin: 0 auto var(--space-8);
+}
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}

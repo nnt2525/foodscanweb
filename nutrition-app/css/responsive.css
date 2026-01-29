@@ -1,0 +1,125 @@
+/* ========================================
+   NutriTrack - Responsive Design
+   ======================================== */
+
+@media (max-width: 768px) {
+    :root {
+        --font-size-4xl: 2rem;
+        --font-size-3xl: 1.5rem;
+        --space-6: 1rem;
+        --space-8: 1.5rem;
+    }
+
+    .container {
+        padding: 0 var(--space-4);
+    }
+
+    /* Hide desktop navbar menu */
+    .navbar-menu {
+        display: none !important;
+    }
+
+    /* Hide desktop navbar actions */
+    .navbar-actions {
+        display: none !important;
+    }
+
+    /* Show hamburger button */
+    .mobile-menu-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-2);
+        background: var(--gray-100);
+        border-radius: var(--radius-md);
+    }
+
+    /* Mobile menu styling */
+    .mobile-menu {
+        display: none;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: white;
+        border-bottom: 1px solid var(--gray-200);
+        padding: var(--space-4);
+        box-shadow: var(--shadow-lg);
+        z-index: 99;
+    }
+
+    .mobile-menu.active {
+        display: block !important;
+    }
+
+    .mobile-menu-list {
+        list-style: none;
+    }
+
+    .mobile-menu-link {
+        display: block;
+        padding: var(--space-3) var(--space-4);
+        color: var(--gray-700);
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        transition: all var(--transition-fast);
+    }
+
+    .mobile-menu-link:hover,
+    .mobile-menu-link.active {
+        background: var(--primary-50);
+        color: var(--primary-600);
+    }
+
+    .grid-cols-2,
+    .grid-cols-3,
+    .grid-cols-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-title {
+        font-size: var(--font-size-3xl);
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .card {
+        padding: var(--space-4);
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .grid-cols-3,
+    .grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+@media print {
+    .navbar,
+    .footer,
+    .btn,
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+    }
+
+    .card {
+        box-shadow: none;
+        border: 1px solid var(--gray-200);
+    }
+}

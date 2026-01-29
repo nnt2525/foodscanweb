@@ -1,0 +1,22 @@
+/* ========================================
+   NutriTrack - Profile Page Styles
+   ======================================== */
+
+/* Profile Container */
+.profile-container {
+    max-width: 600px;
+}
+
+/* Profile Avatar */
+.profile-avatar {
+    font-size: 4rem;
+}
+
+/* Result Cards */
+.result-card {
+    border-left-color: #f97316;
+}
+
+.calorie-value {
+    color: #f97316;
+}

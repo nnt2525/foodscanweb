@@ -1,0 +1,55 @@
+/* ========================================
+   NutriTrack - Dashboard Page Styles
+   ======================================== */
+
+/* Stat Card Colors */
+.stat-value-blue {
+    color: #3b82f6;
+}
+
+.stat-value-orange {
+    color: #f59e0b;
+}
+
+.stat-value-purple {
+    color: #8b5cf6;
+}
+
+.progress-bar-fill.purple {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+/* Chart Card */
+.chart-card {
+    padding: 1.5rem 2rem;
+}
+
+.chart-container {
+    height: 320px;
+}
+
+/* Daily Chart Card */
+.daily-chart-card {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.daily-chart-wrapper {
+    flex: 1;
+    position: relative;
+    min-height: 280px;
+}
+
+.daily-chart-center {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+/* Recent Foods Card */
+.recent-foods-card {
+    grid-column: span 2;
+}

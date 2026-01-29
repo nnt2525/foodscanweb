@@ -5,17 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>สมัครสมาชิก - NutriTrack</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/register.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div class="page-wrapper">
-        <main class="main-content flex items-center justify-center" style="min-height: calc(100vh - 200px);">
-            <div class="container" style="max-width: 420px;">
+        <main class="main-content flex items-center justify-center auth-main">
+            <div class="container auth-container">
                 <div class="card fade-in">
                     <div class="text-center mb-6">
-                        <a href="index.html" class="navbar-logo" style="justify-content: center;">
+                        <a href="index.html" class="navbar-logo auth-logo">
                             <div class="navbar-logo-icon">🥗</div>
                             <span class="navbar-logo-text">NutriTrack</span>
                         </a>
@@ -61,38 +67,7 @@
     <script src="../js/utils.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/navigation.js"></script>
-    <script>
-        // Redirect if already logged in
-        if (isLoggedIn()) {
-            window.location.href = 'dashboard.html';
-        }
-
-        function handleRegister(e) {
-            e.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const errorEl = document.getElementById('errorMessage');
-
-            // Validate password match
-            if (password !== confirmPassword) {
-                errorEl.textContent = 'รหัสผ่านไม่ตรงกัน';
-                errorEl.classList.remove('hidden');
-                return;
-            }
-
-            const result = register(name, email, password);
-
-            if (result.success) {
-                showNotification('สมัครสมาชิกสำเร็จ!', 'success');
-                setTimeout(() => window.location.href = 'dashboard.html', 1000);
-            } else {
-                errorEl.textContent = result.message;
-                errorEl.classList.remove('hidden');
-            }
-        }
-    </script>
+    <script src="../js/register.js"></script>
 </body>
 
 </html>

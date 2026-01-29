@@ -1,0 +1,20 @@
+/* ========================================
+   NutriTrack - Search Page Styles
+   ======================================== */
+
+/* Search Input */
+.search-input {
+    font-size: 1.125rem;
+    padding: 1rem 1.5rem;
+}
+
+/* Category Filters */
+.category-filters {
+    flex-wrap: wrap;
+}
+
+/* No Results */
+.no-results {
+    grid-column: 1 / -1;
+    padding: 3rem;
+}

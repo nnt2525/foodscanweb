@@ -1,0 +1,16 @@
+/* ========================================
+   NutriTrack - Register Page Styles
+   ======================================== */
+
+/* Auth Page Layout (shared with login) */
+.auth-main {
+    min-height: calc(100vh - 200px);
+}
+
+.auth-container {
+    max-width: 420px;
+}
+
+.auth-logo {
+    justify-content: center;
+}

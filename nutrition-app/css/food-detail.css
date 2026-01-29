@@ -1,0 +1,39 @@
+/* ========================================
+   NutriTrack - Food Detail Page Styles
+   ======================================== */
+
+/* Loading State */
+.food-loading {
+    padding: 3rem;
+}
+
+.food-loading .loading-spinner {
+    margin: 0 auto;
+}
+
+/* Food Image */
+.food-detail-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 1rem;
+}
+
+/* Nutrition Card */
+.nutrition-highlight {
+    padding: 1rem;
+    background: var(--primary-50);
+    border-radius: 0.75rem;
+}
+
+.nutrition-item {
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: 0.5rem;
+}
+
+/* Benefit Badge */
+.benefit-badge {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}

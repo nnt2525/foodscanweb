@@ -1,0 +1,35 @@
+/* ========================================
+   NutriTrack - Login Page Styles
+   ======================================== */
+
+/* Auth Page Layout */
+.auth-main {
+    min-height: calc(100vh - 200px);
+}
+
+.auth-container {
+    max-width: 420px;
+}
+
+.auth-logo {
+    justify-content: center;
+}
+
+/* Form Adjustments */
+.form-label-inline {
+    margin-bottom: 0;
+}
+
+.form-input-spaced {
+    margin-top: 0.5rem;
+}
+
+.forgot-password-link {
+    font-size: 0.875rem;
+}
+
+/* Demo Section */
+.demo-section {
+    padding-top: 1rem;
+    border-top: 1px solid var(--gray-200);
+}

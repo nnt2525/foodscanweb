@@ -5,7 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - NutriTrack</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -39,7 +45,7 @@
                             <span class="text-gray">โปรตีน</span>
                             <span class="stat-card-icon">💪</span>
                         </div>
-                        <p class="stat-card-value" style="color: #3b82f6;">45g</p>
+                        <p class="stat-card-value stat-value-blue">45g</p>
                         <p class="stat-card-label">เป้าหมาย: 50g</p>
                         <div class="progress-bar mt-3">
                             <div class="progress-bar-fill blue" style="width: 90%"></div>
@@ -51,7 +57,7 @@
                             <span class="text-gray">คาร์โบไฮเดรต</span>
                             <span class="stat-card-icon">🍚</span>
                         </div>
-                        <p class="stat-card-value" style="color: #f59e0b;">250g</p>
+                        <p class="stat-card-value stat-value-orange">250g</p>
                         <p class="stat-card-label">เป้าหมาย: 300g</p>
                         <div class="progress-bar mt-3">
                             <div class="progress-bar-fill orange" style="width: 83%"></div>
@@ -63,11 +69,10 @@
                             <span class="text-gray">ไขมัน</span>
                             <span class="stat-card-icon">🥑</span>
                         </div>
-                        <p class="stat-card-value" style="color: #8b5cf6;">55g</p>
+                        <p class="stat-card-value stat-value-purple">55g</p>
                         <p class="stat-card-label">เป้าหมาย: 70g</p>
                         <div class="progress-bar mt-3">
-                            <div class="progress-bar-fill"
-                                style="width: 78%; background: linear-gradient(135deg, #8b5cf6, #7c3aed);"></div>
+                            <div class="progress-bar-fill purple" style="width: 78%;"></div>
                         </div>
                     </div>
                 </div>
@@ -75,24 +80,23 @@
                 <!-- Charts Section -->
                 <div class="grid-chart-layout mb-8">
                     <!-- Weekly Chart (Main Focus) -->
-                    <div class="card" style="padding: 1.5rem 2rem;">
+                    <div class="card chart-card">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-xl font-bold">📈 แคลอรี่ย้อนหลัง 7 วัน</h2>
                             <span class="badge badge-green">สัปดาห์นี้</span>
                         </div>
-                        <div style="height: 320px;">
+                        <div class="chart-container">
                             <canvas id="caloriesChart"></canvas>
                         </div>
                     </div>
 
                     <!-- Daily Chart (Side Panel) -->
-                    <div class="card" style="padding: 1.5rem; display: flex; flex-direction: column;">
+                    <div class="card daily-chart-card">
                         <h2 class="text-lg font-bold mb-4 text-center">🔥 สัดส่วนมื้ออาหาร</h2>
-                        <div style="flex: 1; position: relative; min-height: 280px;">
+                        <div class="daily-chart-wrapper">
                             <canvas id="dailyChart"></canvas>
                             <!-- Center Text -->
-                            <div
-                                style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                            <div class="daily-chart-center">
                                 <div class="text-xs text-gray">รวมวันนี้</div>
                                 <div class="text-3xl font-bold text-primary" id="dailyChartCenter">0</div>
                                 <div class="text-xs text-gray">kcal</div>
@@ -104,7 +108,7 @@
                 <!-- Recent Foods & Quick Actions -->
                 <div class="grid grid-cols-3 grid-responsive mb-8">
                     <!-- Recent Foods -->
-                    <div class="card" style="grid-column: span 2;">
+                    <div class="card recent-foods-card">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="text-xl font-bold">อาหารที่บันทึกล่าสุด</h2>
                             <a href="planner.html" class="text-primary">ดูทั้งหมด →</a>
@@ -117,7 +121,6 @@
                         <h2 class="text-xl font-bold mb-4">เมนูด่วน</h2>
                         <div class="flex flex-col gap-4">
                             <a href="search.html" class="btn btn-secondary btn-block">🔍 ค้นหาอาหาร</a>
-                            <a href="scanner.html" class="btn btn-secondary btn-block">📸 สแกนอาหาร</a>
                             <a href="planner.html" class="btn btn-secondary btn-block">📅 วางแผนมื้อ</a>
                             <a href="progress.html" class="btn btn-primary btn-block">📊 ดูความคืบหน้า</a>
                         </div>
@@ -131,187 +134,7 @@
     <script src="../js/utils.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/navigation.js"></script>
-    <script>
-        // Check auth
-        if (!requireAuth()) throw new Error('Not authorized');
-
-        // Set greeting
-        const user = getCurrentUser();
-        document.getElementById('greeting').textContent = `${getGreeting()}, ${user.name}!`;
-
-        // Get Summary Data from LocalStorage (Real Data)
-        const meals = getFromLocalStorage('nutritrack_meals', { breakfast: [], lunch: [], dinner: [], snacks: [] });
-
-        // Calculate totals
-        const calories = {
-            breakfast: meals.breakfast.reduce((sum, item) => sum + item.calories, 0),
-            lunch: meals.lunch.reduce((sum, item) => sum + item.calories, 0),
-            dinner: meals.dinner.reduce((sum, item) => sum + item.calories, 0),
-            snacks: meals.snacks.reduce((sum, item) => sum + item.calories, 0)
-        };
-        const totalCalories = Object.values(calories).reduce((a, b) => a + b, 0);
-        const goalCalories = 2000;
-
-        // Update UI stats
-        document.getElementById('todayCalories').textContent = formatNumber(totalCalories);
-        document.getElementById('caloriesProgress').style.width = Math.min((totalCalories / goalCalories) * 100, 100) + '%';
-
-        // Update doughnut center text
-        document.getElementById('dailyChartCenter').textContent = formatNumber(totalCalories);
-
-        // Render recent foods
-        const recentFoodsEl = document.getElementById('recentFoods');
-        const allMeals = [
-            ...meals.breakfast,
-            ...meals.lunch,
-            ...meals.dinner,
-            ...meals.snacks
-        ].reverse().slice(0, 4);
-
-        if (allMeals.length === 0) {
-            recentFoodsEl.innerHTML = '<div class="text-gray col-span-2 text-center py-4">ยังไม่มีรายการอาหารวันนี้</div>';
-        } else {
-            recentFoodsEl.innerHTML = '';
-            allMeals.forEach(food => {
-                const category = food.category || 'ทั่วไป';
-                recentFoodsEl.innerHTML += `
-                    <div class="food-card">
-                        <div class="food-card-content p-3">
-                            <h3 class="food-card-title text-base">${food.name}</h3>
-                            <p class="food-card-category text-xs">${category}</p>
-                            <span class="food-card-calories text-sm">${food.calories} kcal</span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        // Chart (Weekly - Keep Mock for now as we don't have history storage yet)
-        const ctx = document.getElementById('caloriesChart').getContext('2d');
-
-        // Create Gradient
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)'); // Primary Green
-        gradient.addColorStop(1, 'rgba(34, 197, 94, 0.0)'); // Transparent
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: mockProgressData.labels,
-                datasets: [{
-                    label: 'แคลอรี่',
-                    data: mockProgressData.calories,
-                    borderColor: '#22c55e',
-                    backgroundColor: gradient,
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 6,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#22c55e',
-                    pointBorderWidth: 3,
-                    pointHoverRadius: 8,
-                    pointHoverBackgroundColor: '#22c55e',
-                    pointHoverBorderColor: '#fff',
-                    pointHoverBorderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false // Clean look
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        titleColor: '#1f2937',
-                        bodyColor: '#22c55e',
-                        bodyFont: { size: 14, weight: 'bold' },
-                        titleFont: { size: 13 },
-                        padding: 12,
-                        cornerRadius: 12,
-                        borderColor: 'rgba(0,0,0,0.05)',
-                        borderWidth: 1,
-                        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                        displayColors: false,
-                        callbacks: {
-                            label: function (context) {
-                                return context.parsed.y + ' kcal';
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: {
-                            font: { size: 12, family: "'Inter', sans-serif" },
-                            color: '#6b7280'
-                        }
-                    },
-                    y: {
-                        beginAtZero: false,
-                        min: 1500,
-                        max: 2500,
-                        grid: {
-                            color: '#f3f4f6',
-                            borderDash: [5, 5]
-                        },
-                        ticks: {
-                            font: { size: 11, family: "'Inter', sans-serif" },
-                            color: '#9ca3af',
-                            callback: value => value
-                        },
-                        border: { display: false }
-                    }
-                },
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-            }
-        });
-
-        // Daily Chart (Real Data)
-        const dailyCtx = document.getElementById('dailyChart').getContext('2d');
-        new Chart(dailyCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['🌅 เช้า', '☀️ กลางวัน', '🌙 เย็น', '🍿 ของว่าง'],
-                datasets: [{
-                    data: [calories.breakfast, calories.lunch, calories.dinner, calories.snacks],
-                    backgroundColor: ['#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6'],
-                    borderWidth: 0,
-                    hoverOffset: 15
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '75%', // Thinner ring
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            font: { size: 12, family: "'Inter', sans-serif", weight: '500' },
-                            usePointStyle: true,
-                            pointStyle: 'circle',
-                            padding: 20,
-                            boxWidth: 8,
-                            color: '#4b5563'
-                        }
-                    },
-                    tooltip: {
-                        enabled: false // We show center text instead
-                    }
-                },
-                layout: {
-                    padding: 20
-                }
-            }
-        });
-    </script>
+    <script src="../js/dashboard.js"></script>
 </body>
 
 </html>

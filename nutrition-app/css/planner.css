@@ -1,0 +1,36 @@
+/* ========================================
+   NutriTrack - Planner Page Styles
+   ======================================== */
+
+/* Space utility */
+.space-y-2>*+* {
+    margin-top: 0.5rem;
+}
+
+/* Summary Card */
+.summary-card {
+    background: var(--gradient-primary);
+    color: white;
+}
+
+.summary-card .text-muted {
+    opacity: 0.9;
+}
+
+.summary-progress {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.summary-progress-fill {
+    height: 100%;
+    background: white;
+    border-radius: 9999px;
+    transition: width 0.3s;
+}
+
+/* Meal Item */
+.meal-item {
+    padding: 0.5rem;
+    background: var(--gray-50);
+    border-radius: 0.5rem;
+}

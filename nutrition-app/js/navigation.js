@@ -6,7 +6,6 @@
 const menuItems = [
     { href: 'index.html', label: 'หน้าหลัก', icon: '🏠' },
     { href: 'search.html', label: 'ค้นหาอาหาร', icon: '🔍' },
-    { href: 'scanner.html', label: 'สแกนอาหาร', icon: '📸' },
     { href: 'planner.html', label: 'วางแผนอาหาร', icon: '📅' },
     { href: 'progress.html', label: 'ความคืบหน้า', icon: '📊' },
     { href: 'community.html', label: 'ชุมชน', icon: '👥' },
@@ -106,7 +105,7 @@ function renderFooter() {
                     <h4 class="footer-title">ลิงก์</h4>
                     <ul class="footer-links">
                         <li><a href="search.html">ค้นหาอาหาร</a></li>
-                        <li><a href="scanner.html">สแกนอาหาร</a></li>
+                        <li><a href="planner.html">วางแผนอาหาร</a></li>
                         <li><a href="community.html">ชุมชน</a></li>
                     </ul>
                 </div>
