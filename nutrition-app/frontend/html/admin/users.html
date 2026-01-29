@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการผู้ใช้ - NutriTrack Admin</title>
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/components.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <span class="logo-icon">🥗</span>
+                    <span class="logo-text">NutriTrack</span>
+                </a>
+                <span class="admin-badge">Admin</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-link">
+                    <span class="link-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="users.html" class="sidebar-link active">
+                    <span class="link-icon">👥</span>
+                    <span>ผู้ใช้งาน</span>
+                </a>
+                <a href="foods.html" class="sidebar-link">
+                    <span class="link-icon">🍽️</span>
+                    <span>อาหาร</span>
+                </a>
+                <a href="pending-foods.html" class="sidebar-link">
+                    <span class="link-icon">⏳</span>
+                    <span>รออนุมัติ</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="../dashboard.html" class="sidebar-link">
+                    <span class="link-icon">🏠</span>
+                    <span>กลับหน้าหลัก</span>
+                </a>
+                <button onclick="Auth.logout()" class="sidebar-link logout-btn">
+                    <span class="link-icon">🚪</span>
+                    <span>ออกจากระบบ</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <h1 class="text-2xl font-bold">👥 จัดการผู้ใช้งาน</h1>
+                    <p class="text-gray">จัดการบัญชีผู้ใช้ทั้งหมดในระบบ</p>
+                </div>
+            </header>
+
+            <div class="admin-content fade-in">
+                <!-- Search & Filter -->
+                <div class="search-bar">
+                    <div class="form-group search-input" style="margin-bottom: 0;">
+                        <input type="text" id="searchInput" placeholder="🔍 ค้นหาผู้ใช้..." 
+                               onkeyup="handleSearch(event)">
+                    </div>
+                    <select id="roleFilter" class="form-group" style="margin-bottom: 0; width: auto;" 
+                            onchange="loadUsers()">
+                        <option value="">ทุก Role</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                    </select>
+                </div>
+
+                <!-- Users Table -->
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ชื่อ</th>
+                            <th>อีเมล</th>
+                            <th>Role</th>
+                            <th>วันที่สมัคร</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center text-gray py-8">กำลังโหลด...</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editModal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="font-bold">แก้ไขผู้ใช้</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <form id="editForm" onsubmit="handleEditSubmit(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="editUserId">
+                    <div class="form-group">
+                        <label for="editName">ชื่อ</label>
+                        <input type="text" id="editName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editRole">Role</label>
+                        <select id="editRole" required>
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../js/config.js"></script>
+    <script src="../../js/constants.js"></script>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/pages/admin-users.js"></script>
+</body>
+
+</html>

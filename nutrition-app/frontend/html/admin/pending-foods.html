@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>อาหารรออนุมัติ - NutriTrack Admin</title>
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/components.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <span class="logo-icon">🥗</span>
+                    <span class="logo-text">NutriTrack</span>
+                </a>
+                <span class="admin-badge">Admin</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-link">
+                    <span class="link-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="users.html" class="sidebar-link">
+                    <span class="link-icon">👥</span>
+                    <span>ผู้ใช้งาน</span>
+                </a>
+                <a href="foods.html" class="sidebar-link">
+                    <span class="link-icon">🍽️</span>
+                    <span>อาหาร</span>
+                </a>
+                <a href="pending-foods.html" class="sidebar-link active">
+                    <span class="link-icon">⏳</span>
+                    <span>รออนุมัติ</span>
+                    <span class="badge badge-warning" id="pendingBadge">0</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="../dashboard.html" class="sidebar-link">
+                    <span class="link-icon">🏠</span>
+                    <span>กลับหน้าหลัก</span>
+                </a>
+                <button onclick="Auth.logout()" class="sidebar-link logout-btn">
+                    <span class="link-icon">🚪</span>
+                    <span>ออกจากระบบ</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <h1 class="text-2xl font-bold">⏳ อาหารรออนุมัติ</h1>
+                    <p class="text-gray">ตรวจสอบและอนุมัติอาหารที่ผู้ใช้เพิ่มเข้ามา</p>
+                </div>
+                <div class="header-actions">
+                    <button onclick="approveAll()" class="btn btn-success btn-sm">
+                        ✓ อนุมัติทั้งหมด
+                    </button>
+                </div>
+            </header>
+
+            <div class="admin-content fade-in">
+                <div id="pendingFoodsGrid" class="grid grid-cols-2 gap-6">
+                    <p class="text-gray text-center py-8">กำลังโหลด...</p>
+                </div>
+                
+                <div id="emptyState" class="text-center py-8 hidden">
+                    <div class="text-6xl mb-4">✅</div>
+                    <h3 class="text-xl font-bold mb-2">ไม่มีรายการรออนุมัติ</h3>
+                    <p class="text-gray">อาหารทั้งหมดได้รับการตรวจสอบแล้ว</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Food Detail Modal -->
+    <div id="detailModal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 class="font-bold" id="modalFoodName">รายละเอียดอาหาร</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalContent">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="rejectCurrentFood()">
+                    ✕ ปฏิเสธ
+                </button>
+                <button type="button" class="btn btn-success" onclick="approveCurrentFood()">
+                    ✓ อนุมัติ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/config.js"></script>
+    <script src="../../js/constants.js"></script>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/pages/admin-pending.js"></script>
+</body>
+
+</html>

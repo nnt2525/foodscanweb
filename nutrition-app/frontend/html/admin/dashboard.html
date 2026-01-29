@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - NutriTrack</title>
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/components.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <span class="logo-icon">🥗</span>
+                    <span class="logo-text">NutriTrack</span>
+                </a>
+                <span class="admin-badge">Admin</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-link active">
+                    <span class="link-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="users.html" class="sidebar-link">
+                    <span class="link-icon">👥</span>
+                    <span>ผู้ใช้งาน</span>
+                </a>
+                <a href="foods.html" class="sidebar-link">
+                    <span class="link-icon">🍽️</span>
+                    <span>อาหาร</span>
+                </a>
+                <a href="pending-foods.html" class="sidebar-link">
+                    <span class="link-icon">⏳</span>
+                    <span>รออนุมัติ</span>
+                    <span class="badge badge-warning" id="pendingBadge">0</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="../dashboard.html" class="sidebar-link">
+                    <span class="link-icon">🏠</span>
+                    <span>กลับหน้าหลัก</span>
+                </a>
+                <button onclick="Auth.logout()" class="sidebar-link logout-btn">
+                    <span class="link-icon">🚪</span>
+                    <span>ออกจากระบบ</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <h1 class="text-2xl font-bold">Dashboard</h1>
+                    <p class="text-gray">ภาพรวมระบบ NutriTrack</p>
+                </div>
+                <div class="header-actions">
+                    <span class="text-gray" id="currentDate"></span>
+                    <div class="admin-avatar">
+                        <span>👤</span>
+                        <span id="adminName">Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="admin-content fade-in">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card stat-card-primary">
+                        <div class="stat-card-icon">👥</div>
+                        <div class="stat-card-info">
+                            <p class="stat-card-value" id="totalUsers">0</p>
+                            <p class="stat-card-label">ผู้ใช้ทั้งหมด</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card-success">
+                        <div class="stat-card-icon">🍽️</div>
+                        <div class="stat-card-info">
+                            <p class="stat-card-value" id="totalFoods">0</p>
+                            <p class="stat-card-label">อาหารในระบบ</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card-warning">
+                        <div class="stat-card-icon">⏳</div>
+                        <div class="stat-card-info">
+                            <p class="stat-card-value" id="pendingFoods">0</p>
+                            <p class="stat-card-label">รออนุมัติ</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card-info">
+                        <div class="stat-card-icon">📝</div>
+                        <div class="stat-card-info">
+                            <p class="stat-card-value" id="todayLogs">0</p>
+                            <p class="stat-card-label">บันทึกวันนี้</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="card">
+                        <h2 class="text-lg font-bold mb-4">📈 ผู้ใช้ใหม่ 7 วัน</h2>
+                        <div class="chart-container">
+                            <canvas id="usersChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h2 class="text-lg font-bold mb-4">📊 สัดส่วนอาหาร</h2>
+                        <div class="chart-container">
+                            <canvas id="foodsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Pending Foods -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="text-lg font-bold">⏳ อาหารรออนุมัติ</h2>
+                            <a href="pending-foods.html" class="btn btn-sm btn-ghost">ดูทั้งหมด</a>
+                        </div>
+                        <div id="pendingFoodsList" class="list-container">
+                            <p class="text-gray text-center py-4">กำลังโหลด...</p>
+                        </div>
+                    </div>
+
+                    <!-- Recent Users -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="text-lg font-bold">👥 ผู้ใช้ล่าสุด</h2>
+                            <a href="users.html" class="btn btn-sm btn-ghost">ดูทั้งหมด</a>
+                        </div>
+                        <div id="recentUsersList" class="list-container">
+                            <p class="text-gray text-center py-4">กำลังโหลด...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../js/config.js"></script>
+    <script src="../../js/constants.js"></script>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/pages/admin-dashboard.js"></script>
+</body>
+
+</html>
