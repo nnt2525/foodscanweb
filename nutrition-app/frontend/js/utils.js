@@ -1,142 +1,132 @@
 // ========================================
-// Utility Functions - NutriTrack Frontend
+// Utility Functions for NutriTrack
 // ========================================
 
-// Format number with commas
+// Format number with Thai locale
 function formatNumber(num) {
-    return new Intl.NumberFormat('th-TH').format(num);
+    return num.toLocaleString('th-TH');
 }
 
-// Format date
-function formatDate(date, format = 'short') {
-    const d = new Date(date);
-    const options = format === 'long' 
-        ? { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-        : { year: 'numeric', month: 'short', day: 'numeric' };
-    return d.toLocaleDateString('th-TH', options);
+// Calculate percentage
+function calculatePercentage(value, total) {
+    if (total === 0) return 0;
+    return Math.min(Math.round((value / total) * 100), 100);
 }
 
-// Format time ago
-function timeAgo(date) {
-    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-    
-    const intervals = {
-        ปี: 31536000,
-        เดือน: 2592000,
-        สัปดาห์: 604800,
-        วัน: 86400,
-        ชั่วโมง: 3600,
-        นาที: 60
-    };
-    
-    for (const [unit, secondsInUnit] of Object.entries(intervals)) {
-        const interval = Math.floor(seconds / secondsInUnit);
-        if (interval >= 1) {
-            return `${interval} ${unit}ที่แล้ว`;
-        }
+// Save to localStorage
+function saveToLocalStorage(key, data) {
+    try {
+        localStorage.setItem(key, JSON.stringify(data));
+    } catch (e) {
+        console.error('Error saving:', e);
     }
-    return 'เมื่อสักครู่';
 }
 
-// Show notification
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <span>${message}</span>
-        <button onclick="this.parentElement.remove()">×</button>
-    `;
-    
-    let container = document.querySelector('.notification-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.className = 'notification-container';
-        document.body.appendChild(container);
+// Get from localStorage
+function getFromLocalStorage(key, defaultValue = null) {
+    try {
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : defaultValue;
+    } catch (e) {
+        return defaultValue;
     }
-    
-    container.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.classList.add('fade-out');
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
 }
 
-// Show loading
-function showLoading(element) {
-    element.classList.add('loading');
-    element.disabled = true;
+// Remove from localStorage
+function removeFromLocalStorage(key) {
+    localStorage.removeItem(key);
 }
 
-// Hide loading
-function hideLoading(element) {
-    element.classList.remove('loading');
-    element.disabled = false;
+// Show toast notification
+function showNotification(message, type = 'success', duration = 3000) {
+    const existing = document.querySelector('.toast-notification');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    const icons = { success: '✓', error: '✕', warning: '⚠', info: 'ℹ' };
+    const colors = { success: '#22c55e', error: '#ef4444', warning: '#f59e0b', info: '#3b82f6' };
+
+    toast.innerHTML = `<span style="background:${colors[type]};color:white;padding:4px 8px;border-radius:50%">${icons[type]}</span><span>${message}</span>`;
+    toast.style.cssText = `position:fixed;bottom:20px;right:20px;background:white;padding:12px 20px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.15);display:flex;align-items:center;gap:12px;z-index:9999;border-left:4px solid ${colors[type]}`;
+
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), duration);
+}
+
+// Format date to Thai
+function formatDate(date) {
+    return date.toLocaleDateString('th-TH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+// Get URL query parameter
+function getQueryParam(param) {
+    return new URLSearchParams(window.location.search).get(param);
 }
 
 // Debounce function
 function debounce(func, wait) {
     let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
+    return function (...args) {
         clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+        timeout = setTimeout(() => func(...args), wait);
     };
 }
 
-// Calculate BMR (Mifflin-St Jeor)
-function calculateBMR(weight, height, age, gender) {
-    if (gender === 'male') {
-        return 10 * weight + 6.25 * height - 5 * age + 5;
-    }
-    return 10 * weight + 6.25 * height - 5 * age - 161;
-}
-
-// Calculate TDEE
-function calculateTDEE(bmr, activityLevel) {
-    const multipliers = {
-        sedentary: 1.2,
-        light: 1.375,
-        moderate: 1.55,
-        active: 1.725,
-        very_active: 1.9
-    };
-    return Math.round(bmr * (multipliers[activityLevel] || 1.2));
+// Generate unique ID
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
 // Calculate BMI
-function calculateBMI(weight, heightCm) {
-    const heightM = heightCm / 100;
-    return (weight / (heightM * heightM)).toFixed(1);
+function calculateBMI(weight, height) {
+    const h = height / 100;
+    return (weight / (h * h)).toFixed(1);
 }
 
-// Get BMI category
-function getBMICategory(bmi) {
-    if (bmi < 18.5) return { label: 'น้ำหนักน้อย', color: 'warning' };
-    if (bmi < 23) return { label: 'ปกติ', color: 'success' };
-    if (bmi < 25) return { label: 'น้ำหนักเกิน', color: 'warning' };
-    if (bmi < 30) return { label: 'อ้วน', color: 'danger' };
-    return { label: 'อ้วนมาก', color: 'danger' };
+// Get BMI status
+function getBMIStatus(bmi) {
+    if (bmi < 18.5) return { label: 'ผอม', color: '#3b82f6' };
+    if (bmi < 23) return { label: 'ปกติ', color: '#22c55e' };
+    if (bmi < 25) return { label: 'น้ำหนักเกิน', color: '#f59e0b' };
+    return { label: 'อ้วน', color: '#ef4444' };
 }
 
-// Get today's date in YYYY-MM-DD format
-function getTodayDate() {
-    return new Date().toISOString().split('T')[0];
+// Calculate BMR (Mifflin-St Jeor Equation)
+function calculateBMR(weight, height, age, gender) {
+    // Men: 10W + 6.25H - 5A + 5
+    // Women: 10W + 6.25H - 5A - 161
+    let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+    return gender === 'male' ? bmr + 5 : bmr - 161;
 }
 
-// Export
-window.formatNumber = formatNumber;
-window.formatDate = formatDate;
-window.timeAgo = timeAgo;
-window.showNotification = showNotification;
-window.showLoading = showLoading;
-window.hideLoading = hideLoading;
-window.debounce = debounce;
-window.calculateBMR = calculateBMR;
-window.calculateTDEE = calculateTDEE;
-window.calculateBMI = calculateBMI;
-window.getBMICategory = getBMICategory;
-window.getTodayDate = getTodayDate;
+// Activity Level Multipliers
+const ACTIVITY_LEVELS = {
+    sedentary: 1.2,      // Little or no exercise
+    light: 1.375,        // Light exercise 1-3 days/week
+    moderate: 1.55,      // Moderate exercise 3-5 days/week
+    active: 1.725,       // Hard exercise 6-7 days/week
+    very_active: 1.9     // Very hard exercise & physical job
+};
+
+// Calculate TDEE (Total Daily Energy Expenditure)
+function calculateTDEE(bmr, activityLevel) {
+    const multiplier = ACTIVITY_LEVELS[activityLevel] || 1.2;
+    return Math.round(bmr * multiplier);
+}
+
+// Calculate Recommended Calories based on Goal
+function calculateRecommendedCalories(tdee, goal) {
+    switch (goal) {
+        case 'lose': return tdee - 500;
+        case 'gain': return tdee + 500;
+        default: return tdee; // maintain
+    }
+}
+
+// Get greeting based on time
+function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'สวัสดีตอนเช้า';
+    if (hour < 17) return 'สวัสดีตอนบ่าย';
+    return 'สวัสดีตอนเย็น';
+}

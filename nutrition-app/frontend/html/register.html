@@ -6,108 +6,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>สมัครสมาชิก - NutriTrack</title>
     <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/components.css">
-    <link rel="stylesheet" href="../css/auth.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/register.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="auth-container">
-        <div class="auth-card fade-in">
-            <div class="auth-header">
-                <span class="auth-logo">🥗</span>
-                <h1>สมัครสมาชิก</h1>
-                <p>เริ่มต้นการติดตามสุขภาพของคุณ</p>
+    <div class="page-wrapper">
+        <main class="main-content flex items-center justify-center auth-main">
+            <div class="container auth-container">
+                <div class="card fade-in">
+                    <div class="text-center mb-6">
+                        <a href="index.html" class="navbar-logo auth-logo">
+                            <div class="navbar-logo-icon">🥗</div>
+                            <span class="navbar-logo-text">NutriTrack</span>
+                        </a>
+                        <h1 class="text-2xl font-bold mt-4">สมัครสมาชิก</h1>
+                        <p class="text-gray">เริ่มต้นดูแลสุขภาพวันนี้</p>
+                    </div>
+
+                    <form id="registerForm" onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label class="form-label" for="name">ชื่อ</label>
+                            <input type="text" id="name" class="form-input" placeholder="ชื่อของคุณ" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="email">อีเมล</label>
+                            <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password">รหัสผ่าน</label>
+                            <input type="password" id="password" class="form-input" placeholder="อย่างน้อย 6 ตัวอักษร"
+                                minlength="6" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="confirmPassword">ยืนยันรหัสผ่าน</label>
+                            <input type="password" id="confirmPassword" class="form-input" placeholder="••••••••"
+                                required>
+                        </div>
+                        <div id="errorMessage" class="form-error mb-4 hidden"></div>
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">สมัครสมาชิก</button>
+                    </form>
+
+                    <div class="text-center mt-6">
+                        <p class="text-gray">
+                            มีบัญชีอยู่แล้ว?
+                            <a href="login.html" class="text-primary font-semibold">เข้าสู่ระบบ</a>
+                        </p>
+                    </div>
+                </div>
             </div>
-            
-            <form id="registerForm" class="auth-form">
-                <div class="form-group">
-                    <label for="name">ชื่อ</label>
-                    <input type="text" id="name" name="name" required 
-                           placeholder="ชื่อของคุณ">
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">อีเมล</label>
-                    <input type="email" id="email" name="email" required 
-                           placeholder="your@email.com" autocomplete="email">
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">รหัสผ่าน</label>
-                    <input type="password" id="password" name="password" required 
-                           placeholder="อย่างน้อย 6 ตัวอักษร" minlength="6">
-                </div>
-                
-                <div class="form-group">
-                    <label for="confirmPassword">ยืนยันรหัสผ่าน</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required 
-                           placeholder="กรอกรหัสผ่านอีกครั้ง">
-                </div>
-                
-                <button type="submit" class="btn btn-primary btn-block" id="registerBtn">
-                    สมัครสมาชิก
-                </button>
-                
-                <div id="errorMessage" class="error-message hidden"></div>
-            </form>
-            
-            <div class="auth-footer">
-                <p>มีบัญชีแล้ว? <a href="login.html">เข้าสู่ระบบ</a></p>
-            </div>
-        </div>
+        </main>
     </div>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/auth.js"></script>
+    <script src="../js/data.js"></script>
     <script src="../js/utils.js"></script>
-    <script>
-        // Check if already logged in
-        if (Auth.isLoggedIn()) {
-            window.location.href = 'dashboard.html';
-        }
-
-        // Handle register
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const btn = document.getElementById('registerBtn');
-            const errorEl = document.getElementById('errorMessage');
-            
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            // Validate
-            if (password !== confirmPassword) {
-                errorEl.textContent = 'รหัสผ่านไม่ตรงกัน';
-                errorEl.classList.remove('hidden');
-                return;
-            }
-            
-            showLoading(btn);
-            errorEl.classList.add('hidden');
-            
-            try {
-                const result = await Auth.register({ name, email, password });
-                
-                if (result.success) {
-                    showNotification('สมัครสมาชิกสำเร็จ', 'success');
-                    window.location.href = 'dashboard.html';
-                } else {
-                    errorEl.textContent = result.message || 'ไม่สามารถสมัครสมาชิกได้';
-                    errorEl.classList.remove('hidden');
-                }
-            } catch (error) {
-                errorEl.textContent = 'เกิดข้อผิดพลาด กรุณาลองใหม่';
-                errorEl.classList.remove('hidden');
-            } finally {
-                hideLoading(btn);
-            }
-        });
-    </script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script src="../js/register.js"></script>
 </body>
 
 </html>

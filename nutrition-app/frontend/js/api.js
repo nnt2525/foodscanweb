@@ -1,10 +1,17 @@
 // ========================================
-// API Service Layer - NutriTrack Frontend
+// API Service Layer - NutriTrack
 // ========================================
 
+const API_BASE_URL = 'http://localhost:3000/api';
+
+// ========================================
+// API Configuration
+// ========================================
 const api = {
+    baseUrl: API_BASE_URL,
+    
     async request(endpoint, options = {}) {
-        const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+        const token = localStorage.getItem('nutritrack_token');
         
         const config = {
             headers: {
@@ -16,16 +23,10 @@ const api = {
         };
         
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}${endpoint}`, config);
+            const response = await fetch(`${this.baseUrl}${endpoint}`, config);
             const data = await response.json();
             
             if (!response.ok) {
-                if (response.status === 401) {
-                    localStorage.removeItem(STORAGE_KEYS.TOKEN);
-                    localStorage.removeItem(STORAGE_KEYS.USER);
-                    window.location.href = '/html/login.html';
-                    return;
-                }
                 throw new Error(data.message || 'API Error');
             }
             
@@ -63,65 +64,155 @@ const api = {
 // Auth API
 // ========================================
 const authAPI = {
-    login: (email, password) => api.post('/auth/login', { email, password }),
-    register: (data) => api.post('/auth/register', data),
-    getProfile: () => api.get('/auth/me'),
-    updateProfile: (data) => api.put('/auth/profile', data)
+    async login(email, password) {
+        return api.post('/auth/login', { email, password });
+    },
+    
+    async register(data) {
+        return api.post('/auth/register', data);
+    },
+    
+    async getProfile() {
+        return api.get('/auth/me');
+    },
+    
+    async updateProfile(data) {
+        return api.put('/auth/profile', data);
+    }
 };
 
 // ========================================
 // Foods API
 // ========================================
 const foodsAPI = {
-    getAll: (params = {}) => {
+    async getAll(params = {}) {
         const query = new URLSearchParams(params).toString();
         return api.get(`/foods${query ? '?' + query : ''}`);
     },
-    getById: (id) => api.get(`/foods/${id}`),
-    create: (food) => api.post('/foods', food),
-    search: (query) => api.get(`/foods?search=${encodeURIComponent(query)}`),
-    getCategories: () => api.get('/foods/categories/list')
+    
+    async getById(id) {
+        return api.get(`/foods/${id}`);
+    },
+    
+    async create(food) {
+        return api.post('/foods', food);
+    },
+    
+    async search(query) {
+        return api.get(`/foods/search?q=${encodeURIComponent(query)}`);
+    }
 };
 
 // ========================================
 // Meal Plans API
 // ========================================
 const mealPlansAPI = {
-    getByDate: (date) => api.get(`/meal-plans?date=${date}`),
-    addItem: (planId, item) => api.post(`/meal-plans/${planId}/items`, item),
-    removeItem: (planId, itemId) => api.delete(`/meal-plans/${planId}/items/${itemId}`),
-    clearItems: (planId) => api.delete(`/meal-plans/${planId}/items`)
+    async getByDate(date) {
+        return api.get(`/meal-plans?date=${date}`);
+    },
+    
+    async create(data) {
+        return api.post('/meal-plans', data);
+    },
+    
+    async addItem(planId, item) {
+        return api.post(`/meal-plans/${planId}/items`, item);
+    },
+    
+    async removeItem(planId, itemId) {
+        return api.delete(`/meal-plans/${planId}/items/${itemId}`);
+    },
+    
+    async clear(planId) {
+        return api.delete(`/meal-plans/${planId}/items`);
+    }
+};
+
+// ========================================
+// Food Logs API
+// ========================================
+const foodLogsAPI = {
+    async log(data) {
+        return api.post('/food-logs', data);
+    },
+    
+    async getByDateRange(from, to) {
+        return api.get(`/food-logs?from=${from}&to=${to}`);
+    }
 };
 
 // ========================================
 // Progress API
 // ========================================
 const progressAPI = {
-    getWeekly: () => api.get('/progress/weekly'),
-    getAchievements: () => api.get('/progress/achievements')
+    async getWeekly() {
+        return api.get('/progress/weekly');
+    },
+    
+    async getAchievements() {
+        return api.get('/progress/achievements');
+    }
+};
+
+// ========================================
+// Community API
+// ========================================
+const communityAPI = {
+    async getPosts(page = 1) {
+        return api.get(`/posts?page=${page}`);
+    },
+    
+    async createPost(content) {
+        return api.post('/posts', { content });
+    },
+    
+    async likePost(postId) {
+        return api.post(`/posts/${postId}/like`);
+    }
 };
 
 // ========================================
 // Admin API
 // ========================================
 const adminAPI = {
-    getStats: () => api.get('/admin/stats'),
-    getUsers: (params = {}) => {
+    async getUsers(params = {}) {
         const query = new URLSearchParams(params).toString();
         return api.get(`/admin/users${query ? '?' + query : ''}`);
     },
-    updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
-    deleteUser: (id) => api.delete(`/admin/users/${id}`),
-    getPendingFoods: () => api.get('/admin/foods/pending'),
-    approveFood: (id) => api.put(`/admin/foods/${id}/approve`),
-    rejectFood: (id) => api.put(`/admin/foods/${id}/reject`),
-    deleteFood: (id) => api.delete(`/admin/foods/${id}`)
+    
+    async updateUser(id, data) {
+        return api.put(`/admin/users/${id}`, data);
+    },
+    
+    async deleteUser(id) {
+        return api.delete(`/admin/users/${id}`);
+    },
+    
+    async getPendingFoods() {
+        return api.get('/admin/foods/pending');
+    },
+    
+    async approveFood(id) {
+        return api.put(`/admin/foods/${id}/approve`);
+    },
+    
+    async rejectFood(id) {
+        return api.put(`/admin/foods/${id}/reject`);
+    },
+    
+    async getDashboardStats() {
+        return api.get('/admin/stats');
+    }
 };
 
-// Export
+// ========================================
+// Export for use
+// ========================================
 window.api = api;
 window.authAPI = authAPI;
 window.foodsAPI = foodsAPI;
 window.mealPlansAPI = mealPlansAPI;
+window.foodLogsAPI = foodLogsAPI;
 window.progressAPI = progressAPI;
+window.communityAPI = communityAPI;
 window.adminAPI = adminAPI;

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จัดการอาหาร - NutriTrack Admin</title>
+    <link rel="stylesheet" href="../../css/base.css">
+    <link rel="stylesheet" href="../../css/components.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">
+                    <span class="logo-icon">🥗</span>
+                    <span class="logo-text">NutriTrack</span>
+                </a>
+                <span class="admin-badge">Admin</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="sidebar-link">
+                    <span class="link-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="users.html" class="sidebar-link">
+                    <span class="link-icon">👥</span>
+                    <span>ผู้ใช้งาน</span>
+                </a>
+                <a href="foods.html" class="sidebar-link active">
+                    <span class="link-icon">🍽️</span>
+                    <span>อาหาร</span>
+                </a>
+                <a href="pending-foods.html" class="sidebar-link">
+                    <span class="link-icon">⏳</span>
+                    <span>รออนุมัติ</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="../dashboard.html" class="sidebar-link">
+                    <span class="link-icon">🏠</span>
+                    <span>กลับหน้าหลัก</span>
+                </a>
+                <button onclick="Auth.logout()" class="sidebar-link logout-btn">
+                    <span class="link-icon">🚪</span>
+                    <span>ออกจากระบบ</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <h1 class="text-2xl font-bold">🍽️ จัดการอาหาร</h1>
+                    <p class="text-gray">จัดการรายการอาหารทั้งหมดในระบบ</p>
+                </div>
+                <button onclick="openAddModal()" class="btn btn-primary">
+                    + เพิ่มอาหาร
+                </button>
+            </header>
+
+            <div class="admin-content fade-in">
+                <!-- Search & Filter -->
+                <div class="search-bar">
+                    <div class="form-group search-input" style="margin-bottom: 0;">
+                        <input type="text" id="searchInput" placeholder="🔍 ค้นหาอาหาร..." 
+                               onkeyup="handleSearch(event)">
+                    </div>
+                    <select id="categoryFilter" class="form-group" style="margin-bottom: 0; width: auto;" 
+                            onchange="loadFoods()">
+                        <option value="">ทุกหมวดหมู่</option>
+                    </select>
+                    <select id="statusFilter" class="form-group" style="margin-bottom: 0; width: auto;" 
+                            onchange="loadFoods()">
+                        <option value="approved">อนุมัติแล้ว</option>
+                        <option value="">ทั้งหมด</option>
+                        <option value="pending">รออนุมัติ</option>
+                        <option value="rejected">ปฏิเสธ</option>
+                    </select>
+                </div>
+
+                <!-- Foods Table -->
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>อาหาร</th>
+                            <th>หมวดหมู่</th>
+                            <th>แคลอรี่</th>
+                            <th>โปรตีน</th>
+                            <th>สถานะ</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="foodsTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center text-gray py-8">กำลังโหลด...</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Food Modal -->
+    <div id="foodModal" class="modal hidden">
+        <div class="modal-backdrop" onclick="closeModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="font-bold" id="modalTitle">เพิ่มอาหาร</h3>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <form id="foodForm" onsubmit="handleFoodSubmit(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="foodId">
+                    <div class="form-group">
+                        <label for="foodName">ชื่ออาหาร *</label>
+                        <input type="text" id="foodName" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label for="foodCalories">แคลอรี่ *</label>
+                            <input type="number" id="foodCalories" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="foodCategory">หมวดหมู่</label>
+                            <select id="foodCategory"></select>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="form-group">
+                            <label for="foodProtein">โปรตีน (g)</label>
+                            <input type="number" id="foodProtein" min="0" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="foodCarbs">คาร์บ (g)</label>
+                            <input type="number" id="foodCarbs" min="0" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="foodFat">ไขมัน (g)</label>
+                            <input type="number" id="foodFat" min="0" step="0.1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="foodServing">ปริมาณต่อหน่วย</label>
+                        <input type="text" id="foodServing" placeholder="เช่น 1 จาน (300g)">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../js/config.js"></script>
+    <script src="../../js/constants.js"></script>
+    <script src="../../js/api.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/utils.js"></script>
+    <script src="../../js/pages/admin-foods.js"></script>
+</body>
+
+</html>

@@ -6,118 +6,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เข้าสู่ระบบ - NutriTrack</title>
     <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/components.css">
-    <link rel="stylesheet" href="../css/auth.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/login.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="auth-container">
-        <div class="auth-card fade-in">
-            <div class="auth-header">
-                <span class="auth-logo">🥗</span>
-                <h1>NutriTrack</h1>
-                <p>เข้าสู่ระบบเพื่อติดตามสุขภาพของคุณ</p>
-            </div>
-            
-            <form id="loginForm" class="auth-form">
-                <div class="form-group">
-                    <label for="email">อีเมล</label>
-                    <input type="email" id="email" name="email" required 
-                           placeholder="your@email.com" autocomplete="email">
+    <div class="page-wrapper">
+        <main class="main-content flex items-center justify-center auth-main">
+            <div class="container auth-container">
+                <div class="card fade-in">
+                    <div class="text-center mb-6">
+                        <a href="index.html" class="navbar-logo auth-logo">
+                            <div class="navbar-logo-icon">🥗</div>
+                            <span class="navbar-logo-text">NutriTrack</span>
+                        </a>
+                        <h1 class="text-2xl font-bold mt-4">เข้าสู่ระบบ</h1>
+                        <p class="text-gray">ยินดีต้อนรับกลับ!</p>
+                    </div>
+
+                    <form id="loginForm" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label class="form-label" for="email">อีเมล</label>
+                            <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <div class="flex justify-between items-center">
+                                <label class="form-label form-label-inline" for="password">รหัสผ่าน</label>
+                            </div>
+                            <input type="password" id="password" class="form-input form-input-spaced" placeholder="••••••••" required>
+                        </div>
+                        <div>
+                            <a href="#"
+                                onclick="alert('ขออภัย ระบบกู้คืนรหัสผ่านยังไม่เปิดให้บริการในขณะนี้ โปรดติดต่อผู้ดูแลระบบ')"
+                                class="text-primarys font-semibold forgot-password-link">ลืมรหัสผ่าน?</a>
+                        </div>
+                        <div id="errorMessage" class="form-error mb-4 hidden"></div>
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">เข้าสู่ระบบ</button>
+                    </form>
+
+                    <div class="text-center mt-6">
+                        <p class="text-gray">
+                            ยังไม่มีบัญชี?
+                            <a href="register.html" class="text-primary font-semibold">สมัครสมาชิก</a>
+                        </p>
+                    </div>
+
                 </div>
-                
-                <div class="form-group">
-                    <label for="password">รหัสผ่าน</label>
-                    <input type="password" id="password" name="password" required 
-                           placeholder="••••••••" autocomplete="current-password">
-                </div>
-                
-                <div class="form-group form-checkbox">
-                    <label>
-                        <input type="checkbox" id="remember" name="remember">
-                        <span>จดจำฉันไว้</span>
-                    </label>
-                    <a href="#" class="forgot-link">ลืมรหัสผ่าน?</a>
-                </div>
-                
-                <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
-                    เข้าสู่ระบบ
-                </button>
-                
-                <div id="errorMessage" class="error-message hidden"></div>
-            </form>
-            
-            <div class="auth-footer">
-                <p>ยังไม่มีบัญชี? <a href="register.html">สมัครสมาชิก</a></p>
             </div>
-            
-            <div class="demo-accounts">
-                <p class="text-gray text-sm">บัญชีทดสอบ:</p>
-                <button onclick="fillDemo('admin')" class="btn btn-sm btn-ghost">Admin</button>
-                <button onclick="fillDemo('user')" class="btn btn-sm btn-ghost">User</button>
-            </div>
-        </div>
+        </main>
     </div>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/auth.js"></script>
+    <script src="../js/data.js"></script>
     <script src="../js/utils.js"></script>
-    <script>
-        // Check if already logged in
-        if (Auth.isLoggedIn()) {
-            window.location.href = 'dashboard.html';
-        }
-
-        // Fill demo credentials
-        function fillDemo(type) {
-            if (type === 'admin') {
-                document.getElementById('email').value = 'admin@nutritrack.com';
-                document.getElementById('password').value = 'admin123';
-            } else {
-                document.getElementById('email').value = 'user@nutritrack.com';
-                document.getElementById('password').value = 'user123';
-            }
-        }
-
-        // Handle login
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const btn = document.getElementById('loginBtn');
-            const errorEl = document.getElementById('errorMessage');
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            showLoading(btn);
-            errorEl.classList.add('hidden');
-            
-            try {
-                const result = await Auth.login(email, password);
-                
-                if (result.success) {
-                    showNotification('เข้าสู่ระบบสำเร็จ', 'success');
-                    
-                    // Redirect based on role
-                    if (result.user.role === 'admin') {
-                        window.location.href = 'admin/dashboard.html';
-                    } else {
-                        window.location.href = 'dashboard.html';
-                    }
-                } else {
-                    errorEl.textContent = result.message || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
-                    errorEl.classList.remove('hidden');
-                }
-            } catch (error) {
-                errorEl.textContent = 'เกิดข้อผิดพลาด กรุณาลองใหม่';
-                errorEl.classList.remove('hidden');
-            } finally {
-                hideLoading(btn);
-            }
-        });
-    </script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script src="../js/login.js"></script>
 </body>
 
 </html>
