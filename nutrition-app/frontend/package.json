@@ -1,0 +1,12 @@
+{
+  "name": "nutritrack-frontend",
+  "version": "1.0.0",
+  "description": "NutriTrack Frontend",
+  "scripts": {
+    "dev": "live-server --port=5500 --open=html/index.html",
+    "start": "http-server -p 5500"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
