@@ -46,7 +46,7 @@
                     <div class="card" id="mealBreakfast">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="font-bold flex items-center gap-2">🌅 มื้อเช้า</h2>
-                            <a href="search.html" class="btn btn-sm btn-ghost">+ เพิ่ม</a>
+                            <button onclick="openAddFoodModal('breakfast')" class="btn btn-sm btn-ghost">+ เพิ่ม</button>
                         </div>
                         <div id="breakfastList" class="space-y-2"></div>
                     </div>
@@ -54,7 +54,7 @@
                     <div class="card" id="mealLunch">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="font-bold flex items-center gap-2">☀️ มื้อกลางวัน</h2>
-                            <a href="search.html" class="btn btn-sm btn-ghost">+ เพิ่ม</a>
+                            <button onclick="openAddFoodModal('lunch')" class="btn btn-sm btn-ghost">+ เพิ่ม</button>
                         </div>
                         <div id="lunchList" class="space-y-2"></div>
                     </div>
@@ -62,7 +62,7 @@
                     <div class="card" id="mealDinner">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="font-bold flex items-center gap-2">🌙 มื้อเย็น</h2>
-                            <a href="search.html" class="btn btn-sm btn-ghost">+ เพิ่ม</a>
+                            <button onclick="openAddFoodModal('dinner')" class="btn btn-sm btn-ghost">+ เพิ่ม</button>
                         </div>
                         <div id="dinnerList" class="space-y-2"></div>
                     </div>
@@ -70,7 +70,7 @@
                     <div class="card" id="mealSnacks">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="font-bold flex items-center gap-2">🍿 ของว่าง</h2>
-                            <a href="search.html" class="btn btn-sm btn-ghost">+ เพิ่ม</a>
+                            <button onclick="openAddFoodModal('snacks')" class="btn btn-sm btn-ghost">+ เพิ่ม</button>
                         </div>
                         <div id="snacksList" class="space-y-2"></div>
                     </div>
@@ -80,7 +80,72 @@
                 <div class="card mt-6">
                     <div class="flex gap-4 justify-center">
                         <button onclick="clearAllMeals()" class="btn btn-secondary">🗑️ ล้างทั้งหมด</button>
-                        <a href="search.html" class="btn btn-primary">+ เพิ่มอาหาร</a>
+                        <button onclick="openAddFoodModal('breakfast')" class="btn btn-primary">+ เพิ่มอาหาร</button>
+                    </div>
+                </div>
+
+                <!-- Add Food Modal -->
+                <div id="addFoodModal" class="modal hidden">
+                    <div class="modal-backdrop" onclick="closeAddFoodModal()"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="text-xl font-bold">🍽️ เพิ่มอาหาร</h3>
+                            <button onclick="closeAddFoodModal()" class="modal-close">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Tab Navigation -->
+                            <div class="tab-nav mb-4">
+                                <button class="tab-btn active" onclick="switchTab('search')">🔍 ค้นหา</button>
+                                <button class="tab-btn" onclick="switchTab('custom')">➕ เพิ่มเอง</button>
+                            </div>
+
+                            <!-- Search Tab -->
+                            <div id="searchTab" class="tab-content">
+                                <input type="text" id="modalSearchInput" class="form-input mb-4" 
+                                    placeholder="ค้นหาอาหาร..." oninput="searchFoodsInModal()">
+                                <div id="searchResults" class="search-results"></div>
+                            </div>
+
+                            <!-- Custom Food Tab -->
+                            <div id="customTab" class="tab-content hidden">
+                                <form id="customFoodForm" onsubmit="addCustomFood(event)">
+                                    <div class="form-group">
+                                        <label class="form-label">ชื่ออาหาร *</label>
+                                        <input type="text" id="customName" class="form-input" required>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div class="form-group">
+                                            <label class="form-label">แคลอรี่ (kcal) *</label>
+                                            <input type="number" id="customCalories" class="form-input" required min="0">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">โปรตีน (g)</label>
+                                            <input type="number" id="customProtein" class="form-input" min="0" step="0.1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">คาร์บส (g)</label>
+                                            <input type="number" id="customCarbs" class="form-input" min="0" step="0.1">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">ไขมัน (g)</label>
+                                            <input type="number" id="customFat" class="form-input" min="0" step="0.1">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">หมวดหมู่</label>
+                                        <select id="customCategory" class="form-input">
+                                            <option value="thai">🍜 อาหารไทย</option>
+                                            <option value="clean">🥗 อาหารคลีน</option>
+                                            <option value="fastfood">🍔 ฟาสต์ฟู้ด</option>
+                                            <option value="drinks">🥤 เครื่องดื่ม</option>
+                                            <option value="fruits">🍎 ผลไม้</option>
+                                            <option value="dessert">🍰 ของหวาน</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-block">เพิ่มอาหาร</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
