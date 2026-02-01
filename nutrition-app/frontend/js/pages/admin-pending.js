@@ -2,29 +2,33 @@
 // Admin Pending Foods Page
 // ========================================
 
-if (!Auth.requireAdmin()) {
-    throw new Error('Not authorized');
-}
-
 let pendingFoods = [];
 let currentFoodId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Check admin access
+    const user = auth.getUser();
+
+    if (!auth.isLoggedIn() || user?.role !== 'admin') {
+        window.location.href = '../login.html';
+        return;
+    }
+
     loadPendingFoods();
 });
 
 async function loadPendingFoods() {
     const grid = document.getElementById('pendingFoodsGrid');
     const emptyState = document.getElementById('emptyState');
-    
+
     try {
         const response = await adminAPI.getPendingFoods();
-        
+
         if (response.success && response.data.length > 0) {
             pendingFoods = response.data;
             document.getElementById('pendingBadge').textContent = pendingFoods.length;
             emptyState.classList.add('hidden');
-            
+
             grid.innerHTML = pendingFoods.map(food => `
                 <div class="card">
                     <div class="flex items-center justify-between mb-4">
@@ -90,7 +94,7 @@ async function loadPendingFoods() {
 function viewDetail(id) {
     const food = pendingFoods.find(f => f.id === id);
     if (!food) return;
-    
+
     currentFoodId = id;
     document.getElementById('modalFoodName').textContent = food.name;
     document.getElementById('modalContent').innerHTML = `
@@ -124,7 +128,7 @@ function viewDetail(id) {
             <p><strong>วันที่เพิ่ม:</strong> ${formatDate(food.created_at, 'long')}</p>
         </div>
     `;
-    
+
     document.getElementById('detailModal').classList.remove('hidden');
 }
 
@@ -147,7 +151,7 @@ async function approveFood(id) {
 
 async function rejectFood(id) {
     if (!confirm('ต้องการปฏิเสธอาหารนี้?')) return;
-    
+
     try {
         const response = await adminAPI.rejectFood(id);
         if (response.success) {
@@ -175,7 +179,7 @@ function rejectCurrentFood() {
 
 async function approveAll() {
     if (!confirm(`ต้องการอนุมัติอาหารทั้งหมด ${pendingFoods.length} รายการ?`)) return;
-    
+
     try {
         for (const food of pendingFoods) {
             await adminAPI.approveFood(food.id);

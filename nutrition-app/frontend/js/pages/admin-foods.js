@@ -2,14 +2,18 @@
 // Admin Foods Page
 // ========================================
 
-if (!Auth.requireAdmin()) {
-    throw new Error('Not authorized');
-}
-
 let currentPage = 1;
 const limit = 10;
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Check admin access
+    const user = auth.getUser();
+
+    if (!auth.isLoggedIn() || user?.role !== 'admin') {
+        window.location.href = '../login.html';
+        return;
+    }
+
     loadCategories();
     loadFoods();
 });
@@ -20,7 +24,7 @@ async function loadCategories() {
         if (response.success) {
             const filterSelect = document.getElementById('categoryFilter');
             const formSelect = document.getElementById('foodCategory');
-            
+
             response.data.forEach(cat => {
                 filterSelect.innerHTML += `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`;
                 formSelect.innerHTML += `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`;
@@ -41,17 +45,17 @@ async function loadFoods() {
     const search = document.getElementById('searchInput').value;
     const category = document.getElementById('categoryFilter').value;
     const status = document.getElementById('statusFilter').value;
-    
+
     tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray py-8">กำลังโหลด...</td></tr>';
-    
+
     try {
         const params = { page: currentPage, limit };
         if (search) params.search = search;
         if (category) params.category = category;
         if (status) params.status = status;
-        
+
         const response = await foodsAPI.getAll(params);
-        
+
         if (response.success && response.data.length > 0) {
             tbody.innerHTML = response.data.map(food => `
                 <tr>
@@ -80,7 +84,7 @@ async function loadFoods() {
                     </td>
                 </tr>
             `).join('');
-            
+
             renderPagination(response.pagination);
         } else {
             tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray py-8">ไม่พบอาหาร</td></tr>';
@@ -102,18 +106,18 @@ function getStatusLabel(status) {
 function renderPagination(pagination) {
     const container = document.getElementById('pagination');
     const totalPages = Math.ceil(pagination.total / pagination.limit);
-    
+
     if (totalPages <= 1) {
         container.innerHTML = '';
         return;
     }
-    
+
     let html = '';
-    
+
     if (currentPage > 1) {
         html += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})">‹</button>`;
     }
-    
+
     for (let i = 1; i <= totalPages; i++) {
         if (i === currentPage) {
             html += `<button class="pagination-btn active">${i}</button>`;
@@ -123,11 +127,11 @@ function renderPagination(pagination) {
             html += '<span>...</span>';
         }
     }
-    
+
     if (currentPage < totalPages) {
         html += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})">›</button>`;
     }
-    
+
     container.innerHTML = html;
 }
 
@@ -170,7 +174,7 @@ function closeModal() {
 
 async function handleFoodSubmit(e) {
     e.preventDefault();
-    
+
     const id = document.getElementById('foodId').value;
     const data = {
         name: document.getElementById('foodName').value,
@@ -181,7 +185,7 @@ async function handleFoodSubmit(e) {
         fat: parseFloat(document.getElementById('foodFat').value) || 0,
         serving_size: document.getElementById('foodServing').value
     };
-    
+
     try {
         let response;
         if (id) {
@@ -189,7 +193,7 @@ async function handleFoodSubmit(e) {
         } else {
             response = await foodsAPI.create(data);
         }
-        
+
         if (response.success) {
             showNotification(id ? 'อัพเดทอาหารสำเร็จ' : 'เพิ่มอาหารสำเร็จ', 'success');
             closeModal();
@@ -202,7 +206,7 @@ async function handleFoodSubmit(e) {
 
 async function deleteFood(id) {
     if (!confirm('ต้องการลบอาหารนี้?')) return;
-    
+
     try {
         const response = await adminAPI.deleteFood(id);
         if (response.success) {

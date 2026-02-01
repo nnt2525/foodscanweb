@@ -2,30 +2,33 @@
 // Admin Dashboard Page
 // ========================================
 
-// Check admin access
-if (!Auth.requireAdmin()) {
-    throw new Error('Not authorized');
-}
-
 document.addEventListener('DOMContentLoaded', () => {
+    // Check admin access
+    const user = auth.getUser();
+
+    if (!auth.isLoggedIn() || user?.role !== 'admin') {
+        window.location.href = '../login.html';
+        return;
+    }
+
     initAdminDashboard();
 });
 
 async function initAdminDashboard() {
     // Set current date
     document.getElementById('currentDate').textContent = formatDate(new Date(), 'long');
-    
+
     // Set admin name
-    const user = Auth.getUser();
+    const user = auth.getUser();
     document.getElementById('adminName').textContent = user?.name || 'Admin';
-    
+
     // Load data
     await Promise.all([
         loadStats(),
         loadPendingFoods(),
         loadRecentUsers()
     ]);
-    
+
     // Init charts
     initCharts();
 }
@@ -48,7 +51,7 @@ async function loadStats() {
 
 async function loadPendingFoods() {
     const container = document.getElementById('pendingFoodsList');
-    
+
     try {
         const response = await adminAPI.getPendingFoods();
         if (response.success && response.data.length > 0) {
@@ -78,7 +81,7 @@ async function loadPendingFoods() {
 
 async function loadRecentUsers() {
     const container = document.getElementById('recentUsersList');
-    
+
     try {
         const response = await adminAPI.getUsers({ limit: 5 });
         if (response.success && response.data.length > 0) {
@@ -119,7 +122,7 @@ async function approveFood(id) {
 
 async function rejectFood(id) {
     if (!confirm('ต้องการปฏิเสธอาหารนี้?')) return;
-    
+
     try {
         const response = await adminAPI.rejectFood(id);
         if (response.success) {
@@ -159,7 +162,7 @@ function initCharts() {
             }
         });
     }
-    
+
     // Foods Chart
     const foodsCtx = document.getElementById('foodsChart');
     if (foodsCtx) {
