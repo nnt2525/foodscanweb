@@ -1,235 +1,297 @@
 // ========================================
-// Admin Dashboard - NutriTrack
+// Admin Panel JavaScript
 // ========================================
 
 // Check admin access
-function requireAdmin() {
-    const user = getFromLocalStorage('nutritrack_user', null);
-    if (!user || user.role !== userRoles.ADMIN) {
+document.addEventListener('DOMContentLoaded', async function () {
+    const user = auth.getUser();
+
+    if (!auth.isLoggedIn()) {
         window.location.href = '../login.html';
-        return false;
+        return;
     }
-    return true;
-}
 
-if (!requireAdmin()) throw new Error('Not authorized');
+    if (user.role !== 'admin') {
+        showToast('ไม่มีสิทธิ์เข้าถึงหน้านี้', 'error');
+        window.location.href = '../dashboard.html';
+        return;
+    }
 
-// ========================================
-// Initialize Dashboard
-// ========================================
-document.addEventListener('DOMContentLoaded', () => {
-    initDashboard();
+    // Set admin name
+    const adminNameEl = document.getElementById('adminName');
+    if (adminNameEl) adminNameEl.textContent = user.name;
+
+    // Set current date
+    const currentDateEl = document.getElementById('currentDate');
+    if (currentDateEl) {
+        currentDateEl.textContent = new Date().toLocaleDateString('th-TH', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    // Load dashboard data
+    await loadDashboardStats();
+    await loadPendingFoods();
+    await loadRecentUsers();
+    initCharts();
 });
 
-function initDashboard() {
-    // Set current date
-    document.getElementById('currentDate').textContent = formatDate(new Date());
-    
-    // Load admin name
-    const user = getFromLocalStorage('nutritrack_user', {});
-    document.getElementById('adminName').textContent = user.name || 'Admin';
-    
-    // Load stats
-    loadDashboardStats();
-    
-    // Load pending foods
-    loadPendingFoods();
-    
-    // Load recent users
-    loadRecentUsers();
-    
-    // Initialize charts
-    initCharts();
-}
+// ========================================
+// Dashboard Stats
+// ========================================
+async function loadDashboardStats() {
+    try {
+        const response = await adminAPI.getStats();
 
-// ========================================
-// Dashboard Stats (LocalStorage version - จะเปลี่ยนเป็น API)
-// ========================================
-function loadDashboardStats() {
-    const users = getFromLocalStorage('nutritrack_all_users', []);
-    const foods = getFromLocalStorage('nutritrack_foods', []);
-    const pendingFoods = foods.filter(f => f.status === foodStatus.PENDING);
-    const todayLogs = getFromLocalStorage('nutritrack_food_logs', [])
-        .filter(log => {
-            const logDate = new Date(log.logged_at).toDateString();
-            return logDate === new Date().toDateString();
-        });
-    
-    document.getElementById('totalUsers').textContent = formatNumber(users.length);
-    document.getElementById('totalFoods').textContent = formatNumber(foods.length);
-    document.getElementById('pendingFoods').textContent = formatNumber(pendingFoods.length);
-    document.getElementById('pendingCount').textContent = pendingFoods.length;
-    document.getElementById('todayLogs').textContent = formatNumber(todayLogs.length);
+        if (response.success) {
+            document.getElementById('totalUsers').textContent = formatNumber(response.data.totalUsers);
+            document.getElementById('totalFoods').textContent = formatNumber(response.data.totalFoods);
+            document.getElementById('pendingFoods').textContent = formatNumber(response.data.pendingFoods);
+            document.getElementById('todayLogs').textContent = formatNumber(response.data.todayLogs);
+
+            // Update sidebar badge
+            const pendingCount = document.getElementById('pendingCount');
+            if (pendingCount) pendingCount.textContent = response.data.pendingFoods;
+        }
+    } catch (error) {
+        console.error('Load stats error:', error);
+    }
 }
 
 // ========================================
 // Pending Foods
 // ========================================
-function loadPendingFoods() {
-    const foods = getFromLocalStorage('nutritrack_foods', []);
-    const pendingFoods = foods.filter(f => f.status === foodStatus.PENDING).slice(0, 5);
-    
-    const container = document.getElementById('pendingFoodsList');
-    
-    if (pendingFoods.length === 0) {
-        container.innerHTML = '<p class="text-gray text-center py-4">ไม่มีรายการรออนุมัติ</p>';
-        return;
-    }
-    
-    container.innerHTML = pendingFoods.map(food => `
-        <div class="list-item">
-            <div class="list-item-info">
-                <div class="list-item-avatar">🍽️</div>
-                <div class="list-item-details">
-                    <span class="list-item-name">${food.name}</span>
-                    <span class="list-item-meta">${food.calories} kcal • ${getCategoryName(food.category)}</span>
+async function loadPendingFoods() {
+    try {
+        const response = await adminAPI.getPendingFoods();
+        const container = document.getElementById('pendingFoodsList');
+
+        if (!container) return;
+
+        if (response.success && response.data.length > 0) {
+            container.innerHTML = response.data.slice(0, 5).map(food => `
+                <div class="list-item">
+                    <div class="list-item-info">
+                        <span class="list-item-name">${food.name}</span>
+                        <span class="text-gray text-sm">${food.created_by_name || 'ไม่ระบุ'}</span>
+                    </div>
+                    <div class="list-item-actions">
+                        <button onclick="approveFood(${food.id})" class="btn btn-sm btn-success">✓</button>
+                        <button onclick="rejectFood(${food.id})" class="btn btn-sm btn-danger">✕</button>
+                    </div>
                 </div>
-            </div>
-            <div class="list-item-actions">
-                <button onclick="approveFood(${food.id})" class="btn btn-sm btn-approve">✓</button>
-                <button onclick="rejectFood(${food.id})" class="btn btn-sm btn-reject">✕</button>
-            </div>
-        </div>
-    `).join('');
-}
-
-function getCategoryName(categoryId) {
-    const category = categories.find(c => c.id === categoryId);
-    return category ? category.name : 'ไม่ระบุ';
-}
-
-function approveFood(foodId) {
-    const foods = getFromLocalStorage('nutritrack_foods', []);
-    const index = foods.findIndex(f => f.id === foodId);
-    
-    if (index !== -1) {
-        foods[index].status = foodStatus.APPROVED;
-        foods[index].approvedAt = new Date().toISOString();
-        saveToLocalStorage('nutritrack_foods', foods);
-        loadPendingFoods();
-        loadDashboardStats();
-        showNotification('อนุมัติอาหารแล้ว', 'success');
-    }
-}
-
-function rejectFood(foodId) {
-    if (!confirm('ต้องการปฏิเสธอาหารนี้?')) return;
-    
-    const foods = getFromLocalStorage('nutritrack_foods', []);
-    const index = foods.findIndex(f => f.id === foodId);
-    
-    if (index !== -1) {
-        foods[index].status = foodStatus.REJECTED;
-        foods[index].rejectedAt = new Date().toISOString();
-        saveToLocalStorage('nutritrack_foods', foods);
-        loadPendingFoods();
-        loadDashboardStats();
-        showNotification('ปฏิเสธอาหารแล้ว', 'info');
+            `).join('');
+        } else {
+            container.innerHTML = '<p class="text-gray text-center py-4">ไม่มีรายการรออนุมัติ</p>';
+        }
+    } catch (error) {
+        console.error('Load pending foods error:', error);
     }
 }
 
 // ========================================
 // Recent Users
 // ========================================
-function loadRecentUsers() {
-    const users = getFromLocalStorage('nutritrack_all_users', [])
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 5);
-    
-    const container = document.getElementById('recentUsersList');
-    
-    if (users.length === 0) {
-        container.innerHTML = '<p class="text-gray text-center py-4">ไม่มีข้อมูลผู้ใช้</p>';
-        return;
-    }
-    
-    container.innerHTML = users.map(user => `
-        <div class="list-item">
-            <div class="list-item-info">
-                <div class="list-item-avatar">👤</div>
-                <div class="list-item-details">
-                    <span class="list-item-name">${user.name}</span>
-                    <span class="list-item-meta">${user.email}</span>
+async function loadRecentUsers() {
+    try {
+        const response = await adminAPI.getUsers({ limit: 5 });
+        const container = document.getElementById('recentUsersList');
+
+        if (!container) return;
+
+        if (response.success && response.data.length > 0) {
+            container.innerHTML = response.data.map(user => `
+                <div class="list-item">
+                    <div class="list-item-info">
+                        <span class="list-item-name">${user.name}</span>
+                        <span class="text-gray text-sm">${user.email}</span>
+                    </div>
+                    <span class="badge badge-${user.role === 'admin' ? 'primary' : 'secondary'}">${user.role}</span>
                 </div>
-            </div>
-            <span class="status-badge ${user.role === 'admin' ? 'status-approved' : 'status-pending'}">
-                ${user.role === 'admin' ? 'Admin' : 'User'}
-            </span>
-        </div>
-    `).join('');
+            `).join('');
+        } else {
+            container.innerHTML = '<p class="text-gray text-center py-4">ไม่มีข้อมูลผู้ใช้</p>';
+        }
+    } catch (error) {
+        console.error('Load recent users error:', error);
+    }
+}
+
+// ========================================
+// Approve/Reject Foods
+// ========================================
+async function approveFood(id) {
+    try {
+        const response = await adminAPI.approveFood(id);
+        if (response.success) {
+            showToast('อนุมัติอาหารสำเร็จ', 'success');
+            loadDashboardStats();
+            loadPendingFoods();
+        }
+    } catch (error) {
+        showToast('เกิดข้อผิดพลาด', 'error');
+    }
+}
+
+async function rejectFood(id) {
+    if (!confirm('ยืนยันการปฏิเสธอาหารนี้?')) return;
+
+    try {
+        const response = await adminAPI.rejectFood(id);
+        if (response.success) {
+            showToast('ปฏิเสธอาหารสำเร็จ', 'success');
+            loadDashboardStats();
+            loadPendingFoods();
+        }
+    } catch (error) {
+        showToast('เกิดข้อผิดพลาด', 'error');
+    }
+}
+
+async function deleteFood(id) {
+    if (!confirm('ยืนยันการลบอาหารนี้?')) return;
+
+    try {
+        const response = await adminAPI.deleteFood(id);
+        if (response.success) {
+            showToast('ลบอาหารสำเร็จ', 'success');
+            if (typeof loadFoods === 'function') loadFoods();
+        }
+    } catch (error) {
+        showToast('เกิดข้อผิดพลาด', 'error');
+    }
+}
+
+// ========================================
+// User Management
+// ========================================
+async function deleteUser(id) {
+    if (!confirm('ยืนยันการลบผู้ใช้นี้?')) return;
+
+    try {
+        const response = await adminAPI.deleteUser(id);
+        if (response.success) {
+            showToast('ลบผู้ใช้สำเร็จ', 'success');
+            if (typeof loadUsers === 'function') loadUsers();
+        }
+    } catch (error) {
+        showToast('เกิดข้อผิดพลาด', 'error');
+    }
+}
+
+async function updateUserRole(id, role) {
+    try {
+        const response = await adminAPI.updateUser(id, { role });
+        if (response.success) {
+            showToast('อัพเดท role สำเร็จ', 'success');
+        }
+    } catch (error) {
+        showToast('เกิดข้อผิดพลาด', 'error');
+    }
 }
 
 // ========================================
 // Charts
 // ========================================
 function initCharts() {
-    initUsersChart();
-    initActivityChart();
-}
+    const usersChartEl = document.getElementById('usersChart');
+    const activityChartEl = document.getElementById('activityChart');
 
-function initUsersChart() {
-    const ctx = document.getElementById('usersChart');
-    if (!ctx) return;
-    
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'],
-            datasets: [{
-                label: 'ผู้ใช้ใหม่',
-                data: [0, 0, 0, 0, 0, 0, 0],
-                borderColor: '#22c55e',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
+    if (usersChartEl) {
+        new Chart(usersChartEl, {
+            type: 'line',
+            data: {
+                labels: getLast7Days(),
+                datasets: [{
+                    label: 'ผู้ใช้ใหม่',
+                    data: [2, 5, 3, 8, 4, 6, 3],
+                    borderColor: '#22c55e',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true }
                 }
             }
-        }
-    });
+        });
+    }
+
+    if (activityChartEl) {
+        new Chart(activityChartEl, {
+            type: 'bar',
+            data: {
+                labels: getLast7Days(),
+                datasets: [{
+                    label: 'การบันทึกอาหาร',
+                    data: [45, 52, 38, 65, 48, 55, 42],
+                    backgroundColor: '#3b82f6'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
 }
 
-function initActivityChart() {
-    const ctx = document.getElementById('activityChart');
-    if (!ctx) return;
-    
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['บันทึกอาหาร', 'วางแผน', 'ค้นหา', 'ชุมชน'],
-            datasets: [{
-                data: [0, 0, 0, 0],
-                backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b', '#8b5cf6']
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
+function getLast7Days() {
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        days.push(date.toLocaleDateString('th-TH', { weekday: 'short' }));
+    }
+    return days;
 }
 
 // ========================================
 // Logout
 // ========================================
 function logout() {
-    localStorage.removeItem('nutritrack_user');
-    localStorage.removeItem('nutritrack_token');
+    auth.logout();
     window.location.href = '../login.html';
+}
+
+// ========================================
+// Toast Notification (if not defined)
+// ========================================
+function showToast(message, type = 'info') {
+    // Check if toast container exists
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.style.cssText = `
+        padding: 12px 20px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        animation: slideIn 0.3s ease;
+        background: ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#3b82f6'};
+    `;
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    setTimeout(() => toast.remove(), 3000);
 }

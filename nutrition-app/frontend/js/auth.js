@@ -1,72 +1,135 @@
 // ========================================
 // Authentication Helpers for NutriTrack
+// Connected to Backend API with JWT
 // ========================================
 
-const AUTH_KEY = 'nutritrack_user';
-const USERS_KEY = 'nutritrack_users';
+const TOKEN_KEY = 'nutritrack_token';
+const USER_KEY = 'nutritrack_user';
 
-// Check if user is logged in
+// ========================================
+// Token Management
+// ========================================
+
+// Get stored JWT token
+function getToken() {
+    return localStorage.getItem(TOKEN_KEY);
+}
+
+// Save JWT token
+function saveToken(token) {
+    localStorage.setItem(TOKEN_KEY, token);
+}
+
+// Remove JWT token
+function removeToken() {
+    localStorage.removeItem(TOKEN_KEY);
+}
+
+// ========================================
+// User Session Management
+// ========================================
+
+// Check if user is logged in (has valid token)
 function isLoggedIn() {
-    return getFromLocalStorage(AUTH_KEY) !== null;
+    const token = getToken();
+    if (!token) return false;
+
+    // Check if token is expired (basic check)
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const expiry = payload.exp * 1000; // Convert to milliseconds
+        return Date.now() < expiry;
+    } catch (e) {
+        return false;
+    }
 }
 
-// Get current user
+// Get current user from localStorage cache
 function getCurrentUser() {
-    return getFromLocalStorage(AUTH_KEY);
+    const userStr = localStorage.getItem(USER_KEY);
+    if (!userStr) return null;
+    try {
+        return JSON.parse(userStr);
+    } catch (e) {
+        return null;
+    }
 }
 
-// Login user
-function login(email, password) {
-    const users = getFromLocalStorage(USERS_KEY, []);
-    const user = users.find(u => u.email === email && u.password === password);
-
-    if (user) {
-        const sessionUser = { ...user };
-        delete sessionUser.password;
-        saveToLocalStorage(AUTH_KEY, sessionUser);
-        return { success: true, user: sessionUser };
-    }
-    return { success: false, message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' };
+// Save user to localStorage cache
+function saveUser(user) {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
-// Register user
-function register(name, email, password) {
-    const users = getFromLocalStorage(USERS_KEY, []);
+// Remove user from localStorage
+function removeUser() {
+    localStorage.removeItem(USER_KEY);
+}
 
-    if (users.find(u => u.email === email)) {
-        return { success: false, message: 'อีเมลนี้ถูกใช้งานแล้ว' };
-    }
+// ========================================
+// Authentication API Functions
+// ========================================
 
-    const newUser = {
-        id: generateId(),
-        name,
-        email,
-        password,
-        createdAt: new Date().toISOString(),
-        profile: {
-            weight: null,
-            height: null,
-            age: null,
-            gender: null,
-            goal: null,
-            dailyCalories: 2000
+// Login user via API
+async function login(email, password) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            saveToken(data.token);
+            saveUser(data.user);
+            return { success: true, user: data.user };
+        } else {
+            return { success: false, message: data.message || 'เข้าสู่ระบบไม่สำเร็จ' };
         }
-    };
+    } catch (error) {
+        console.error('Login error:', error);
+        return { success: false, message: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้' };
+    }
+}
 
-    users.push(newUser);
-    saveToLocalStorage(USERS_KEY, users);
+// Register user via API
+async function register(name, email, password) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email, password })
+        });
 
-    const sessionUser = { ...newUser };
-    delete sessionUser.password;
-    saveToLocalStorage(AUTH_KEY, sessionUser);
+        const data = await response.json();
 
-    return { success: true, user: sessionUser };
+        if (data.success) {
+            saveToken(data.token);
+            saveUser(data.user);
+            return { success: true, user: data.user };
+        } else {
+            // Handle validation errors
+            if (data.errors && data.errors.length > 0) {
+                return { success: false, message: data.errors[0].msg };
+            }
+            return { success: false, message: data.message || 'สมัครสมาชิกไม่สำเร็จ' };
+        }
+    } catch (error) {
+        console.error('Register error:', error);
+        return { success: false, message: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้' };
+    }
 }
 
 // Logout user
 function logout() {
-    removeFromLocalStorage(AUTH_KEY);
-    window.location.href = 'index.html';
+    removeToken();
+    removeUser();
+    window.location.href = 'login.html';
 }
 
 // Require authentication - redirect if not logged in
@@ -81,24 +144,78 @@ function requireAuth() {
     return true;
 }
 
-// Update user profile
-function updateProfile(profileData) {
-    const user = getCurrentUser();
-    if (!user) return false;
+// ========================================
+// Profile Management
+// ========================================
 
-    user.profile = { ...user.profile, ...profileData };
-    saveToLocalStorage(AUTH_KEY, user);
+// Update user profile via API
+async function updateProfile(profileData) {
+    try {
+        const token = getToken();
+        if (!token) return { success: false, message: 'กรุณาเข้าสู่ระบบก่อน' };
 
-    // Update in users list too
-    const users = getFromLocalStorage(USERS_KEY, []);
-    const index = users.findIndex(u => u.id === user.id);
-    if (index !== -1) {
-        users[index] = { ...users[index], profile: user.profile };
-        saveToLocalStorage(USERS_KEY, users);
+        const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(profileData)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Update cached user
+            const user = getCurrentUser();
+            if (user) {
+                user.profile = { ...user.profile, ...profileData };
+                saveUser(user);
+            }
+            return { success: true };
+        } else {
+            return { success: false, message: data.message || 'อัพเดทโปรไฟล์ไม่สำเร็จ' };
+        }
+    } catch (error) {
+        console.error('Update profile error:', error);
+        return { success: false, message: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้' };
     }
-
-    return true;
 }
+
+// Fetch user profile from API
+async function fetchUserProfile() {
+    try {
+        const token = getToken();
+        if (!token) return null;
+
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            saveUser(data.user);
+            return data.user;
+        } else {
+            // Token might be invalid, clear it
+            if (response.status === 401) {
+                removeToken();
+                removeUser();
+            }
+            return null;
+        }
+    } catch (error) {
+        console.error('Fetch profile error:', error);
+        return null;
+    }
+}
+
+// ========================================
+// UI Updates
+// ========================================
 
 // Update navigation based on auth state
 function updateAuthUI() {
@@ -113,7 +230,7 @@ function updateAuthUI() {
             userProfile.classList.remove('hidden');
             userProfile.style.display = 'flex';
         }
-        if (userNameEl) userNameEl.textContent = user.name;
+        if (userNameEl && user) userNameEl.textContent = user.name;
     } else {
         if (authButtons) {
             authButtons.classList.remove('hidden');

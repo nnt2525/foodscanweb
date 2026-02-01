@@ -138,8 +138,7 @@
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg), 0 6px 20px rgba(22, 163, 74, 0.4);
+    opacity: 0.9;
 }
 
 .btn-secondary {
@@ -205,8 +204,7 @@
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    cursor: pointer;
 }
 
 .card-glass {
@@ -255,8 +253,7 @@
 }
 
 .food-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-xl);
+    cursor: pointer;
 }
 
 .food-card-image {

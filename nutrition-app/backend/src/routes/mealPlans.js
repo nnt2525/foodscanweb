@@ -13,13 +13,13 @@ router.get('/', auth, async (req, res) => {
     try {
         const { date } = req.query;
         const targetDate = date || new Date().toISOString().split('T')[0];
-        
+
         // Get or create meal plan for the date
         let [plans] = await db.query(
             'SELECT * FROM meal_plans WHERE user_id = ? AND date = ?',
             [req.user.id, targetDate]
         );
-        
+
         let plan;
         if (plans.length === 0) {
             // Create new plan
@@ -31,7 +31,7 @@ router.get('/', auth, async (req, res) => {
         } else {
             plan = plans[0];
         }
-        
+
         // Get meal items
         const [items] = await db.query(
             `SELECT mi.*, f.name, f.calories, f.protein, f.carbs, f.fat
@@ -41,7 +41,7 @@ router.get('/', auth, async (req, res) => {
              ORDER BY mi.created_at`,
             [plan.id]
         );
-        
+
         // Group by meal type
         const meals = {
             breakfast: items.filter(i => i.meal_type === 'breakfast'),
@@ -49,7 +49,7 @@ router.get('/', auth, async (req, res) => {
             dinner: items.filter(i => i.meal_type === 'dinner'),
             snacks: items.filter(i => i.meal_type === 'snacks')
         };
-        
+
         // Calculate totals
         const totals = items.reduce((acc, item) => ({
             calories: acc.calories + (item.calories * item.quantity),
@@ -57,7 +57,7 @@ router.get('/', auth, async (req, res) => {
             carbs: acc.carbs + (item.carbs * item.quantity),
             fat: acc.fat + (item.fat * item.quantity)
         }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
-        
+
         res.json({
             success: true,
             data: {
@@ -77,26 +77,26 @@ router.post('/:planId/items', auth, async (req, res) => {
     try {
         const { planId } = req.params;
         const { food_id, meal_type, quantity = 1 } = req.body;
-        
+
         // Verify plan ownership
         const [plans] = await db.query(
             'SELECT * FROM meal_plans WHERE id = ? AND user_id = ?',
             [planId, req.user.id]
         );
-        
+
         if (plans.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'ไม่พบแผนอาหาร'
             });
         }
-        
+
         // Add item
         const [result] = await db.query(
             'INSERT INTO meal_items (meal_plan_id, food_id, meal_type, quantity) VALUES (?, ?, ?, ?)',
             [planId, food_id, meal_type, quantity]
         );
-        
+
         res.status(201).json({
             success: true,
             message: 'เพิ่มอาหารสำเร็จ',
@@ -112,25 +112,76 @@ router.post('/:planId/items', auth, async (req, res) => {
 router.delete('/:planId/items/:itemId', auth, async (req, res) => {
     try {
         const { planId, itemId } = req.params;
-        
+
         // Verify plan ownership
         const [plans] = await db.query(
             'SELECT * FROM meal_plans WHERE id = ? AND user_id = ?',
             [planId, req.user.id]
         );
-        
+
         if (plans.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'ไม่พบแผนอาหาร'
             });
         }
-        
+
         await db.query('DELETE FROM meal_items WHERE id = ? AND meal_plan_id = ?', [itemId, planId]);
-        
+
         res.json({ success: true, message: 'ลบอาหารสำเร็จ' });
     } catch (error) {
         console.error('Remove meal item error:', error);
+        res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
+    }
+});
+
+// Update meal item (change quantity)
+router.put('/:planId/items/:itemId', auth, async (req, res) => {
+    try {
+        const { planId, itemId } = req.params;
+        const { quantity } = req.body;
+
+        if (!quantity || quantity < 0.1) {
+            return res.status(400).json({
+                success: false,
+                message: 'จำนวนต้องมากกว่า 0'
+            });
+        }
+
+        // Verify plan ownership
+        const [plans] = await db.query(
+            'SELECT * FROM meal_plans WHERE id = ? AND user_id = ?',
+            [planId, req.user.id]
+        );
+
+        if (plans.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'ไม่พบแผนอาหาร'
+            });
+        }
+
+        // Verify item exists
+        const [items] = await db.query(
+            'SELECT * FROM meal_items WHERE id = ? AND meal_plan_id = ?',
+            [itemId, planId]
+        );
+
+        if (items.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'ไม่พบรายการอาหาร'
+            });
+        }
+
+        await db.query(
+            'UPDATE meal_items SET quantity = ? WHERE id = ?',
+            [quantity, itemId]
+        );
+
+        res.json({ success: true, message: 'แก้ไขจำนวนสำเร็จ' });
+    } catch (error) {
+        console.error('Update meal item error:', error);
         res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
     }
 });
@@ -139,22 +190,22 @@ router.delete('/:planId/items/:itemId', auth, async (req, res) => {
 router.delete('/:planId/items', auth, async (req, res) => {
     try {
         const { planId } = req.params;
-        
+
         // Verify plan ownership
         const [plans] = await db.query(
             'SELECT * FROM meal_plans WHERE id = ? AND user_id = ?',
             [planId, req.user.id]
         );
-        
+
         if (plans.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'ไม่พบแผนอาหาร'
             });
         }
-        
+
         await db.query('DELETE FROM meal_items WHERE meal_plan_id = ?', [planId]);
-        
+
         res.json({ success: true, message: 'ล้างรายการสำเร็จ' });
     } catch (error) {
         console.error('Clear meal items error:', error);

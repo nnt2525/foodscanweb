@@ -11,6 +11,9 @@ const foodRoutes = require('./routes/foods');
 const mealPlanRoutes = require('./routes/mealPlans');
 const progressRoutes = require('./routes/progress');
 const adminRoutes = require('./routes/admin');
+const nutrientsRoutes = require('./routes/nutrients');
+const importRoutes = require('./routes/import');
+const categoriesRoutes = require('./routes/categories');
 
 const app = express();
 
@@ -24,6 +27,9 @@ app.use('/api/foods', foodRoutes);
 app.use('/api/meal-plans', mealPlanRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/nutrients', nutrientsRoutes);
+app.use('/api/import', importRoutes);
+app.use('/api/categories', categoriesRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
