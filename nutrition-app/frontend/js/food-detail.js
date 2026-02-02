@@ -1,12 +1,40 @@
 // ========================================
 // Food Detail Page - NutriTrack
+// Connected to Backend API
 // ========================================
 
-const foodId = parseInt(getQueryParam('id'));
-const food = mockFoods.find(f => f.id === foodId);
+let food = null;
 const container = document.getElementById('foodContent');
 
-if (!food) {
+// Initialize
+document.addEventListener('DOMContentLoaded', async () => {
+    const foodId = getQueryParam('id');
+
+    if (!foodId) {
+        showError();
+        return;
+    }
+
+    await loadFoodDetail(foodId);
+});
+
+async function loadFoodDetail(id) {
+    try {
+        const response = await foodsAPI.getById(id);
+
+        if (response.success && response.data) {
+            food = response.data;
+            renderFoodDetail();
+        } else {
+            showError();
+        }
+    } catch (error) {
+        console.error('Load food error:', error);
+        showError();
+    }
+}
+
+function showError() {
     container.innerHTML = `
         <div class="text-center" style="padding: 3rem;">
             <div class="text-4xl mb-4">❌</div>
@@ -15,30 +43,36 @@ if (!food) {
             <a href="search.html" class="btn btn-primary">กลับไปค้นหา</a>
         </div>
     `;
-} else {
+}
+
+function renderFoodDetail() {
     document.title = `${food.name} - NutriTrack`;
-    const n = food.nutrition;
 
     container.innerHTML = `
         <a href="search.html" class="btn btn-ghost mb-4">← กลับ</a>
         
         <div class="grid grid-cols-2 grid-responsive gap-6">
             <div>
-                <img src="${food.image}" alt="${food.name}" style="width:100%;height:300px;object-fit:cover;border-radius:1rem;">
+            <div class="food-image-container" style="width:100%;height:300px;border-radius:1rem;overflow:hidden;background:linear-gradient(135deg, var(--primary-100), var(--primary-50));">
+                    ${food.image_url
+            ? `<img src="${food.image_url}" alt="${food.name}" style="width:100%;height:100%;object-fit:cover;">`
+            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><span style="font-size:5rem;">🍽️</span></div>`
+        }
+                </div>
                 <div class="flex gap-2 mt-4 flex-wrap">
-                    ${food.tags.map(t => `<span class="badge badge-green">${t}</span>`).join('')}
+                    <span class="badge badge-green">${food.category_name || 'ทั่วไป'}</span>
+                    ${food.source && food.source !== 'manual' ? `<span class="badge badge-blue">${food.source.toUpperCase()}</span>` : ''}
                 </div>
             </div>
             
             <div>
                 <h1 class="text-3xl font-bold mb-2">${food.name}</h1>
-                <p class="text-gray mb-4">${food.nameEn} • ${food.category}</p>
-                <p class="mb-4">${food.description}</p>
+                <p class="text-gray mb-4">${food.name_en || ''} ${food.brand ? `• ${food.brand}` : ''}</p>
                 
                 <div class="card mb-4">
                     <div class="flex justify-between items-center mb-4">
                         <span class="text-lg font-bold">ปริมาณต่อหนึ่งที่</span>
-                        <span class="badge badge-blue">${food.servingSize}g</span>
+                        <span class="badge badge-blue">${food.serving_size || '100g'}</span>
                     </div>
                     <div class="text-center mb-4" style="padding:1rem;background:var(--primary-50);border-radius:0.75rem;">
                         <div class="text-3xl font-bold text-primary">${food.calories}</div>
@@ -46,21 +80,21 @@ if (!food) {
                     </div>
                     <div class="grid grid-cols-3 gap-4 text-center">
                         <div style="padding:1rem;background:var(--gray-50);border-radius:0.5rem;">
-                            <div class="font-bold">${n.carbohydrates.total}g</div>
+                            <div class="font-bold">${food.carbs || 0}g</div>
                             <div class="text-sm text-gray">คาร์บ</div>
                         </div>
                         <div style="padding:1rem;background:var(--gray-50);border-radius:0.5rem;">
-                            <div class="font-bold">${n.protein.total}g</div>
+                            <div class="font-bold">${food.protein || 0}g</div>
                             <div class="text-sm text-gray">โปรตีน</div>
                         </div>
                         <div style="padding:1rem;background:var(--gray-50);border-radius:0.5rem;">
-                            <div class="font-bold">${n.fat.total}g</div>
+                            <div class="font-bold">${food.fat || 0}g</div>
                             <div class="text-sm text-gray">ไขมัน</div>
                         </div>
                     </div>
                 </div>
                 
-                ${isLoggedIn() ? `
+                ${auth.isLoggedIn() ? `
                     <div class="form-group mb-4">
                         <label class="form-label">เลือกมื้ออาหาร</label>
                         <select id="mealSelect" class="form-input">
@@ -86,37 +120,29 @@ if (!food) {
             <h2 class="text-xl font-bold mb-4">ข้อมูลโภชนาการโดยละเอียด</h2>
             <div class="grid grid-cols-2 grid-responsive gap-6">
                 <div>
-                    <h3 class="font-semibold mb-3">คาร์โบไฮเดรต</h3>
+                    <h3 class="font-semibold mb-3">สารอาหารหลัก</h3>
                     <div class="text-sm">
-                        <div class="flex justify-between mb-2"><span>รวม</span><span>${n.carbohydrates.total}g</span></div>
-                        <div class="flex justify-between mb-2 text-gray"><span>ใยอาหาร</span><span>${n.carbohydrates.fiber}g</span></div>
-                        <div class="flex justify-between text-gray"><span>น้ำตาล</span><span>${n.carbohydrates.sugar}g</span></div>
+                        <div class="flex justify-between mb-2"><span>พลังงาน</span><span>${food.calories} kcal</span></div>
+                        <div class="flex justify-between mb-2"><span>โปรตีน</span><span>${food.protein || 0}g</span></div>
+                        <div class="flex justify-between mb-2"><span>คาร์โบไฮเดรต</span><span>${food.carbs || 0}g</span></div>
+                        <div class="flex justify-between mb-2"><span>ไขมัน</span><span>${food.fat || 0}g</span></div>
+                        <div class="flex justify-between"><span>ใยอาหาร</span><span>${food.fiber || 0}g</span></div>
                     </div>
                 </div>
                 <div>
-                    <h3 class="font-semibold mb-3">ไขมัน</h3>
+                    <h3 class="font-semibold mb-3">ข้อมูลเพิ่มเติม</h3>
                     <div class="text-sm">
-                        <div class="flex justify-between mb-2"><span>รวม</span><span>${n.fat.total}g</span></div>
-                        <div class="flex justify-between mb-2 text-gray"><span>อิ่มตัว</span><span>${n.fat.saturated}g</span></div>
-                        <div class="flex justify-between text-gray"><span>ไม่อิ่มตัว</span><span>${n.fat.unsaturated}g</span></div>
+                        <div class="flex justify-between mb-2"><span>หมวดหมู่</span><span>${food.category_name || '-'}</span></div>
+                        <div class="flex justify-between mb-2"><span>แหล่งที่มา</span><span>${food.source || 'manual'}</span></div>
+                        ${food.barcode ? `<div class="flex justify-between"><span>Barcode</span><span>${food.barcode}</span></div>` : ''}
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Benefits -->
-        <div class="card mt-6">
-            <h2 class="text-xl font-bold mb-4">ประโยชน์</h2>
-            <div class="flex gap-2 flex-wrap">
-                ${food.benefits.map(b => `
-                    <span class="badge badge-blue" style="padding: 0.5rem 1rem; font-size: 0.875rem;">✓ ${b}</span>
-                `).join('')}
             </div>
         </div>
     `;
 
     // Set default meal based on time
-    if (isLoggedIn()) {
+    if (auth.isLoggedIn()) {
         const now = new Date().getHours();
         let defaultMeal = 'snacks';
         if (now < 10) defaultMeal = 'breakfast';
@@ -140,7 +166,15 @@ function addToMeal() {
         snacks: 'ของว่าง'
     };
 
-    meals[mealType].push({ ...food, addedAt: new Date().toISOString() });
+    meals[mealType].push({
+        id: food.id,
+        name: food.name,
+        calories: food.calories || 0,
+        protein: food.protein || 0,
+        carbs: food.carbs || 0,
+        fat: food.fat || 0,
+        addedAt: new Date().toISOString()
+    });
     saveToLocalStorage('nutritrack_meals', meals);
     showNotification(`เพิ่ม ${food.name} ลงใน${mealNames[mealType]}แล้ว!`, 'success');
 }

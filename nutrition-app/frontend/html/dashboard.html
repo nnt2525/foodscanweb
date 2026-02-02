@@ -105,6 +105,33 @@
                     </div>
                 </div>
 
+                <!-- Water Tracking -->
+                <div class="card mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold">💧 การดื่มน้ำวันนี้</h2>
+                        <span class="text-gray text-sm" id="waterGoalText">เป้าหมาย: 8 แก้ว</span>
+                    </div>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="flex-1">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span id="waterCount">0</span>
+                                <span class="text-gray">/ 8 แก้ว (2 ลิตร)</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill blue" id="waterProgress" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 justify-center flex-wrap" id="waterGlasses">
+                        <!-- Water glasses will be rendered here -->
+                    </div>
+                    <div class="flex gap-2 justify-center mt-4">
+                        <button onclick="addWater()" class="btn btn-primary btn-sm">+ เพิ่ม 1 แก้ว</button>
+                        <button onclick="removeWater()" class="btn btn-secondary btn-sm">- ลด 1 แก้ว</button>
+                        <button onclick="resetWater()" class="btn btn-ghost btn-sm">รีเซ็ต</button>
+                    </div>
+                </div>
+
                 <!-- Recent Foods & Quick Actions -->
                 <div class="grid grid-cols-3 grid-responsive mb-8">
                     <!-- Recent Foods -->
@@ -133,6 +160,7 @@
     <script src="../js/data.js"></script>
     <script src="../js/utils.js"></script>
     <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
     <script src="../js/navigation.js"></script>
     <script src="../js/dashboard.js"></script>
 </body>

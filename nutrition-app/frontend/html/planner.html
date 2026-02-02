@@ -46,7 +46,8 @@
                     <div class="card" id="mealBreakfast">
                         <div class="flex items-center justify-between mb-4">
                             <h2 class="font-bold flex items-center gap-2">🌅 มื้อเช้า</h2>
-                            <button onclick="openAddFoodModal('breakfast')" class="btn btn-sm btn-ghost">+ เพิ่ม</button>
+                            <button onclick="openAddFoodModal('breakfast')" class="btn btn-sm btn-ghost">+
+                                เพิ่ม</button>
                         </div>
                         <div id="breakfastList" class="space-y-2"></div>
                     </div>
@@ -101,7 +102,7 @@
 
                             <!-- Search Tab -->
                             <div id="searchTab" class="tab-content">
-                                <input type="text" id="modalSearchInput" class="form-input mb-4" 
+                                <input type="text" id="modalSearchInput" class="form-input mb-4"
                                     placeholder="ค้นหาอาหาร..." oninput="searchFoodsInModal()">
                                 <div id="searchResults" class="search-results"></div>
                             </div>
@@ -116,11 +117,13 @@
                                     <div class="grid grid-cols-2 gap-4">
                                         <div class="form-group">
                                             <label class="form-label">แคลอรี่ (kcal) *</label>
-                                            <input type="number" id="customCalories" class="form-input" required min="0">
+                                            <input type="number" id="customCalories" class="form-input" required
+                                                min="0">
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">โปรตีน (g)</label>
-                                            <input type="number" id="customProtein" class="form-input" min="0" step="0.1">
+                                            <input type="number" id="customProtein" class="form-input" min="0"
+                                                step="0.1">
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">คาร์บส (g)</label>
@@ -155,6 +158,7 @@
     <script src="../js/data.js"></script>
     <script src="../js/utils.js"></script>
     <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
     <script src="../js/navigation.js"></script>
     <script src="../js/planner.js"></script>
 </body>

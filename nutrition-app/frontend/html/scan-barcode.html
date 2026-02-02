@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สแกนบาร์โค้ด - NutriTrack</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .scanner-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .camera-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background: #1a1a1a;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .camera-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .scan-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .scan-line {
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #22c55e, transparent);
+            animation: scanMove 2s ease-in-out infinite;
+            box-shadow: 0 0 20px #22c55e;
+        }
+
+        @keyframes scanMove {
+
+            0%,
+            100% {
+                transform: translateY(-100px);
+            }
+
+            50% {
+                transform: translateY(100px);
+            }
+        }
+
+        .scan-corners {
+            position: absolute;
+            width: 70%;
+            height: 50%;
+            border: 3px solid #22c55e;
+            border-radius: 10px;
+        }
+
+        .manual-input {
+            background: var(--gray-50);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, var(--primary-50), white);
+            border: 2px solid var(--primary-200);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .no-camera {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #fff;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .no-camera-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <main class="main-content">
+            <div class="container fade-in scanner-container">
+                <div class="flex items-center justify-between mb-6">
+                    <h1 class="text-2xl font-bold">📷 สแกนบาร์โค้ด</h1>
+                    <a href="search.html" class="btn btn-ghost btn-sm">← กลับ</a>
+                </div>
+
+                <!-- Camera View -->
+                <div class="camera-box" id="cameraBox">
+                    <video id="video" autoplay playsinline></video>
+                    <div class="scan-overlay">
+                        <div class="scan-corners"></div>
+                        <div class="scan-line"></div>
+                    </div>
+                    <div class="no-camera hidden" id="noCamera">
+                        <div class="no-camera-icon">📷</div>
+                        <p>ไม่สามารถเปิดกล้องได้</p>
+                        <p class="text-sm mt-2">กรุณาอนุญาตการใช้กล้อง หรือใส่บาร์โค้ดด้วยตัวเอง</p>
+                    </div>
+                </div>
+
+                <!-- Camera Controls -->
+                <div class="flex gap-2 justify-center mb-4">
+                    <button onclick="startCamera()" class="btn btn-primary btn-sm" id="startBtn">
+                        📷 เปิดกล้อง
+                    </button>
+                    <button onclick="stopCamera()" class="btn btn-secondary btn-sm" id="stopBtn" disabled>
+                        ⏹️ ปิดกล้อง
+                    </button>
+                </div>
+
+                <!-- Manual Input -->
+                <div class="manual-input">
+                    <h3 class="font-bold mb-3">📝 หรือใส่บาร์โค้ดเอง</h3>
+                    <div class="flex gap-2">
+                        <input type="text" id="barcodeInput" class="form-input"
+                            placeholder="ใส่เลขบาร์โค้ด เช่น 8850329112108">
+                        <button onclick="searchBarcode()" class="btn btn-primary">ค้นหา</button>
+                    </div>
+                </div>
+
+                <!-- Result -->
+                <div id="resultSection" class="hidden">
+                    <div class="result-card">
+                        <h3 class="font-bold text-lg mb-2" id="resultName">-</h3>
+                        <p class="text-gray text-sm mb-3" id="resultBarcode">บาร์โค้ด: -</p>
+                        <div class="grid grid-cols-4 gap-2 text-center mb-4">
+                            <div>
+                                <div class="font-bold text-primary" id="resultCalories">-</div>
+                                <div class="text-xs text-gray">kcal</div>
+                            </div>
+                            <div>
+                                <div class="font-bold text-blue-500" id="resultProtein">-</div>
+                                <div class="text-xs text-gray">โปรตีน</div>
+                            </div>
+                            <div>
+                                <div class="font-bold text-orange-500" id="resultCarbs">-</div>
+                                <div class="text-xs text-gray">คาร์บส</div>
+                            </div>
+                            <div>
+                                <div class="font-bold text-purple-500" id="resultFat">-</div>
+                                <div class="text-xs text-gray">ไขมัน</div>
+                            </div>
+                        </div>
+                        <button onclick="addToMeal()" class="btn btn-primary btn-block">
+                            + เพิ่มลงมื้ออาหาร
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Not Found -->
+                <div id="notFoundSection" class="hidden">
+                    <div class="card text-center mt-4">
+                        <div class="text-4xl mb-2">❌</div>
+                        <h3 class="font-bold">ไม่พบข้อมูลสินค้า</h3>
+                        <p class="text-gray text-sm mb-4">บาร์โค้ดนี้ยังไม่มีในระบบ</p>
+                        <button onclick="addNewFood()" class="btn btn-secondary btn-sm">
+                            เพิ่มอาหารใหม่
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script src="../js/barcode-scanner.js"></script>
+</body>
+
+</html>

@@ -137,7 +137,7 @@ async function loadFoodsForSearch() {
     try {
         const data = await foodsAPI.getAll({ status: 'approved' });
         if (data.success) {
-            searchFoods = data.foods || [];
+            searchFoods = data.data || [];
         }
     } catch (error) {
         searchFoods = getFromLocalStorage('nutritrack_foods', []);

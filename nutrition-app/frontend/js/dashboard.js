@@ -95,12 +95,24 @@ async function loadWeeklyChart() {
     let weeklyData = defaultWeeklyData;
 
     try {
-        const data = await progressAPI.getWeekly();
-        if (data.success && data.progress) {
-            weeklyData = {
-                labels: data.progress.map(d => d.day || d.date),
-                calories: data.progress.map(d => d.calories || 0)
-            };
+        const response = await progressAPI.getWeekly();
+        if (response.success && response.data && response.data.daily) {
+            // Get last 7 days labels
+            const days = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
+            const labels = [];
+            const calories = [];
+
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(days[date.getDay()]);
+
+                const dateStr = date.toISOString().split('T')[0];
+                const dayData = response.data.daily.find(d => d.date === dateStr);
+                calories.push(dayData ? dayData.calories : 0);
+            }
+
+            weeklyData = { labels, calories };
         }
     } catch (error) {
         console.log('Using default weekly data');
@@ -245,5 +257,167 @@ function renderWeeklyChart(data) {
     });
 }
 
+// ========================================
+// Water Tracking
+// ========================================
+
+const WATER_GOAL = 8; // 8 glasses = 2 liters
+let waterIntake = 0;
+
+// Initialize water tracking
+function initWaterTracking() {
+    // Get today's water intake from localStorage
+    const today = new Date().toISOString().split('T')[0];
+    const savedData = getFromLocalStorage('nutritrack_water', {});
+    waterIntake = savedData[today] || 0;
+
+    renderWaterGlasses();
+    updateWaterUI();
+}
+
+// Render water glasses
+function renderWaterGlasses() {
+    const container = document.getElementById('waterGlasses');
+    if (!container) return;
+
+    let html = '';
+    for (let i = 1; i <= WATER_GOAL; i++) {
+        const filled = i <= waterIntake;
+        html += `
+            <div class="water-glass ${filled ? 'filled' : ''}" onclick="setWater(${i})" title="${i} แก้ว">
+                <span class="glass-icon">${filled ? '💧' : '🥛'}</span>
+            </div>
+        `;
+    }
+    container.innerHTML = html;
+}
+
+// Update water UI
+function updateWaterUI() {
+    const countEl = document.getElementById('waterCount');
+    const progressEl = document.getElementById('waterProgress');
+
+    if (countEl) countEl.textContent = waterIntake;
+    if (progressEl) {
+        const percentage = Math.min((waterIntake / WATER_GOAL) * 100, 100);
+        progressEl.style.width = percentage + '%';
+    }
+
+    // Show celebration if goal reached
+    if (waterIntake === WATER_GOAL) {
+        showNotification('🎉 เยี่ยม! คุณดื่มน้ำครบเป้าหมายแล้ว!', 'success');
+    }
+}
+
+// Add one glass of water
+function addWater() {
+    if (waterIntake < WATER_GOAL) {
+        waterIntake++;
+        saveWaterData();
+        renderWaterGlasses();
+        updateWaterUI();
+        showNotification(`💧 ดื่มน้ำแล้ว ${waterIntake}/${WATER_GOAL} แก้ว`, 'info');
+    } else {
+        showNotification('คุณดื่มน้ำครบเป้าหมายแล้ว! 🎉', 'success');
+    }
+}
+
+// Remove one glass of water
+function removeWater() {
+    if (waterIntake > 0) {
+        waterIntake--;
+        saveWaterData();
+        renderWaterGlasses();
+        updateWaterUI();
+    }
+}
+
+// Set water to specific amount
+function setWater(amount) {
+    waterIntake = amount;
+    saveWaterData();
+    renderWaterGlasses();
+    updateWaterUI();
+}
+
+// Reset water tracking
+function resetWater() {
+    waterIntake = 0;
+    saveWaterData();
+    renderWaterGlasses();
+    updateWaterUI();
+    showNotification('รีเซ็ตการดื่มน้ำแล้ว', 'info');
+}
+
+// Save water data to localStorage
+function saveWaterData() {
+    const today = new Date().toISOString().split('T')[0];
+    const savedData = getFromLocalStorage('nutritrack_water', {});
+    savedData[today] = waterIntake;
+
+    // Keep only last 30 days of data
+    const keys = Object.keys(savedData).sort().reverse().slice(0, 30);
+    const trimmedData = {};
+    keys.forEach(key => trimmedData[key] = savedData[key]);
+
+    saveToLocalStorage('nutritrack_water', trimmedData);
+}
+
+// Add water glass styles dynamically
+function addWaterStyles() {
+    if (document.getElementById('water-styles')) return;
+
+    const style = document.createElement('style');
+    style.id = 'water-styles';
+    style.textContent = `
+        .water-glass {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--gray-100);
+            border: 2px solid transparent;
+        }
+        .water-glass:hover {
+            transform: scale(1.1);
+            border-color: var(--primary-300);
+        }
+        .water-glass.filled {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            animation: fillWater 0.3s ease;
+        }
+        .glass-icon {
+            font-size: 1.5rem;
+        }
+        @keyframes fillWater {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .progress-bar-fill.blue {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Extended init function
+const originalInitDashboard = initDashboard;
+initDashboard = async function () {
+    addWaterStyles();
+    initWaterTracking();
+    // Note: The original functions are already called in the async initDashboard
+};
+
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', initDashboard);
+document.addEventListener('DOMContentLoaded', async () => {
+    addWaterStyles();
+    initWaterTracking();
+    await loadTodayData();
+    loadWeeklyChart();
+});
+

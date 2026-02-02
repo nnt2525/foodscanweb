@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกน้ำหนัก - NutriTrack</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/animations.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .weight-display {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-50), white);
+            border-radius: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .current-weight {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--primary-600);
+            line-height: 1;
+        }
+
+        .weight-unit {
+            font-size: 1.5rem;
+            color: var(--gray-500);
+        }
+
+        .weight-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .weight-change.down {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .weight-change.up {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .weight-change.same {
+            background: var(--gray-100);
+            color: var(--gray-600);
+        }
+
+        .chart-container {
+            height: 300px;
+            margin: 1.5rem 0;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-date {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        .history-weight {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .delete-btn {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .history-item:hover .delete-btn {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <main class="main-content">
+            <div class="container fade-in">
+                <div class="flex items-center justify-between mb-6">
+                    <h1 class="text-2xl font-bold">⚖️ บันทึกน้ำหนัก</h1>
+                    <a href="profile.html" class="btn btn-ghost btn-sm">← กลับ</a>
+                </div>
+
+                <!-- Current Weight Display -->
+                <div class="weight-display">
+                    <div id="noData" class="hidden">
+                        <div class="text-4xl mb-2">⚖️</div>
+                        <p class="text-gray">ยังไม่มีข้อมูลน้ำหนัก</p>
+                    </div>
+                    <div id="hasData">
+                        <div class="text-sm text-gray mb-2">น้ำหนักล่าสุด</div>
+                        <div class="current-weight">
+                            <span id="currentWeight">0</span>
+                            <span class="weight-unit">kg</span>
+                        </div>
+                        <div id="weightChange" class="weight-change same">
+                            <span>→</span> <span>ไม่เปลี่ยนแปลง</span>
+                        </div>
+                        <div class="text-sm text-gray mt-2" id="lastUpdate">-</div>
+                    </div>
+                </div>
+
+                <!-- Add Weight Form -->
+                <div class="card mb-6">
+                    <h2 class="font-bold mb-4">📝 บันทึกน้ำหนักวันนี้</h2>
+                    <div class="flex gap-2">
+                        <input type="number" id="weightInput" class="form-input" placeholder="น้ำหนัก (kg)" step="0.1"
+                            min="20" max="300">
+                        <button onclick="addWeight()" class="btn btn-primary">บันทึก</button>
+                    </div>
+                </div>
+
+                <!-- Weight Chart -->
+                <div class="card mb-6">
+                    <h2 class="font-bold mb-4">📊 กราฟน้ำหนัก 30 วัน</h2>
+                    <div class="chart-container">
+                        <canvas id="weightChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Weight History -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="font-bold">📋 ประวัติการบันทึก</h2>
+                        <button onclick="clearHistory()" class="btn btn-ghost btn-sm text-red-500">ล้างทั้งหมด</button>
+                    </div>
+                    <div id="historyList">
+                        <p class="text-gray text-center py-4">ไม่มีประวัติการบันทึก</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/navigation.js"></script>
+    <script src="../js/weight-tracker.js"></script>
+</body>
+
+</html>

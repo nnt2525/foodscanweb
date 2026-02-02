@@ -26,7 +26,7 @@ async function loadCategories() {
     try {
         const data = await api.get('/foods/categories');
         if (data.success && data.categories) {
-            const cats = ['ทั้งหมด', ...data.categories.map(c => c.name)];
+            const cats = [{ name: 'ทั้งหมด', icon: '📋' }, ...data.categories];
             renderCategoryButtons(cats);
         } else {
             renderCategoryButtons(categories); // fallback to local data.js
@@ -39,12 +39,21 @@ async function loadCategories() {
 
 function renderCategoryButtons(cats) {
     const container = document.getElementById('categoryFilters');
-    container.innerHTML = cats.map(cat => `
+
+    // Normalize categories - handle both string and object formats
+    const normalized = cats.map(cat => {
+        if (typeof cat === 'string') {
+            return { name: cat, icon: '' };
+        }
+        return { name: cat.name, icon: cat.icon || '' };
+    });
+
+    container.innerHTML = normalized.map(cat => `
         <button 
-            class="btn ${cat === activeCategory ? 'btn-primary' : 'btn-secondary'} btn-sm btn-rounded"
-            onclick="filterByCategory('${cat}')"
+            class="btn ${cat.name === activeCategory ? 'btn-primary' : 'btn-secondary'} btn-sm btn-rounded"
+            onclick="filterByCategory('${cat.name}')"
         >
-            ${cat}
+            ${cat.icon ? cat.icon + ' ' : ''}${cat.name}
         </button>
     `).join('');
 }
@@ -56,8 +65,8 @@ async function loadFoods() {
 
     try {
         const data = await foodsAPI.getAll({ status: 'approved' });
-        if (data.success && data.foods) {
-            allFoods = data.foods;
+        if (data.success && data.data) {
+            allFoods = data.data;
             renderFoods(allFoods);
         } else {
             allFoods = [];
@@ -85,19 +94,27 @@ function renderFoods(foods) {
         return;
     }
 
-    grid.innerHTML = foods.map(food => `
+    grid.innerHTML = foods.map(food => {
+        const imageUrl = food.image_url || food.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400';
+        const categoryName = food.category_name || food.category || 'ทั่วไป';
+        const categoryIcon = food.category_icon || '';
+
+        return `
         <a href="food-detail.html?id=${food.id}" class="food-card">
-            <img src="${food.image || 'https://via.placeholder.com/300x180?text=🍽️'}" alt="${food.name}" class="food-card-image">
+            <div class="food-card-image-wrapper">
+                <img src="${imageUrl}" alt="${food.name}" class="food-card-image" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'">
+            </div>
             <div class="food-card-content">
                 <h3 class="food-card-title">${food.name}</h3>
-                <p class="food-card-category">${food.category || 'ทั่วไป'}</p>
+                <p class="food-card-category">${categoryIcon} ${categoryName}</p>
                 <div class="flex items-center justify-between mt-2">
                     <span class="food-card-calories">${food.calories || 0} kcal</span>
-                    <span class="text-gray text-sm">${food.serving_size || food.servingSize || 100}g</span>
+                    <span class="text-gray text-sm">${food.serving_size || '100g'}</span>
                 </div>
             </div>
         </a>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // Filter foods by search query
