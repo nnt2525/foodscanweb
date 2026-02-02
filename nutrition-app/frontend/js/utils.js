@@ -130,3 +130,17 @@ function getGreeting() {
     if (hour < 17) return 'สวัสดีตอนบ่าย';
     return 'สวัสดีตอนเย็น';
 }
+
+// Toggle password visibility
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        button.textContent = '🙈';
+        button.title = 'ซ่อนรหัสผ่าน';
+    } else {
+        input.type = 'password';
+        button.textContent = '👁️';
+        button.title = 'แสดงรหัสผ่าน';
+    }
+}

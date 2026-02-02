@@ -38,8 +38,13 @@
                             <div class="flex justify-between items-center">
                                 <label class="form-label form-label-inline" for="password">รหัสผ่าน</label>
                             </div>
-                            <input type="password" id="password" class="form-input form-input-spaced"
-                                placeholder="••••••••" required>
+                            <div style="position: relative;">
+                                <input type="password" id="password" class="form-input form-input-spaced"
+                                    placeholder="••••••••" required style="padding-right: 50px;">
+                                <button type="button" onclick="togglePassword('password', this)"
+                                    style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.2rem;"
+                                    title="แสดง/ซ่อนรหัสผ่าน">👁️</button>
+                            </div>
                         </div>
                         <div>
                             <a href="forgot-password.html"

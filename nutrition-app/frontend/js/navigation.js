@@ -45,6 +45,7 @@ function renderNavigation() {
             
             <div class="navbar-actions">
                 ${loggedIn ? `
+                    ${user && user.role === 'admin' ? `<a href="admin/dashboard.html" class="btn btn-ghost btn-sm">🛠️ Admin</a>` : ''}
                     <button onclick="logout()" class="btn btn-outline btn-sm">ออกจากระบบ</button>
                 ` : `
                     <a href="login.html" class="btn btn-secondary btn-sm btn-rounded">เข้าสู่ระบบ</a>
