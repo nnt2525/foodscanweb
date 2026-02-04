@@ -102,6 +102,9 @@
                     </div>
                 </div>
 
+                <!-- Notification Settings -->
+                <div id="notificationSettings" class="mb-6"></div>
+
                 <!-- Logout -->
                 <button onclick="logout()" class="btn btn-secondary btn-block">
                     ออกจากระบบ
@@ -115,7 +118,13 @@
     <script src="../js/auth.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/navigation.js"></script>
+    <script src="../js/notifications.js"></script>
     <script src="../js/profile.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNotificationSettings('notificationSettings');
+        });
+    </script>
 </body>
 
 </html>

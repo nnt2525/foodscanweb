@@ -123,7 +123,7 @@ function filterFoods() {
     let filtered = allFoods;
 
     if (activeCategory !== 'ทั้งหมด') {
-        filtered = filtered.filter(f => f.category === activeCategory);
+        filtered = filtered.filter(f => f.category_name === activeCategory);
     }
 
     if (query) {
