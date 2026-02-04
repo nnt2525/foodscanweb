@@ -404,6 +404,30 @@ function generateMealRows(meals) {
     return rows;
 }
 
+// ========================================
+// Social Sharing
+// ========================================
+function shareCurrentProgress() {
+    // Get current stats from the page
+    const totalCalories = weeklyData?.totals?.calories || 13800;
+    const avgCalories = weeklyData?.totals?.avgCalories || 1971;
+    const protein = weeklyData?.totals?.protein || 490;
+    const carbs = weeklyData?.totals?.carbs || 1260;
+    const fat = weeklyData?.totals?.fat || 420;
+    const goalDays = weeklyData?.goalDays || 5;
+
+    const user = getCurrentUser();
+    const calorieGoal = user?.daily_calories || 2000;
+
+    shareProgress({
+        calories: avgCalories,
+        calorieGoal: calorieGoal,
+        protein: Math.round(protein / 7),
+        carbs: Math.round(carbs / 7),
+        fat: Math.round(fat / 7)
+    });
+}
+
 // Initialize on load
 initProgress();
 

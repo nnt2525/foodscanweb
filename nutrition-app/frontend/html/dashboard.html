@@ -128,6 +128,8 @@
                     <div class="flex gap-2 justify-center mt-4">
                         <button onclick="addWater()" class="btn btn-primary btn-sm">+ เพิ่ม 1 แก้ว</button>
                         <button onclick="removeWater()" class="btn btn-secondary btn-sm">- ลด 1 แก้ว</button>
+                        <button onclick="shareWaterProgress(getFromLocalStorage('nutritrack_water_count', 0))"
+                            class="btn btn-ghost btn-sm">📤 แชร์</button>
                         <button onclick="resetWater()" class="btn btn-ghost btn-sm">รีเซ็ต</button>
                     </div>
                 </div>
@@ -164,6 +166,8 @@
     <script src="../js/auth.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/navigation.js"></script>
+    <script src="../js/social-sharing.js"></script>
+    <script src="../js/notifications.js"></script>
     <script src="../js/dashboard.js"></script>
 </body>
 
