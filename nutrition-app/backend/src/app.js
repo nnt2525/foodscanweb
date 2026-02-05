@@ -1,10 +1,11 @@
 // ========================================
 // NutriTrack API - Main Application
 // ========================================
-
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const authRoutes = require('./routes/auth');
 const foodRoutes = require('./routes/foods');
@@ -16,6 +17,13 @@ const importRoutes = require('./routes/import');
 const categoriesRoutes = require('./routes/categories');
 
 const app = express();
+
+// Security Middleware
+app.use(helmet()); // ป้องกัน HTTP Headers
+app.use(rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 นาที
+    max: 100 // จำกัด 100 requests ต่อ IP
+}));
 
 // Middleware
 app.use(cors());

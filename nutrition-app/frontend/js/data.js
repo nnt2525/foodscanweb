@@ -17,16 +17,21 @@ const dailyRecommended = {
     vitaminD: 20
 };
 
-// Food Categories
+// Food Categories (matching database categories table)
 const categories = [
-    { id: 'all', name: 'ทั้งหมด', icon: '📋' },
-    { id: 'thai', name: 'อาหารไทย', icon: '🍜' },
-    { id: 'clean', name: 'อาหารคลีน', icon: '🥗' },
-    { id: 'fastfood', name: 'ฟาสต์ฟู้ด', icon: '🍔' },
-    { id: 'drinks', name: 'เครื่องดื่ม', icon: '🥤' },
-    { id: 'fruits', name: 'ผลไม้', icon: '🍎' },
-    { id: 'dessert', name: 'ของหวาน', icon: '🍰' }
+    { id: 'all', name: 'ทั้งหมด', icon: '📋', filterType: 'all' },
+    { id: 'thai', name: 'อาหารไทย', icon: '🍜', filterType: 'source', filterValue: 'THAI' },
+    { id: 'usda', name: 'อาหารสากล', icon: '🌍', filterType: 'source', filterValue: 'USDA' },
+    { id: 'meat', name: 'เนื้อสัตว์', icon: '🍖', filterType: 'category', filterValue: 1 },
+    { id: 'rice', name: 'ข้าว/แป้ง', icon: '🍚', filterType: 'category', filterValue: 2 },
+    { id: 'soup', name: 'แกง/ต้ม', icon: '🍲', filterType: 'category', filterValue: 3 },
+    { id: 'fried', name: 'ผัด/ทอด', icon: '🍳', filterType: 'category', filterValue: 4 },
+    { id: 'veg', name: 'ผัก/สลัด', icon: '🥗', filterType: 'category', filterValue: 5 },
+    { id: 'fruits', name: 'ผลไม้', icon: '🍎', filterType: 'category', filterValue: 6 },
+    { id: 'dessert', name: 'ขนมหวาน', icon: '🍰', filterType: 'category', filterValue: 7 },
+    { id: 'drinks', name: 'เครื่องดื่ม', icon: '🥤', filterType: 'category', filterValue: 8 }
 ];
+
 
 // Achievement Badge Types
 const badgeTypes = [

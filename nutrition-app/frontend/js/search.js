@@ -4,6 +4,7 @@
 // ========================================
 
 let activeCategory = 'ทั้งหมด';
+let activeFilter = { type: 'all', value: null };
 let allFoods = [];
 
 // Initialize page
@@ -43,15 +44,20 @@ function renderCategoryButtons(cats) {
     // Normalize categories - handle both string and object formats
     const normalized = cats.map(cat => {
         if (typeof cat === 'string') {
-            return { name: cat, icon: '' };
+            return { name: cat, icon: '', filterType: 'all', filterValue: null };
         }
-        return { name: cat.name, icon: cat.icon || '' };
+        return {
+            name: cat.name,
+            icon: cat.icon || '',
+            filterType: cat.filterType || 'all',
+            filterValue: cat.filterValue || null
+        };
     });
 
     container.innerHTML = normalized.map(cat => `
         <button 
             class="btn ${cat.name === activeCategory ? 'btn-primary' : 'btn-secondary'} btn-sm btn-rounded"
-            onclick="filterByCategory('${cat.name}')"
+            onclick="filterByCategory('${cat.name}', '${cat.filterType}', '${cat.filterValue}')"
         >
             ${cat.icon ? cat.icon + ' ' : ''}${cat.name}
         </button>
@@ -122,15 +128,19 @@ function filterFoods() {
     const query = document.getElementById('searchInput').value.toLowerCase();
     let filtered = allFoods;
 
-    if (activeCategory !== 'ทั้งหมด') {
-        filtered = filtered.filter(f => f.category_name === activeCategory);
+    // Apply filter based on type
+    if (activeFilter.type === 'source' && activeFilter.value && activeFilter.value !== 'null') {
+        filtered = filtered.filter(f => f.source === activeFilter.value);
+    } else if (activeFilter.type === 'category' && activeFilter.value && activeFilter.value !== 'null') {
+        filtered = filtered.filter(f => f.category_id === parseInt(activeFilter.value));
     }
+    // 'all' type shows everything
 
     if (query) {
         filtered = filtered.filter(f =>
             (f.name && f.name.toLowerCase().includes(query)) ||
             (f.name_en && f.name_en.toLowerCase().includes(query)) ||
-            (f.category && f.category.toLowerCase().includes(query))
+            (f.category_name && f.category_name.toLowerCase().includes(query))
         );
     }
 
@@ -138,8 +148,12 @@ function filterFoods() {
 }
 
 // Filter by category
-function filterByCategory(category) {
-    activeCategory = category;
+function filterByCategory(categoryName, filterType, filterValue) {
+    activeCategory = categoryName;
+    activeFilter = {
+        type: filterType || 'all',
+        value: filterValue || null
+    };
     loadCategories(); // Re-render buttons with updated active state
     filterFoods();
 }
