@@ -7,7 +7,7 @@ if (!requireAuth()) throw new Error('Not authorized');
 
 let currentMealType = 'breakfast';
 let currentMealPlanId = null;
-const userGoal = getCurrentUser()?.profile?.dailyCalories || 2000;
+const userGoal = getCurrentUser()?.daily_calories || 2000;
 
 document.getElementById('todayDate').textContent = formatDate(new Date());
 

@@ -37,12 +37,13 @@ async function loadUserProfile() {
         : new Date().toLocaleDateString('th-TH');
 
     // Load profile form
-    const profile = user.profile || {};
+    // Backend returns flat structure, but cache might have nested profile
+    const profile = user.profile || user;
     document.getElementById('weight').value = profile.weight || '';
     document.getElementById('height').value = profile.height || '';
     document.getElementById('age').value = profile.age || '';
     document.getElementById('gender').value = profile.gender || '';
-    document.getElementById('activity').value = profile.activity || 'sedentary';
+    document.getElementById('activity').value = profile.activity_level || profile.activity || 'sedentary';
     document.getElementById('goal').value = profile.goal || 'maintain';
 
     updateStats();
@@ -52,13 +53,34 @@ async function loadUserProfile() {
 async function saveProfile(e) {
     e.preventDefault();
 
+    const currentUser = getCurrentUser();
+
+    // Calculate values for saving
+    const weight = parseFloat(document.getElementById('weight').value);
+    const height = parseFloat(document.getElementById('height').value);
+    const age = parseInt(document.getElementById('age').value);
+    const gender = document.getElementById('gender').value;
+    const activity = document.getElementById('activity').value;
+    const goal = document.getElementById('goal').value;
+
+    let daily_calories = 2000;
+    if (weight && height && age && gender) {
+        const bmr = calculateBMI(weight, height); // Wait, this is wrong in existing code? No, calculateBMR is usually distinct.
+        // Re-using the logic from updateStats
+        const bmrVal = calculateBMR(weight, height, age, gender);
+        const tdee = calculateTDEE(bmrVal, activity);
+        daily_calories = calculateRecommendedCalories(tdee, goal);
+    }
+
     const data = {
-        weight: parseFloat(document.getElementById('weight').value),
-        height: parseFloat(document.getElementById('height').value),
-        age: parseInt(document.getElementById('age').value),
-        gender: document.getElementById('gender').value,
-        activity: document.getElementById('activity').value,
-        goal: document.getElementById('goal').value
+        name: currentUser ? currentUser.name : document.getElementById('userName').textContent,
+        weight,
+        height,
+        age,
+        gender,
+        activity_level: activity,
+        goal,
+        daily_calories
     };
 
     const submitBtn = document.querySelector('button[type="submit"]');

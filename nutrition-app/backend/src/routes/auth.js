@@ -145,12 +145,29 @@ router.put('/profile', auth, async (req, res) => {
     try {
         const { name, weight, height, age, gender, activity_level, goal, daily_calories } = req.body;
 
-        await db.query(
-            `UPDATE users SET name = ?, weight = ?, height = ?, age = ?, 
-             gender = ?, activity_level = ?, goal = ?, daily_calories = ?, updated_at = NOW()
-             WHERE id = ?`,
-            [name, weight, height, age, gender, activity_level, goal, daily_calories, req.user.id]
-        );
+        // Build dynamic update query
+        const fields = [];
+        const values = [];
+
+        if (name !== undefined) { fields.push('name = ?'); values.push(name); }
+        if (weight !== undefined) { fields.push('weight = ?'); values.push(weight); }
+        if (height !== undefined) { fields.push('height = ?'); values.push(height); }
+        if (age !== undefined) { fields.push('age = ?'); values.push(age); }
+        if (gender !== undefined) { fields.push('gender = ?'); values.push(gender); }
+        if (activity_level !== undefined) { fields.push('activity_level = ?'); values.push(activity_level); }
+        if (goal !== undefined) { fields.push('goal = ?'); values.push(goal); }
+        if (daily_calories !== undefined) { fields.push('daily_calories = ?'); values.push(daily_calories); }
+
+        fields.push('updated_at = NOW()');
+
+        if (fields.length === 1) { // Only updated_at
+            return res.json({ success: true, message: 'ไม่มีข้อมูลที่เปลี่ยนแปลง' });
+        }
+
+        const query = `UPDATE users SET ${fields.join(', ')} WHERE id = ?`;
+        values.push(req.user.id);
+
+        await db.query(query, values);
 
         res.json({ success: true, message: 'อัพเดทโปรไฟล์สำเร็จ' });
     } catch (error) {

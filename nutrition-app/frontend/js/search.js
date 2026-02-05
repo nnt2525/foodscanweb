@@ -25,7 +25,7 @@ async function loadCategories() {
     const container = document.getElementById('categoryFilters');
 
     try {
-        const data = await api.get('/foods/categories');
+        const data = await api.get('/categories');
         if (data.success && data.categories) {
             const cats = [{ name: 'ทั้งหมด', icon: '📋' }, ...data.categories];
             renderCategoryButtons(cats);
@@ -112,7 +112,7 @@ function renderFoods(foods) {
             </div>
             <div class="food-card-content">
                 <h3 class="food-card-title">${food.name}</h3>
-                <p class="food-card-category">${categoryIcon} ${categoryName}</p>
+                <p class="food-card-category">${categoryName}</p>
                 <div class="flex items-center justify-between mt-2">
                     <span class="food-card-calories">${food.calories || 0} kcal</span>
                     <span class="text-gray text-sm">${food.serving_size || '100g'}</span>

@@ -42,7 +42,10 @@ async function loadTodayData() {
         snacks: 0
     };
     let recentMeals = [];
-    const goalCalories = getCurrentUser()?.profile?.dailyCalories || 2000;
+    // Get user goal
+    const user = getCurrentUser();
+    // Default to 2000 if not set
+    const goalCalories = user?.daily_calories || 2000;
 
     try {
         // Try to fetch from API

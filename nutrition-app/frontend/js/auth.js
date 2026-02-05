@@ -169,7 +169,8 @@ async function updateProfile(profileData) {
             // Update cached user
             const user = getCurrentUser();
             if (user) {
-                user.profile = { ...user.profile, ...profileData };
+                // Merge updates directly into user object (flat structure)
+                Object.assign(user, profileData);
                 saveUser(user);
             }
             return { success: true };
@@ -239,3 +240,20 @@ function updateAuthUI() {
         if (userProfile) userProfile.classList.add('hidden');
     }
 }
+// Export auth object globally
+window.auth = {
+    getToken,
+    saveToken,
+    removeToken,
+    isLoggedIn,
+    getCurrentUser,
+    saveUser,
+    removeUser,
+    login,
+    register,
+    logout,
+    requireAuth,
+    updateProfile,
+    fetchUserProfile,
+    updateAuthUI
+};
