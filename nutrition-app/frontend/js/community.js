@@ -2,45 +2,25 @@
 // Community Page - NutriTrack
 // ========================================
 
-// Default posts data
-const mockPosts = [
-    {
-        id: 1,
-        author: 'สมชาย ใจดี',
-        avatar: '👨',
-        content: 'วันนี้ออกกำลังกายครบ 30 วันแล้วครับ! ลดน้ำหนักได้ 5 กก. 💪',
-        likes: 15,
-        comments: 3,
-        timestamp: '2 ชั่วโมงที่แล้ว',
-        liked: false
-    },
-    {
-        id: 2,
-        author: 'สมหญิง รักสุขภาพ',
-        avatar: '👩',
-        content: 'มีใครมีสูตรอาหารคลีนแนะนำบ้างไหมคะ? กำลังหาไอเดียใหม่ๆ 🥗',
-        likes: 8,
-        comments: 5,
-        timestamp: '5 ชั่วโมงที่แล้ว',
-        liked: false
-    },
-    {
-        id: 3,
-        author: 'นักวิ่ง มาราธอน',
-        avatar: '🏃',
-        content: 'เช้านี้วิ่งได้ 10 กม. เลย ใครอยากเข้ากลุ่มวิ่งด้วยกันบ้างครับ? 🏃‍♂️',
-        likes: 22,
-        comments: 8,
-        timestamp: 'เมื่อวานนี้',
-        liked: true
-    }
-];
-
-let posts = getFromLocalStorage('nutritrack_posts', [...mockPosts]);
+// Posts loaded from localStorage or API (no mock data)
+let posts = getFromLocalStorage('nutritrack_posts', []);
 
 
 function renderPosts() {
-    document.getElementById('postsList').innerHTML = posts.map(p => `
+    const container = document.getElementById('postsList');
+
+    if (posts.length === 0) {
+        container.innerHTML = `
+            <div class="card text-center py-8">
+                <div class="text-4xl mb-4">💬</div>
+                <p class="text-gray">ยังไม่มีโพสต์ในชุมชน</p>
+                <p class="text-sm text-gray">เป็นคนแรกที่แบ่งปันประสบการณ์!</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = posts.map(p => `
         <div class="card mb-4">
             <div class="flex items-start gap-3">
                 <div class="text-3xl">${p.avatar}</div>

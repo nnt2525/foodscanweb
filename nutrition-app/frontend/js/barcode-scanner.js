@@ -67,8 +67,8 @@ function startScanningLoop() {
     // Real implementation would use canvas to capture frames
     // and process them with a barcode detection library
 
-    // For demo purposes, we'll just use manual input
-    console.log('Scanning started - use manual input for demo');
+    // Manual barcode input available as alternative
+    console.log('Camera scanning ready');
 }
 
 // Search barcode in database
@@ -99,33 +99,12 @@ async function searchBarcode() {
         }
     } catch (error) {
         console.error('Search error:', error);
-
-        // Fallback: check mock data
-        const mockFood = getMockFoodByBarcode(barcode);
-        if (mockFood) {
-            currentFood = mockFood;
-            displayResult(mockFood);
-        } else {
-            showNotFound(barcode);
-        }
+        // No fallback mock data - show not found
+        showNotFound(barcode);
     }
 }
 
-// Mock barcode database for demo
-function getMockFoodByBarcode(barcode) {
-    const mockBarcodes = {
-        '8850329112108': { name: 'นมสดโฟร์โมสต์', calories: 150, protein: 8, carbs: 12, fat: 8 },
-        '8851959132012': { name: 'น้ำดื่มสิงห์', calories: 0, protein: 0, carbs: 0, fat: 0 },
-        '8858891303231': { name: 'โยเกิร์ตดัชชี่', calories: 120, protein: 4, carbs: 20, fat: 3 },
-        '8850999220017': { name: 'มาม่าต้มยำกุ้ง', calories: 350, protein: 8, carbs: 50, fat: 12 },
-        '8850329102109': { name: 'นมถั่วเหลืองแลคตาซอย', calories: 140, protein: 6, carbs: 18, fat: 5 },
-        '8851123312025': { name: 'ขนมปังฟาร์มเฮ้าส์', calories: 80, protein: 3, carbs: 15, fat: 1 },
-        '8850999220123': { name: 'มาม่าหมูสับ', calories: 340, protein: 7, carbs: 48, fat: 13 },
-        '8858998581112': { name: 'กาแฟเนสกาแฟ 3in1', calories: 90, protein: 1, carbs: 17, fat: 2 }
-    };
 
-    return mockBarcodes[barcode] ? { ...mockBarcodes[barcode], barcode } : null;
-}
 
 // Display search result
 function displayResult(food) {

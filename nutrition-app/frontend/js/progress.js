@@ -46,30 +46,32 @@ async function loadWeeklyData() {
             renderNutrientsChart({ protein: 0, carbs: 0, fat: 0 });
         }
     } catch (error) {
-        console.log('Using fallback data for progress');
+        console.log('API failed, showing empty data');
         renderCaloriesChart([]);
-        renderNutrientsChart({ protein: 49, carbs: 265, fat: 66 });
-        updateStatsWithDefaults();
+        renderNutrientsChart({ protein: 0, carbs: 0, fat: 0 });
+        updateStatsWithZeros();
     }
 }
 
 // Update stats display
 function updateStats(data) {
-    document.getElementById('totalCalories')?.textContent &&
-        (document.getElementById('totalCalories').textContent = formatNumber(data.totals.calories));
+    const totalCalEl = document.getElementById('totalCaloriesWeek');
+    const avgCalEl = document.getElementById('avgCaloriesWeek');
+    const daysOnTargetEl = document.getElementById('daysOnTargetWeek');
+    const badgesEl = document.getElementById('totalBadgesWeek');
 
-    document.getElementById('avgCalories')?.textContent &&
-        (document.getElementById('avgCalories').textContent = formatNumber(data.avgCalories));
-
-    document.getElementById('daysOnTarget')?.textContent &&
-        (document.getElementById('daysOnTarget').textContent = data.daysOnTarget);
+    if (totalCalEl) totalCalEl.textContent = formatNumber(data.totals?.calories || 0);
+    if (avgCalEl) avgCalEl.textContent = formatNumber(data.avgCalories || 0);
+    if (daysOnTargetEl) daysOnTargetEl.textContent = data.daysOnTarget || 0;
+    if (badgesEl) badgesEl.textContent = data.badges || 0;
 }
 
-function updateStatsWithDefaults() {
-    // Use mock data when API fails
-    document.querySelectorAll('.stat-card-value').forEach((el, i) => {
-        const defaults = ['13,800', '1,971', '5', '3'];
-        if (i < defaults.length) el.textContent = defaults[i];
+function updateStatsWithZeros() {
+    // Initialize with zeros when no data available
+    const ids = ['totalCaloriesWeek', 'avgCaloriesWeek', 'daysOnTargetWeek', 'totalBadgesWeek'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '0';
     });
 }
 

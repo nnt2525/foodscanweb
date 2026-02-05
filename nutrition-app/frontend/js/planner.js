@@ -15,8 +15,30 @@ document.getElementById('todayDate').textContent = formatDate(new Date());
 // Initialize
 // ========================================
 async function initPlanner() {
+    // Display target calories from user profile
+    const targetDisplay = document.getElementById('targetCalories');
+    if (targetDisplay) {
+        targetDisplay.textContent = formatNumber(userGoal) + ' kcal';
+    }
+
     await loadMeals();
     await loadFoodsForSearch();
+}
+
+// ========================================
+// Meal Type Selector Modal
+// ========================================
+function openMealTypeSelector() {
+    document.getElementById('mealTypeSelectorModal').classList.remove('hidden');
+}
+
+function closeMealTypeSelector() {
+    document.getElementById('mealTypeSelectorModal').classList.add('hidden');
+}
+
+function selectMealTypeAndOpenFood(mealType) {
+    closeMealTypeSelector();
+    openAddFoodModal(mealType);
 }
 
 // ========================================
