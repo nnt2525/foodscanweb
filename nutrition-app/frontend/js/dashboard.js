@@ -133,6 +133,9 @@ function updateCaloriesUI(total, goal) {
     if (todayCaloriesEl) todayCaloriesEl.textContent = formatNumber(total);
     if (progressEl) progressEl.style.width = Math.min((total / goal) * 100, 100) + '%';
     if (centerEl) centerEl.textContent = formatNumber(total);
+
+    const goalEl = document.getElementById('goalCaloriesDisplay');
+    if (goalEl) goalEl.textContent = `เป้าหมาย: ${formatNumber(goal)} kcal`;
 }
 
 // Update recent foods list
