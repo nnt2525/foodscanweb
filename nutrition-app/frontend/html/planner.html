@@ -21,7 +21,12 @@
             <div class="container fade-in">
                 <div class="flex items-center justify-between mb-6">
                     <h1 class="text-3xl font-bold">วางแผนอาหาร</h1>
-                    <span class="text-gray" id="todayDate"></span>
+                    <div class="flex items-center gap-2">
+                        <button class="btn btn-sm btn-ghost" onclick="changeDate(-1)">❮</button>
+                        <input type="date" id="dateSelector" class="form-input py-1" style="width: auto;"
+                            onchange="handleDateChange(this.value)">
+                        <button class="btn btn-sm btn-ghost" onclick="changeDate(1)">❯</button>
+                    </div>
                 </div>
 
                 <!-- Daily Summary -->

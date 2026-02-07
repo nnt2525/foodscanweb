@@ -18,19 +18,30 @@ const categoriesRoutes = require('./routes/categories');
 
 const app = express();
 
+// Middleware
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        // Allow any localhost origin (for development with dynamic ports)
+        if (origin.match(/^http:\/\/localhost:\d+$/) || origin.match(/^http:\/\/127\.0\.0\.1:\d+$/)) {
+            return callback(null, true);
+        }
+
+        // Block other origins
+        return callback(new Error('Not allowed by CORS'), false);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 // Security Middleware
 app.use(helmet()); // ป้องกัน HTTP Headers
 app.use(rateLimit({
     windowMs: 15 * 60 * 1000, // 15 นาที
-    max: 100 // จำกัด 100 requests ต่อ IP
-}));
-
-// Middleware
-app.use(cors({
-    origin: ['http://localhost:5500', 'http://127.0.0.1:5500'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    max: 1000 // จำกัด 1000 requests ต่อ IP (ผ่อนปรนสำหรับ Dev)
 }));
 app.use(express.json());
 

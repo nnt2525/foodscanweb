@@ -8,13 +8,18 @@ if (!requireAuth()) throw new Error('Not authorized');
 let currentMealType = 'breakfast';
 let currentMealPlanId = null;
 const userGoal = getCurrentUser()?.daily_calories || 2000;
-
-document.getElementById('todayDate').textContent = formatDate(new Date());
+let currentSelectedDate = new Date().toISOString().split('T')[0];
 
 // ========================================
 // Initialize
 // ========================================
 async function initPlanner() {
+    // Set initial date
+    const dateInput = document.getElementById('dateSelector');
+    if (dateInput) {
+        dateInput.value = currentSelectedDate;
+    }
+
     // Display target calories from user profile
     const targetDisplay = document.getElementById('targetCalories');
     if (targetDisplay) {
@@ -23,6 +28,24 @@ async function initPlanner() {
 
     await loadMeals();
     await loadFoodsForSearch();
+}
+
+// ========================================
+// Date Navigation
+// ========================================
+async function changeDate(offset) {
+    const date = new Date(currentSelectedDate);
+    date.setDate(date.getDate() + offset);
+    currentSelectedDate = date.toISOString().split('T')[0];
+
+    document.getElementById('dateSelector').value = currentSelectedDate;
+    await loadMeals();
+}
+
+async function handleDateChange(value) {
+    if (!value) return;
+    currentSelectedDate = value;
+    await loadMeals();
 }
 
 // ========================================
@@ -45,41 +68,24 @@ function selectMealTypeAndOpenFood(mealType) {
 // Load Meals
 // ========================================
 async function loadMeals() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = currentSelectedDate;
 
     try {
-        const data = await mealPlansAPI.getByDate(today);
-        if (data.success && data.mealPlan) {
-            currentMealPlanId = data.mealPlan.id;
-            renderMealsFromAPI(data.mealPlan.items || []);
+        const response = await mealPlansAPI.getByDate(today);
+        if (response.success && response.data) {
+            const { plan, meals } = response.data;
+            currentMealPlanId = plan.id;
+
+            // Backend returns meals grouped by type with correct fields
+            renderMealsUI(meals);
         } else {
-            // No meal plan for today, use localStorage fallback
+            // Fallback for offline/error
             renderMealsFromLocalStorage();
         }
     } catch (error) {
-        console.log('API failed, using localStorage');
+        console.log('API failed, using localStorage', error);
         renderMealsFromLocalStorage();
     }
-}
-
-function renderMealsFromAPI(items) {
-    const meals = { breakfast: [], lunch: [], dinner: [], snacks: [] };
-
-    items.forEach(item => {
-        const type = item.meal_type || 'snacks';
-        if (meals[type]) {
-            meals[type].push({
-                id: item.id,
-                name: item.food_name || item.name,
-                calories: item.calories || 0,
-                protein: item.protein || 0,
-                carbs: item.carbs || 0,
-                fat: item.fat || 0
-            });
-        }
-    });
-
-    renderMealsUI(meals);
 }
 
 function renderMealsFromLocalStorage() {
@@ -241,7 +247,27 @@ async function addFoodToMeal(foodId) {
         return;
     }
 
-    // Add to localStorage (API integration can be added later)
+    if (currentMealPlanId) {
+        try {
+            const response = await mealPlansAPI.addItem(currentMealPlanId, {
+                food_id: food.id,
+                meal_type: currentMealType,
+                quantity: 1
+            });
+
+            if (response.success) {
+                await loadMeals();
+                closeAddFoodModal();
+                showNotification(`เพิ่ม ${food.name} แล้ว`, 'success');
+                return;
+            }
+        } catch (error) {
+            console.error('Failed to add to backend:', error);
+            // Fallback to local storage if API fails
+        }
+    }
+
+    // Fallback/Offline mode
     const meals = getFromLocalStorage('nutritrack_meals', { breakfast: [], lunch: [], dinner: [], snacks: [] });
     meals[currentMealType].push({
         id: food.id,
@@ -270,7 +296,7 @@ async function addCustomFood(event) {
         protein: parseFloat(document.getElementById('customProtein').value) || 0,
         carbs: parseFloat(document.getElementById('customCarbs').value) || 0,
         fat: parseFloat(document.getElementById('customFat').value) || 0,
-        category: document.getElementById('customCategory').value
+        category: document.getElementById('customCategory').value || 'general'
     };
 
     if (!food.name || !food.calories) {
@@ -279,20 +305,37 @@ async function addCustomFood(event) {
     }
 
     try {
-        // Try to save to API
-        const response = await foodsAPI.create(food);
-        if (response.success) {
-            food.id = response.food.id;
+        // 1. Create the food in the backend
+        const foodResponse = await foodsAPI.create(food);
+
+        if (foodResponse.success && currentMealPlanId) {
+            // 2. Add the new food to the current meal plan
+            const newFoodId = foodResponse.data.id;
+            await mealPlansAPI.addItem(currentMealPlanId, {
+                food_id: newFoodId,
+                meal_type: currentMealType,
+                quantity: 1
+            });
+
+            await loadMeals();
+            closeAddFoodModal();
+            showNotification(`เพิ่ม ${food.name} แล้ว`, 'success');
+            return;
         }
     } catch (error) {
-        // Fallback: save locally
-        food.id = Date.now();
-        const foods = getFromLocalStorage('nutritrack_foods', []);
-        foods.push(food);
-        saveToLocalStorage('nutritrack_foods', foods);
+        console.error('API Error:', error);
+        // Fallback to local storage
     }
 
-    // Add to meal
+    // Fallback
+    food.id = Date.now();
+
+    // Save custom food locally
+    const foods = getFromLocalStorage('nutritrack_foods', []);
+    foods.push(food);
+    saveToLocalStorage('nutritrack_foods', foods);
+
+    // Add to meal locally
     const meals = getFromLocalStorage('nutritrack_meals', { breakfast: [], lunch: [], dinner: [], snacks: [] });
     meals[currentMealType].push({
         id: food.id,

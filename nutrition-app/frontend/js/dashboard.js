@@ -51,16 +51,24 @@ async function loadTodayData() {
         // Try to fetch from API
         const data = await mealPlansAPI.getByDate(today);
 
-        if (data.success && data.mealPlan) {
-            // Process meal items from API
-            const items = data.mealPlan.items || [];
-            items.forEach(item => {
-                const mealType = item.meal_type || 'snacks';
-                if (calories[mealType] !== undefined) {
-                    calories[mealType] += item.calories || 0;
-                }
+        if (data.success && data.data) {
+            const mealsData = data.data.meals || {};
+
+            // Calculate calories per meal type
+            ['breakfast', 'lunch', 'dinner', 'snacks'].forEach(type => {
+                const items = mealsData[type] || [];
+                calories[type] = items.reduce((sum, item) => sum + ((item.calories || 0) * (item.quantity || 1)), 0);
             });
-            recentMeals = items.slice(0, 4);
+
+            // Get recent meals (flatten and take last 4)
+            // Note: Simplification - just take from what we have
+            const allItems = [
+                ...(mealsData.breakfast || []),
+                ...(mealsData.lunch || []),
+                ...(mealsData.dinner || []),
+                ...(mealsData.snacks || [])
+            ];
+            recentMeals = allItems.slice(0, 4);
         }
     } catch (error) {
         console.log('Using localStorage fallback for meals');

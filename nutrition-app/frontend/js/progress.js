@@ -60,8 +60,11 @@ function updateStats(data) {
     const daysOnTargetEl = document.getElementById('daysOnTargetWeek');
     const badgesEl = document.getElementById('totalBadgesWeek');
 
-    if (totalCalEl) totalCalEl.textContent = formatNumber(data.totals?.calories || 0);
-    if (avgCalEl) avgCalEl.textContent = formatNumber(data.avgCalories || 0);
+    // Helper to safely format rounded numbers
+    const formatSafe = (val) => formatNumber(Math.round(Number(val) || 0));
+
+    if (totalCalEl) totalCalEl.textContent = formatSafe(data.totals?.calories);
+    if (avgCalEl) avgCalEl.textContent = formatSafe(data.avgCalories);
     if (daysOnTargetEl) daysOnTargetEl.textContent = data.daysOnTarget || 0;
     if (badgesEl) badgesEl.textContent = data.badges || 0;
 }
@@ -80,6 +83,9 @@ function renderCaloriesChart(dailyData) {
     const ctx = document.getElementById('caloriesChart')?.getContext('2d');
     if (!ctx) return;
 
+    // Safety check for dailyData
+    const safeDailyData = Array.isArray(dailyData) ? dailyData : [];
+
     const labels = [];
     const calories = [];
 
@@ -91,9 +97,17 @@ function renderCaloriesChart(dailyData) {
         labels.push(days[date.getDay()]);
 
         // Find data for this date
-        const dateStr = date.toISOString().split('T')[0];
-        const dayData = dailyData.find(d => d.date === dateStr);
-        calories.push(dayData ? dayData.calories : 0);
+        // Normalize both to YYYY-MM-DD
+        const targetDateStr = date.toISOString().split('T')[0];
+
+        const dayData = dailyData.find(d => {
+            if (!d.date) return false;
+            // Handle both string "YYYY-MM-DD" and ISO string "YYYY-MM-DDTHH:mm:ss.sssZ"
+            const dataDateStr = (typeof d.date === 'string' ? d.date : new Date(d.date).toISOString()).split('T')[0];
+            return dataDateStr === targetDateStr;
+        });
+
+        calories.push(dayData ? parseFloat(dayData.calories || 0) : 0);
     }
 
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
@@ -138,6 +152,7 @@ function renderCaloriesChart(dailyData) {
                 },
                 y: {
                     beginAtZero: true,
+                    suggestedMax: 2000, // Suggest a reasonable max to avoid flat lines on low data
                     grid: { color: '#f3f4f6', borderDash: [5, 5] },
                     border: { display: false }
                 }
