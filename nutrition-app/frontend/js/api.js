@@ -2,7 +2,7 @@
 // API Service Layer - NutriTrack
 // ========================================
 
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = 'http://127.0.0.1:3001/api';
 
 // ========================================
 // API Configuration
