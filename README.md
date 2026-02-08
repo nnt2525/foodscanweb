@@ -1,12 +1,29 @@
 # 🥗 NutriTrack - ระบบติดตามโภชนาการ
 
+## 👥 สมาชิกกลุ่ม
+
+ลำดับ ชื่อ-นามสกุล รหัสนักศึกษา
+
+1 นาย พุฒินนท์ แสนพล 67022018  
+2 นาย ภาณุพงศ์ สุทธกร 67022052  
+3 นาย ภูริ สุวรรณวงศ์ 67022096
+
 [![Version](https://img.shields.io/badge/version-2.0-green.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
 [![Node](https://img.shields.io/badge/node-18+-brightgreen.svg)]()
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)]()
 
-ระบบติดตามโภชนาการและวางแผนอาหารครบวงจร พร้อมฐานข้อมูล USDA กว่า 200+ รายการ
+ระบบติดตามโภชนาการและวางแผนอาหารครบวงจร พร้อมฐานข้อมูลอาหารไทยกว่า **850+ รายการ**
 
-> **🌟 Recent Updates (Feb 2026):** ปรับปรุงหน้าค้นหาอาหารใหม่ (Modern UI), เพิ่มระบบ Smart Search, แก้ไขการแสดงผลกราฟความคืบหน้า, และปรับปรุงประสิทธิภาพ Backend (Rate Limiting)
+> **🌟 Latest Update (Feb 2026):** ปรับปรุง Admin Panel, เพิ่มระบบ CRUD อาหาร/ผู้ใช้, แก้ไข UI Sidebar, และอัพเดตฐานข้อมูลอาหารไทย 850 เมนู
+
+---
+
+## 📸 Preview
+
+| Landing Page |   Dashboard    | Admin Panel |
+| :----------: | :------------: | :---------: |
+|   หน้าแรก    | หน้าหลักผู้ใช้ | จัดการระบบ  |
 
 ---
 
@@ -14,26 +31,50 @@
 
 ### 👤 สำหรับผู้ใช้ทั่วไป
 
-| ฟีเจอร์ | รายละเอียด |
-|---------|------------|
-| 🔐 ระบบสมาชิก | สมัคร/เข้าสู่ระบบ/ลืมรหัสผ่าน อย่างปลอดภัย |
-| 🔍 ค้นหาเมนูอาหาร | **Smart Search** พร้อมระบบตัวกรองหมวดหมู่อัจฉริยะ, Infinite Scroll โหลดต่อเนื่อง, และ Smart Debounce |
-| 📅 วางแผนโภชนาการ | คำนวณ BMR/TDEE อัตโนมัติ พร้อมบันทึกมื้ออาหาร (เช้า, กลางวัน, เย็น, ของว่าง) |
-| 📊 Dashboard ส่วนตัว | ภาพรวมแคลอรี่รายวัน, กราฟวงกลมสารอาหาร (Macronutrients), และการดื่มน้ำ |
-| 📈 สถิติความคืบหน้า | **Interactive Charts** (Chart.js) แสดงแนวโน้มแคลอรี่ 7 วันย้อนหลัง + สัดส่วนสารอาหารที่แม่นยำ |
-| 🏆 Gamification | ระบบเหรียญรางวัล (Badges) เมื่อทำตามเป้าหมายสำเร็จ |
-| ⚖️ ติดตามน้ำหนัก | บันทึกและดูแนวโน้มน้ำหนักตัว พร้อมคำแนะนำ BMI |
-| 📤 รายงานผล | Export ข้อมูลเป็น **CSV** หรือ **PDF** เพื่อสุขภาพ |
-| 📷 สแกนบาร์โค้ด | (Beta) รองรับการสแกนบาร์โค้ดสินค้าเพื่อดึงข้อมูลโภชนาการ |
+| ฟีเจอร์                  | รายละเอียด                                       |
+| ------------------------ | ------------------------------------------------ |
+| 🔐 **ระบบสมาชิก**        | สมัคร/เข้าสู่ระบบ/ลืมรหัสผ่าน อย่างปลอดภัย (JWT) |
+| 🔍 **ค้นหาเมนูอาหาร**    | Smart Search + กรองหมวดหมู่ + Infinite Scroll    |
+| 📅 **วางแผนโภชนาการ**    | คำนวณ BMR/TDEE + บันทึกมื้ออาหาร 4 มื้อ          |
+| 📊 **Dashboard ส่วนตัว** | ภาพรวมแคลอรี่/สารอาหาร/น้ำดื่ม รายวัน            |
+| 📈 **สถิติความคืบหน้า**  | กราฟแนวโน้ม 7 วัน (Chart.js)                     |
+| 🏆 **Gamification**      | เหรียญรางวัลเมื่อทำตามเป้าหมาย                   |
+| ⚖️ **ติดตามน้ำหนัก**     | บันทึก + คำแนะนำ BMI                             |
+| 📤 **Export รายงาน**     | CSV / PDF                                        |
+| ➕ **เพิ่มอาหารใหม่**    | User สามารถเพิ่มอาหารใหม่ (รอ Admin อนุมัติ)     |
 
 ### 🛠️ สำหรับ Admin
 
-| ฟีเจอร์ | รายละเอียด |
-|---------|------------|
-| 📊 Dashboard | สถิติภาพรวมระบบ |
-| 👤 จัดการผู้ใช้ | CRUD + เปลี่ยน Role |
-| 🍽️ จัดการอาหาร | เพิ่ม/แก้ไข/ลบ/อนุมัติ |
-| ✅ อนุมัติอาหาร | ตรวจสอบอาหารที่ผู้ใช้เพิ่ม |
+| ฟีเจอร์             | รายละเอียด                                 |
+| ------------------- | ------------------------------------------ |
+| 📊 **Dashboard**    | สถิติภาพรวม: จำนวน Users, Foods, Pending   |
+| 👥 **จัดการผู้ใช้** | ดู/แก้ไข/ลบ/เปลี่ยน Role                   |
+| 🍽️ **จัดการอาหาร**  | CRUD + กรองตาม Category/Status             |
+| ✅ **อนุมัติอาหาร** | ตรวจสอบ/อนุมัติ/ปฏิเสธ อาหารที่ User เพิ่ม |
+| 📈 **รายงาน**       | สถิติการใช้งานระบบ                         |
+
+---
+
+## 🗃️ ฐานข้อมูลอาหาร
+
+| รายการ         | จำนวน    |
+| -------------- | -------- |
+| 🍜 อาหารไทย    | 600+     |
+| 🥗 อาหารคลีน   | 50+      |
+| 🍔 ฟาสต์ฟู้ด   | 50+      |
+| 🥤 เครื่องดื่ม | 50+      |
+| 🍎 ผลไม้       | 50+      |
+| 🍰 ของหวาน     | 50+      |
+| **รวมทั้งหมด** | **850+** |
+
+**ข้อมูลโภชนาการต่อเมนู:**
+
+- แคลอรี่ (kcal)
+- โปรตีน (g)
+- คาร์โบไฮเดรต (g)
+- ไขมัน (g)
+- ไฟเบอร์ (g)
+- โซเดียม (mg)
 
 ---
 
@@ -46,19 +87,18 @@ nutrition-app/
 │   │   ├── index.html          # Landing page
 │   │   ├── login.html          # เข้าสู่ระบบ
 │   │   ├── register.html       # สมัครสมาชิก
-│   │   ├── dashboard.html      # หน้าหลัก + Water tracking
+│   │   ├── dashboard.html      # หน้าหลัก
 │   │   ├── search.html         # ค้นหาอาหาร
+│   │   ├── food-detail.html    # รายละเอียดอาหาร
 │   │   ├── planner.html        # วางแผนอาหาร
-│   │   ├── progress.html       # ความคืบหน้า + กราฟ
-│   │   ├── profile.html        # โปรไฟล์ + Notifications
+│   │   ├── progress.html       # ความคืบหน้า
+│   │   ├── profile.html        # โปรไฟล์
 │   │   ├── weight-tracker.html # ติดตามน้ำหนัก
-│   │   ├── scan-barcode.html   # สแกนบาร์โค้ด
-│   │   ├── community.html      # ชุมชน
 │   │   └── admin/              # Admin Panel
-│   │       ├── dashboard.html
-│   │       ├── users.html
-│   │       ├── foods.html
-│   │       └── pending-foods.html
+│   │       ├── dashboard.html  # สถิติภาพรวม
+│   │       ├── users.html      # จัดการผู้ใช้
+│   │       ├── foods.html      # จัดการอาหาร
+│   │       └── pending-foods.html # อนุมัติอาหาร
 │   │
 │   ├── css/
 │   │   ├── base.css            # Variables + Reset
@@ -66,90 +106,108 @@ nutrition-app/
 │   │   ├── components.css      # Buttons, Cards, Forms
 │   │   ├── utilities.css       # Helper classes
 │   │   ├── animations.css      # Transitions
-│   │   └── responsive.css      # Mobile-first
+│   │   ├── responsive.css      # Mobile-first
+│   │   └── admin.css           # Admin Panel styles
 │   │
 │   └── js/
 │       ├── config.js           # API configuration
-│       ├── api.js              # API calls wrapper
-│       ├── auth.js             # Authentication
+│       ├── api.js              # API calls (authAPI, foodsAPI, adminAPI)
+│       ├── auth.js             # Authentication + JWT
 │       ├── utils.js            # Helper functions
-│       ├── navigation.js       # Navbar + routing
-│       ├── notifications.js    # Push notifications
-│       ├── social-sharing.js   # Social sharing modal
-│       ├── dashboard.js        # Dashboard logic
-│       ├── search.js           # Search page
-│       ├── planner.js          # Meal planner
-│       ├── progress.js         # Progress charts
-│       ├── weight-tracker.js   # Weight tracking
-│       ├── barcode-scanner.js  # Barcode scanning
-│       └── community.js        # Community posts
+│       ├── constants.js        # App constants
+│       ├── navigation.js       # Navbar
+│       ├── admin-layout.js     # Admin sidebar toggle
+│       └── pages/              # Page-specific JS
+│           ├── dashboard.js
+│           ├── search.js
+│           ├── admin-dashboard.js
+│           ├── admin-users.js
+│           ├── admin-foods.js
+│           └── admin-pending.js
 │
-├── backend/                     # Backend (Node.js + Express)
-│   ├── src/
-│   │   ├── app.js              # Main application
-│   │   ├── config/
-│   │   │   └── database.js     # MySQL connection
-│   │   ├── middleware/
-│   │   │   └── auth.js         # JWT authentication
-│   │   ├── routes/
-│   │   │   ├── auth.js         # Login, Register, Profile
-│   │   │   ├── foods.js        # CRUD Foods + USDA
-│   │   │   ├── mealPlans.js    # Meal planning
-│   │   │   ├── progress.js     # Progress tracking
-│   │   │   └── admin.js        # Admin endpoints
-│   │   ├── services/
-│   │   │   └── usdaService.js  # USDA API integration
-│   │   └── database/
-│   │       ├── migration_complete.sql
-│   │       ├── nutritrack_seed_foods.sql
-│   │       └── nutritrack_seed_nutrients.sql
-│   │
-│   ├── .env.example
-│   └── package.json
-│
-└── docs/
-    └── DATABASE_DESIGN.md      # Database documentation
+└── backend/                     # Backend (Node.js + Express)
+    ├── src/
+    │   ├── app.js              # Main application
+    │   ├── config/
+    │   │   └── database.js     # MySQL connection
+    │   ├── middleware/
+    │   │   └── auth.js         # JWT + Admin auth
+    │   ├── routes/
+    │   │   ├── auth.js         # Authentication
+    │   │   ├── foods.js        # Foods CRUD
+    │   │   ├── mealPlans.js    # Meal planning
+    │   │   ├── foodLogs.js     # Food logging
+    │   │   ├── progress.js     # Progress tracking
+    │   │   ├── community.js    # Community features
+    │   │   └── admin.js        # Admin endpoints
+    │   └── database/
+    │       └── *.sql           # Migration files
+    │
+    ├── .env                    # Environment variables
+    └── package.json
 ```
 
 ---
 
 ## 🚀 การติดตั้ง
 
-### 1. Clone และติดตั้ง Dependencies
+### ความต้องการระบบ
+
+- **Node.js** 18+
+- **MySQL** 8.0+
+- **npm** หรือ **yarn**
+
+### 1. Clone Repository
 
 ```bash
-# Clone repository
-git clone <repo-url>
-cd nutrition-app
+git clone https://github.com/nnt2525/foodscanweb.git
+cd foodscanweb/nutrition-app
+```
 
-# Backend
+### 2. ติดตั้ง Backend
+
+```bash
 cd backend
-npm install
-cp .env.example .env
-# แก้ไข .env ใส่ค่า database credentials
-
-# Frontend
-cd ../frontend
 npm install
 ```
 
-### 2. ตั้งค่า Database
+### 3. ตั้งค่า Environment Variables
+
+สร้างไฟล์ `.env` ใน folder `backend/`:
+
+```env
+# Server
+PORT=3001
+NODE_ENV=development
+
+# Database
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=nutritrack
+
+# JWT
+JWT_SECRET=your_super_secret_key_here
+JWT_EXPIRES_IN=7d
+```
+
+### 4. ตั้งค่า Database
 
 ```bash
-# สร้างฐานข้อมูล MySQL
+# เข้า MySQL
 mysql -u root -p
 
-# ใน MySQL:
+# สร้างฐานข้อมูล
 CREATE DATABASE nutritrack;
 USE nutritrack;
 
 # รันไฟล์ migration
 SOURCE src/database/migration_complete.sql;
 SOURCE src/database/nutritrack_seed_foods.sql;
-SOURCE src/database/nutritrack_seed_nutrients.sql;
 ```
 
-### 3. รัน Development Server
+### 5. รัน Development Server
 
 ```bash
 # Terminal 1 - Backend (Port 3001)
@@ -161,7 +219,7 @@ cd frontend
 npm run dev
 ```
 
-### 4. เปิดเว็บ
+### 6. เปิดเว็บไซต์
 
 ```
 http://127.0.0.1:5500/html/index.html
@@ -171,91 +229,143 @@ http://127.0.0.1:5500/html/index.html
 
 ## 🔐 บัญชีทดสอบ
 
-| Role | Email | Password |
-|------|-------|----------|
-| **Admin** | admin@nutritrack.com | admin123 |
-| **User** | user@nutritrack.com | user123 |
+| Role      | Email                       | Password      |
+| --------- | --------------------------- | ------------- |
+| **Admin** | admin@nutritrack.com        | admin123      |
+| **User**  | testuser_unique@example.com | อัพเดตจากระบบ |
 
-> สามารถสมัครสมาชิกใหม่ผ่านหน้า Register
+> 💡 สามารถสมัครสมาชิกใหม่ผ่านหน้า Register ได้เลย
 
 ---
 
 ## 📋 API Endpoints
 
-### 🔓 Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | สมัครสมาชิก |
-| POST | `/api/auth/login` | เข้าสู่ระบบ |
-| GET | `/api/auth/me` | ข้อมูลผู้ใช้ปัจจุบัน |
-| PUT | `/api/auth/profile` | อัพเดทโปรไฟล์ |
-| POST | `/api/auth/forgot-password` | ลืมรหัสผ่าน |
+### 🔓 Authentication (`/api/auth`)
 
-### 🍽️ Foods
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/foods` | รายการอาหาร (filter, search, pagination) |
-| GET | `/api/foods/:id` | รายละเอียดอาหาร |
-| POST | `/api/foods` | เพิ่มอาหาร (pending) |
-| GET | `/api/foods/categories/list` | รายการหมวดหมู่ |
+| Method | Endpoint    | Description          |
+| ------ | ----------- | -------------------- |
+| POST   | `/register` | สมัครสมาชิก          |
+| POST   | `/login`    | เข้าสู่ระบบ          |
+| GET    | `/me`       | ข้อมูลผู้ใช้ปัจจุบัน |
+| PUT    | `/profile`  | อัพเดทโปรไฟล์        |
 
-### 📅 Meal Plans
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/meal-plans` | แผนอาหารตามวันที่ |
-| POST | `/api/meal-plans/:id/items` | เพิ่มอาหารในแผน |
-| DELETE | `/api/meal-plans/:id/items/:itemId` | ลบอาหารจากแผน |
+### 🍽️ Foods (`/api/foods`)
 
-### 📊 Progress
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/progress/weekly` | สรุป 7 วัน |
-| GET | `/api/progress/daily` | สรุปรายวัน |
+| Method | Endpoint           | Description                              |
+| ------ | ------------------ | ---------------------------------------- |
+| GET    | `/`                | รายการอาหาร (filter, search, pagination) |
+| GET    | `/:id`             | รายละเอียดอาหาร                          |
+| POST   | `/`                | เพิ่มอาหาร (pending)                     |
+| GET    | `/categories/list` | รายการหมวดหมู่                           |
 
-### 🛠️ Admin
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/admin/stats` | สถิติ Dashboard |
-| GET | `/api/admin/users` | รายการผู้ใช้ |
-| PUT | `/api/admin/users/:id` | แก้ไขผู้ใช้ |
-| DELETE | `/api/admin/users/:id` | ลบผู้ใช้ |
-| PUT | `/api/admin/foods/:id/approve` | อนุมัติอาหาร |
-| PUT | `/api/admin/foods/:id/reject` | ปฏิเสธอาหาร |
+### 📅 Meal Plans (`/api/meal-plans`)
+
+| Method | Endpoint             | Description       |
+| ------ | -------------------- | ----------------- |
+| GET    | `/`                  | แผนอาหารตามวันที่ |
+| POST   | `/:id/items`         | เพิ่มอาหารในแผน   |
+| DELETE | `/:id/items/:itemId` | ลบอาหารจากแผน     |
+
+### 📊 Progress (`/api/progress`)
+
+| Method | Endpoint  | Description |
+| ------ | --------- | ----------- |
+| GET    | `/weekly` | สรุป 7 วัน  |
+| GET    | `/daily`  | สรุปรายวัน  |
+
+### 🛠️ Admin (`/api/admin`) - ต้อง Login เป็น Admin
+
+| Method | Endpoint             | Description        |
+| ------ | -------------------- | ------------------ |
+| GET    | `/stats`             | สถิติ Dashboard    |
+| GET    | `/users`             | รายการผู้ใช้       |
+| PUT    | `/users/:id`         | แก้ไขผู้ใช้        |
+| DELETE | `/users/:id`         | ลบผู้ใช้           |
+| GET    | `/foods`             | รายการอาหารทั้งหมด |
+| PUT    | `/foods/:id`         | แก้ไขอาหาร         |
+| GET    | `/foods/pending`     | รายการรออนุมัติ    |
+| PUT    | `/foods/:id/approve` | อนุมัติอาหาร       |
+| PUT    | `/foods/:id/reject`  | ปฏิเสธอาหาร        |
+| DELETE | `/foods/:id`         | ลบอาหาร            |
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **HTML5** - Semantic markup
-- **CSS3** - Custom properties, Flexbox, Grid
-- **JavaScript** - Vanilla ES6+
-- **Chart.js** - กราฟและแผนภูมิ
+
+| Technology      | Usage                            |
+| --------------- | -------------------------------- |
+| HTML5           | Semantic markup                  |
+| CSS3            | Custom properties, Flexbox, Grid |
+| JavaScript ES6+ | Vanilla JS, Async/Await          |
+| Chart.js        | กราฟและแผนภูมิ                   |
 
 ### Backend
-- **Node.js 18+** - Runtime
-- **Express.js** - Web framework
-- **MySQL** - Database
-- **JWT** - Authentication
-- **bcryptjs** - Password hashing
 
-### Database
-- **200+ รายการอาหาร** จาก USDA
-- **6 หมวดหมู่** อาหารไทย, อาหารคลีน, เครื่องดื่ม, ผลไม้, ของหวาน, อาหารต่างชาติ
-- **สารอาหาร** โปรตีน, คาร์บ, ไขมัน, ไฟเบอร์, วิตามิน, แร่ธาตุ
-
----
-
-## 📱 Screenshots
-
-### Landing Page
-![Landing](docs/screenshots/landing.png)
-
-### Dashboard
-![Dashboard](docs/screenshots/dashboard.png)
-
-### Search
-![Search](docs/screenshots/search.png)
+| Technology  | Usage                 |
+| ----------- | --------------------- |
+| Node.js 18+ | Runtime               |
+| Express.js  | Web framework         |
+| MySQL 8.0   | Database              |
+| JWT         | Authentication        |
+| bcryptjs    | Password hashing      |
+| cors        | Cross-origin          |
+| dotenv      | Environment variables |
 
 ---
 
+## 🗄️ Database Schema
+
+### ตารางหลัก
+
+```
+users           - ข้อมูลผู้ใช้
+foods           - รายการอาหาร (850+)
+categories      - หมวดหมู่อาหาร (6)
+meal_plans      - แผนอาหารรายวัน
+meal_plan_items - รายการอาหารในแผน
+food_logs       - บันทึกการกินอาหาร
+weight_logs     - บันทึกน้ำหนัก
+user_badges     - เหรียญรางวัล
+```
+
+---
+
+## 📝 Changelog
+
+### v2.0 (Feb 2026)
+
+- ✅ เพิ่ม Admin Panel ครบ (Dashboard, Users, Foods, Pending)
+- ✅ อัพเดตฐานข้อมูลอาหารไทย 850 เมนู
+- ✅ แก้ไข UI Sidebar toggle
+- ✅ เพิ่ม CRUD operations ทั้งหมด
+- ✅ แก้ไข API endpoint ให้ถูกต้อง
+
+### v1.0 (Jan 2026)
+
+- 🎉 เปิดตัวระบบ
+- 📊 Dashboard ผู้ใช้
+- 🔍 ค้นหาอาหาร
+- 📅 วางแผนอาหาร
+
+---
+
+## 👥 ผู้พัฒนา
+
+- **Developer:** [Your Name]
+- **GitHub:** [@nnt2525](https://github.com/nnt2525)
+
+---
+
+## 📄 License
+
+MIT License - ใช้งานได้อย่างอิสระ
+
+---
+
+## 🙏 Acknowledgments
+
+- ข้อมูลโภชนาการอ้างอิงจากกรมอนามัย
+- Icons จาก Emoji
+- Chart library จาก Chart.js
