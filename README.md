@@ -353,7 +353,7 @@ user_badges     - เหรียญรางวัล
 
 ## 👥 ผู้พัฒนา
 
-- **Developer:** [Your Name]
+- **Developer:** [Phutinont Saenphol]
 - **GitHub:** [@nnt2525](https://github.com/nnt2525)
 
 ---
