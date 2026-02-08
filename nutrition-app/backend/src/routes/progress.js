@@ -45,10 +45,10 @@ router.get('/weekly', auth, async (req, res) => {
         
         // Calculate totals
         const totals = dailyData.reduce((acc, day) => ({
-            calories: acc.calories + day.calories,
-            protein: acc.protein + day.protein,
-            carbs: acc.carbs + day.carbs,
-            fat: acc.fat + day.fat
+            calories: acc.calories + Number(day.calories || 0),
+            protein: acc.protein + Number(day.protein || 0),
+            carbs: acc.carbs + Number(day.carbs || 0),
+            fat: acc.fat + Number(day.fat || 0)
         }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
         
         const avgCalories = dailyData.length > 0 

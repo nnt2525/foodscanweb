@@ -233,7 +233,7 @@ function initCharts() {
                 datasets: [{
                     label: 'การบันทึกอาหาร',
                     data: [45, 52, 38, 65, 48, 55, 42],
-                    backgroundColor: '#3b82f6'
+                    backgroundColor: '#f97316' /* Orange-500 */
                 }]
             },
             options: {

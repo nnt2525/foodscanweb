@@ -34,13 +34,19 @@ function renderNavigation() {
             </a>
             
             <ul class="navbar-menu" id="navMenu">
-                ${menuItems.map(item => `
+                ${menuItems.map(item => {
+                    let href = item.href;
+                    if (item.label === 'หน้าหลัก' && loggedIn) {
+                        href = 'dashboard.html';
+                    }
+                    return `
                     <li>
-                        <a href="${item.href}" class="navbar-link ${currentPage === item.href ? 'active' : ''}">
+                        <a href="${href}" class="navbar-link ${currentPage === href ? 'active' : ''}">
                             ${item.label}
                         </a>
                     </li>
-                `).join('')}
+                `;
+                }).join('')}
             </ul>
             
             <div class="navbar-actions">

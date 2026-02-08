@@ -119,7 +119,11 @@ async function loadWeeklyChart() {
                 labels.push(days[date.getDay()]);
 
                 const dateStr = date.toISOString().split('T')[0];
-                const dayData = response.data.daily.find(d => d.date === dateStr);
+                const dayData = response.data.daily.find(d => {
+                    if (!d.date) return false;
+                    const dataDateStr = (typeof d.date === 'string' ? d.date : new Date(d.date).toISOString()).split('T')[0];
+                    return dataDateStr === dateStr;
+                });
                 calories.push(dayData ? dayData.calories : 0);
             }
 
