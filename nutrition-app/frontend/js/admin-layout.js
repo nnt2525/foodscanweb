@@ -4,6 +4,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     initSidebar();
+    initMobileMenu();
 });
 
 function initSidebar() {
@@ -20,26 +21,96 @@ function initSidebar() {
     toggleBtn.style.padding = '0.25rem 0.5rem';
     toggleBtn.style.cursor = 'pointer';
     toggleBtn.style.color = 'white';
+    toggleBtn.style.marginRight = '0.5rem';
+    toggleBtn.style.order = '-1'; // Move to start with flexbox
     
-    // Add button to sidebar header
-    sidebarHeader.appendChild(toggleBtn);
+    // Insert button at the beginning of sidebar header
+    sidebarHeader.insertBefore(toggleBtn, sidebarHeader.firstChild);
     
     // Adjust header layout
     sidebarHeader.style.display = 'flex';
     sidebarHeader.style.alignItems = 'center';
-    sidebarHeader.style.justifyContent = 'space-between';
 
     // Add event listener
     toggleBtn.addEventListener('click', toggleSidebar);
 
-    // 2. Restore State from LocalStorage
-    const isCollapsed = localStorage.getItem('adminSidebarCollapsed') === 'true';
-    if (isCollapsed) {
-        applySidebarState(true);
+    // 2. Restore State from LocalStorage (only on desktop)
+    if (window.innerWidth > 768) {
+        const isCollapsed = localStorage.getItem('adminSidebarCollapsed') === 'true';
+        if (isCollapsed) {
+            applySidebarState(true);
+        }
     }
 }
 
+function initMobileMenu() {
+    const adminHeader = document.querySelector('.admin-header');
+    if (!adminHeader) return;
+
+    // Create mobile menu toggle button in header
+    const mobileToggle = document.createElement('button');
+    mobileToggle.id = 'mobileMenuToggle';
+    mobileToggle.className = 'mobile-menu-toggle';
+    mobileToggle.innerHTML = '☰';
+    mobileToggle.style.display = 'none'; // Hidden by default, shown via CSS @media
+
+    // Create mobile overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'mobileOverlay';
+    overlay.className = 'mobile-overlay';
+    document.body.appendChild(overlay);
+
+    // Insert toggle at the start of header
+    const headerFirstChild = adminHeader.firstElementChild;
+    if (headerFirstChild) {
+        adminHeader.insertBefore(mobileToggle, headerFirstChild);
+    }
+
+    // Event listeners
+    mobileToggle.addEventListener('click', openMobileMenu);
+    overlay.addEventListener('click', closeMobileMenu);
+
+    // Show mobile toggle on small screens
+    if (window.innerWidth <= 768) {
+        mobileToggle.style.display = 'flex';
+    }
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+        if (window.innerWidth <= 768) {
+            mobileToggle.style.display = 'flex';
+        } else {
+            mobileToggle.style.display = 'none';
+            closeMobileMenu();
+        }
+    });
+}
+
+function openMobileMenu() {
+    const sidebar = document.querySelector('.admin-sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    
+    if (sidebar) sidebar.classList.add('mobile-open');
+    if (overlay) overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeMobileMenu() {
+    const sidebar = document.querySelector('.admin-sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
 function toggleSidebar() {
+    // On mobile, use the mobile menu instead
+    if (window.innerWidth <= 768) {
+        closeMobileMenu();
+        return;
+    }
+
     const sidebar = document.querySelector('.admin-sidebar');
     const main = document.querySelector('.admin-main');
     
@@ -49,7 +120,6 @@ function toggleSidebar() {
     main.classList.toggle('expanded');
 
     // Adjust toggle button style based on state
-    const toggleBtn = document.getElementById('sidebarToggle');
     const sidebarHeader = document.querySelector('.sidebar-header');
     
     if (isCollapsed) {
@@ -80,3 +150,4 @@ function applySidebarState(collapsed) {
         if (sidebarHeader) sidebarHeader.style.justifyContent = 'space-between';
     }
 }
+

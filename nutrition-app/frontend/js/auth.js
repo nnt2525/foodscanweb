@@ -247,6 +247,7 @@ window.auth = {
     removeToken,
     isLoggedIn,
     getCurrentUser,
+    getUser: getCurrentUser,  // Alias for compatibility
     saveUser,
     removeUser,
     login,

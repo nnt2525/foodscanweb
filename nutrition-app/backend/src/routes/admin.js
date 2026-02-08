@@ -130,6 +130,67 @@ router.get('/foods/pending', adminAuth, async (req, res) => {
     }
 });
 
+// Get all foods (Admin - includes all statuses)
+router.get('/foods', adminAuth, async (req, res) => {
+    try {
+        const { page = 1, limit = 20, search, category, status } = req.query;
+        const offset = (page - 1) * limit;
+        
+        let query = `
+            SELECT f.*, c.name as category_name, u.name as created_by_name
+            FROM foods f
+            LEFT JOIN categories c ON f.category_id = c.id
+            LEFT JOIN users u ON f.created_by = u.id
+            WHERE 1=1
+        `;
+        const params = [];
+        
+        if (status && status !== 'all') {
+            query += ' AND f.status = ?';
+            params.push(status);
+        }
+        
+        if (category && category !== 'all') {
+            query += ' AND f.category_id = ?';
+            params.push(category);
+        }
+        
+        if (search) {
+            query += ' AND f.name LIKE ?';
+            params.push(`%${search}%`);
+        }
+        
+        query += ' ORDER BY f.created_at DESC LIMIT ? OFFSET ?';
+        params.push(parseInt(limit), offset);
+        
+        const [foods] = await db.query(query, params);
+        
+        // Get total count
+        let countQuery = 'SELECT COUNT(*) as total FROM foods WHERE 1=1';
+        const countParams = [];
+        
+        if (status && status !== 'all') {
+            countQuery += ' AND status = ?';
+            countParams.push(status);
+        }
+        
+        const [countResult] = await db.query(countQuery, countParams);
+        
+        res.json({
+            success: true,
+            data: foods,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total: countResult[0].total
+            }
+        });
+    } catch (error) {
+        console.error('Admin get all foods error:', error);
+        res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
+    }
+});
+
 // Approve food
 router.put('/foods/:id/approve', adminAuth, async (req, res) => {
     try {
@@ -174,6 +235,41 @@ router.delete('/foods/:id', adminAuth, async (req, res) => {
         res.json({ success: true, message: 'ลบอาหารสำเร็จ' });
     } catch (error) {
         console.error('Delete food error:', error);
+        res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
+    }
+});
+
+// Update food (Admin)
+router.put('/foods/:id', adminAuth, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, calories, protein, carbs, fat, fiber, serving_size, category_id, status } = req.body;
+        
+        // Check if food exists
+        const [foods] = await db.query('SELECT * FROM foods WHERE id = ?', [id]);
+        if (foods.length === 0) {
+            return res.status(404).json({ success: false, message: 'ไม่พบอาหาร' });
+        }
+        
+        await db.query(
+            `UPDATE foods SET 
+             name = COALESCE(?, name), 
+             calories = COALESCE(?, calories), 
+             protein = COALESCE(?, protein), 
+             carbs = COALESCE(?, carbs), 
+             fat = COALESCE(?, fat),
+             fiber = COALESCE(?, fiber),
+             serving_size = COALESCE(?, serving_size),
+             category_id = COALESCE(?, category_id),
+             status = COALESCE(?, status),
+             updated_at = NOW() 
+             WHERE id = ?`,
+            [name, calories, protein, carbs, fat, fiber, serving_size, category_id, status, id]
+        );
+        
+        res.json({ success: true, message: 'อัพเดทอาหารสำเร็จ' });
+    } catch (error) {
+        console.error('Update food error:', error);
         res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาด' });
     }
 });

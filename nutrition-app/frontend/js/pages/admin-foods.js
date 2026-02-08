@@ -54,7 +54,7 @@ async function loadFoods() {
         if (category) params.category = category;
         if (status) params.status = status;
 
-        const response = await foodsAPI.getAll(params);
+        const response = await adminAPI.getAllFoods(params);
 
         if (response.success && response.data.length > 0) {
             tbody.innerHTML = response.data.map(food => `

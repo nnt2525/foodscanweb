@@ -54,15 +54,6 @@ function renderFoodDetail() {
                 <span>←</span> กลับไปค้นหา
             </a>
 
-            <!-- Section 1: Image (Top) -->
-            <div class="card p-0 shadow-lg overflow-hidden mb-6 bg-white">
-                <div class="w-full h-80 bg-gray-50 flex items-center justify-center relative">
-                     ${food.image_url 
-                        ? `<img src="${food.image_url}" alt="${food.name}" class="w-full h-full object-cover">` 
-                        : `<span style="font-size:5rem;">🍽️</span>`}
-                </div>
-            </div>
-
             <!-- Section 2: Basic Info (Middle) -->
             <div class="card shadow-lg p-8 mb-6">
                 <!-- Header -->

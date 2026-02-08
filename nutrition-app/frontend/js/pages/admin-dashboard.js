@@ -38,11 +38,17 @@ async function loadStats() {
         const response = await adminAPI.getStats();
         if (response.success) {
             const { totalUsers, totalFoods, pendingFoods, todayLogs } = response.data;
-            document.getElementById('totalUsers').textContent = formatNumber(totalUsers);
-            document.getElementById('totalFoods').textContent = formatNumber(totalFoods);
-            document.getElementById('pendingFoods').textContent = formatNumber(pendingFoods);
-            document.getElementById('pendingBadge').textContent = pendingFoods;
-            document.getElementById('todayLogs').textContent = formatNumber(todayLogs);
+            
+            // Update stat cards with null checks
+            const totalUsersEl = document.getElementById('totalUsers');
+            const totalFoodsEl = document.getElementById('totalFoods');
+            const pendingFoodsEl = document.getElementById('pendingFoods');
+            const todayLogsEl = document.getElementById('todayLogs');
+            
+            if (totalUsersEl) totalUsersEl.textContent = formatNumber(totalUsers);
+            if (totalFoodsEl) totalFoodsEl.textContent = formatNumber(totalFoods);
+            if (pendingFoodsEl) pendingFoodsEl.textContent = formatNumber(pendingFoods);
+            if (todayLogsEl) todayLogsEl.textContent = formatNumber(todayLogs);
         }
     } catch (error) {
         console.error('Load stats error:', error);

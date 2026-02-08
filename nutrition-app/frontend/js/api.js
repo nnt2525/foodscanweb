@@ -108,6 +108,10 @@ const foodsAPI = {
 
     async search(query) {
         return api.get(`/foods/search?q=${encodeURIComponent(query)}`);
+    },
+
+    async getCategories() {
+        return api.get('/foods/categories/list');
     }
 };
 
@@ -216,8 +220,17 @@ const adminAPI = {
         return api.delete(`/admin/foods/${id}`);
     },
 
+    async updateFood(id, data) {
+        return api.put(`/admin/foods/${id}`, data);
+    },
+
     async getDashboardStats() {
         return api.get('/admin/stats');
+    },
+
+    async getAllFoods(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        return api.get(`/admin/foods${query ? '?' + query : ''}`);
     }
 };
 

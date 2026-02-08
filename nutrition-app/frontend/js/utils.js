@@ -99,18 +99,12 @@ function calculateBMR(weight, height, age, gender) {
     return gender === 'male' ? bmr + 5 : bmr - 161;
 }
 
-// Activity Level Multipliers
-const ACTIVITY_LEVELS = {
-    sedentary: 1.2,      // Little or no exercise
-    light: 1.375,        // Light exercise 1-3 days/week
-    moderate: 1.55,      // Moderate exercise 3-5 days/week
-    active: 1.725,       // Hard exercise 6-7 days/week
-    very_active: 1.9     // Very hard exercise & physical job
-};
-
 // Calculate TDEE (Total Daily Energy Expenditure)
+// Uses ACTIVITY_LEVELS from constants.js
 function calculateTDEE(bmr, activityLevel) {
-    const multiplier = ACTIVITY_LEVELS[activityLevel] || 1.2;
+    // Find multiplier from ACTIVITY_LEVELS array (defined in constants.js)
+    const level = window.ACTIVITY_LEVELS?.find(l => l.id === activityLevel);
+    const multiplier = level?.multiplier || 1.2;
     return Math.round(bmr * multiplier);
 }
 
