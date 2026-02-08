@@ -49,92 +49,132 @@ function renderFoodDetail() {
     document.title = `${food.name} - NutriTrack`;
 
     container.innerHTML = `
-        <a href="search.html" class="btn btn-ghost mb-4">← กลับ</a>
-        
-        <div class="grid grid-cols-2 grid-responsive gap-6">
-            <div>
-            <div class="food-image-container" style="width:100%;height:300px;border-radius:1rem;overflow:hidden;background:linear-gradient(135deg, var(--primary-100), var(--primary-50));">
-                    ${food.image_url
-            ? `<img src="${food.image_url}" alt="${food.name}" style="width:100%;height:100%;object-fit:cover;">`
-            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><span style="font-size:5rem;">🍽️</span></div>`
-        }
-                </div>
-                <div class="flex gap-2 mt-4 flex-wrap">
-                    <span class="badge badge-green">${food.category_name || 'ทั่วไป'}</span>
-                    ${food.source && food.source !== 'manual' ? `<span class="badge badge-blue">${food.source.toUpperCase()}</span>` : ''}
+        <div class="max-w-3xl mx-auto">
+            <a href="search.html" class="btn btn-ghost mb-6 inline-flex items-center gap-2">
+                <span>←</span> กลับไปค้นหา
+            </a>
+
+            <!-- Section 1: Image (Top) -->
+            <div class="card p-0 shadow-lg overflow-hidden mb-6 bg-white">
+                <div class="w-full h-80 bg-gray-50 flex items-center justify-center relative">
+                     ${food.image_url 
+                        ? `<img src="${food.image_url}" alt="${food.name}" class="w-full h-full object-cover">` 
+                        : `<span style="font-size:5rem;">🍽️</span>`}
                 </div>
             </div>
-            
-            <div>
-                <h1 class="text-3xl font-bold mb-2">${food.name}</h1>
-                <p class="text-gray mb-4">${food.name_en || ''} ${food.brand ? `• ${food.brand}` : ''}</p>
-                
-                <div class="card mb-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-lg font-bold">ปริมาณต่อหนึ่งที่</span>
-                        <span class="badge badge-blue">${food.serving_size || '100g'}</span>
+
+            <!-- Section 2: Basic Info (Middle) -->
+            <div class="card shadow-lg p-8 mb-6">
+                <!-- Header -->
+                <div class="text-center mb-8">
+                    <div class="flex justify-center gap-2 mb-4">
+                            <span class="badge badge-green">${food.category_name || 'ทั่วไป'}</span>
+                            ${food.source && food.source !== 'manual' ? `<span class="badge badge-blue">${food.source.toUpperCase()}</span>` : ''}
                     </div>
-                    <div class="text-center mb-4" style="padding:1rem;background:var(--primary-50);border-radius:0.75rem;">
-                        <div class="text-3xl font-bold text-primary">${food.calories}</div>
-                        <div class="text-gray">แคลอรี่</div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-4 text-center">
-                        <div style="padding:1rem;background:var(--gray-50);border-radius:0.5rem;">
-                            <div class="font-bold">${food.carbs || 0}g</div>
-                            <div class="text-sm text-gray">คาร์บ</div>
-                        </div>
-                        <div style="padding:1rem;background:var(--gray-50);border-radius:0.5rem;">
-                            <div class="font-bold">${food.protein || 0}g</div>
-                            <div class="text-sm text-gray">โปรตีน</div>
-                        </div>
-                        <div style="padding:1rem;background:var(--gray-50);border-radius:0.5rem;">
-                            <div class="font-bold">${food.fat || 0}g</div>
-                            <div class="text-sm text-gray">ไขมัน</div>
-                        </div>
-                    </div>
+                    <h1 class="text-4xl font-bold text-dark mb-2">${food.name}</h1>
+                    <p class="text-gray mb-4 text-lg">${food.name_en || ''} ${food.brand ? `• ${food.brand}` : ''}</p>
                 </div>
                 
-                ${auth.isLoggedIn() ? `
-                    <div class="form-group mb-4">
-                        <label class="form-label">เลือกมื้ออาหาร</label>
-                        <select id="mealSelect" class="form-input">
-                            <option value="breakfast">มื้อเช้า</option>
-                            <option value="lunch">มื้อเที่ยง</option>
-                            <option value="dinner">มื้อเย็น</option>
-                            <option value="snacks">ของว่าง</option>
-                        </select>
+                <!-- Main Stats (Calories) -->
+                <div class="bg-primary-50 rounded-2xl p-6 text-center mb-8 max-w-sm mx-auto" style="border-radius: 1rem;">
+                    <div class="text-sm text-gray uppercase tracking-widest mb-2" style="letter-spacing: 0.1em;">พลังงาน</div>
+                    <div class="flex items-baseline justify-center gap-2">
+                        <span class="text-5xl font-bold text-primary">${food.calories}</span>
+                        <span class="text-xl text-primary font-medium">kcal</span>
                     </div>
-                    <button onclick="addToMeal()" class="btn btn-primary btn-block btn-lg">
-                        + เพิ่มลงมื้ออาหาร
-                    </button>
+                    <div class="text-sm text-gray mt-2">ต่อ ${food.serving_size || '100g'}</div>
+                </div>
+
+                <!-- Macros Grid -->
+                <div class="grid grid-cols-3 gap-4 mb-8 max-w-lg mx-auto">
+                    <div class="text-center p-4 bg-gray-50" style="border-radius: 1rem;">
+                        <div class="text-2xl font-bold text-dark mb-1">${food.protein || 0}g</div>
+                        <div class="text-sm text-gray">โปรตีน</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50" style="border-radius: 1rem;">
+                        <div class="text-2xl font-bold text-dark mb-1">${food.carbs || 0}g</div>
+                        <div class="text-sm text-gray">คาร์บ</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50" style="border-radius: 1rem;">
+                        <div class="text-2xl font-bold text-dark mb-1">${food.fat || 0}g</div>
+                        <div class="text-sm text-gray">ไขมัน</div>
+                    </div>
+                </div>
+
+                <!-- Add to Meal -->
+                ${auth.isLoggedIn() ? `
+                    <div class="max-w-lg mx-auto" style="border-top: 1px solid var(--gray-200); padding-top: 2rem;">
+                        <label class="form-label mb-3 text-center block">บันทึกลงมื้ออาหาร</label>
+                        <div class="flex gap-3">
+                            <select id="mealSelect" class="form-input flex-1">
+                                <option value="breakfast">Breakfast (มื้อเช้า)</option>
+                                <option value="lunch">Lunch (มื้อเที่ยง)</option>
+                                <option value="dinner">Dinner (มื้อเย็น)</option>
+                                <option value="snacks">Snack (ของว่าง)</option>
+                            </select>
+                            <button onclick="addToMeal()" class="btn btn-primary px-8">
+                                + บันทึก
+                            </button>
+                        </div>
+                    </div>
                 ` : `
-                    <a href="login.html" class="btn btn-primary btn-block btn-lg">
-                        เข้าสู่ระบบเพื่อบันทึก
-                    </a>
+                    <div class="text-center mt-6">
+                        <a href="login.html" class="btn btn-outline inline-flex px-8">
+                            เข้าสู่ระบบเพื่อบันทึก
+                        </a>
+                    </div>
                 `}
             </div>
-        </div>
-        
-        <!-- Detailed Nutrition -->
-        <div class="card mt-6">
-            <h2 class="text-xl font-bold mb-4">ข้อมูลโภชนาการโดยละเอียด</h2>
-            <div class="grid grid-cols-2 grid-responsive gap-6">
-                <div>
-                    <h3 class="font-semibold mb-3">สารอาหารหลัก</h3>
-                    <div class="text-sm">
-                        <div class="flex justify-between mb-2"><span>พลังงาน</span><span>${food.calories} kcal</span></div>
-                        <div class="flex justify-between mb-2"><span>โปรตีน</span><span>${food.protein || 0}g</span></div>
-                        <div class="flex justify-between mb-2"><span>คาร์โบไฮเดรต</span><span>${food.carbs || 0}g</span></div>
-                        <div class="flex justify-between mb-2"><span>ไขมัน</span><span>${food.fat || 0}g</span></div>
-                        <div class="flex justify-between"><span>ใยอาหาร</span><span>${food.fiber || 0}g</span></div>
+
+            <!-- Section 3: Detailed Info (Bottom) -->
+            <div class="card shadow-lg p-8">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2 border-b border-gray-200 pb-4">
+                    <span class="text-2xl">📋</span> ข้อมูลโภชนาการโดยละเอียด
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="font-semibold mb-4 text-dark text-lg">สารอาหารหลัก</h3>
+                        <div class="text-base space-y-3">
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="text-gray-600">พลังงานทั้งหมด</span>
+                                <span class="font-medium">${food.calories} kcal</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="text-gray-600">โปรตีน</span>
+                                <span class="font-medium">${food.protein || 0}g</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="text-gray-600">คาร์โบไฮเดรต</span>
+                                <span class="font-medium">${food.carbs || 0}g</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="text-gray-600">ไขมัน</span>
+                                <span class="font-medium">${food.fat || 0}g</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="text-gray-600">ใยอาหาร</span>
+                                <span class="font-medium">${food.fiber || 0}g</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <h3 class="font-semibold mb-3">ข้อมูลเพิ่มเติม</h3>
-                    <div class="text-sm">
-                        <div class="flex justify-between mb-2"><span>หมวดหมู่</span><span>${food.category_name || '-'}</span></div>
-                        <div class="flex justify-between mb-2"><span>แหล่งที่มา</span><span>${food.source || 'manual'}</span></div>
-                        ${food.barcode ? `<div class="flex justify-between"><span>Barcode</span><span>${food.barcode}</span></div>` : ''}
+                    <div>
+                        <h3 class="font-semibold mb-4 text-dark text-lg">ข้อมูลเพิ่มเติม</h3>
+                        <div class="text-base space-y-3">
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="text-gray-600">หมวดหมู่</span>
+                                <span class="badge badge-gray text-sm">${food.category_name || '-'}</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="text-gray-600">แหล่งที่มา</span>
+                                <span class="text-gray-800">${food.source || 'manual'}</span>
+                            </div>
+                            ${food.barcode ? `
+                            <div class="flex justify-between py-2 border-b border-gray-100">
+                                <span class="text-gray-600">บาร์โค้ด</span>
+                                <span class="font-mono text-gray-800">${food.barcode}</span>
+                            </div>` : ''}
+                        </div>
                     </div>
                 </div>
             </div>

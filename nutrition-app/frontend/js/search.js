@@ -171,17 +171,13 @@ function renderFoods(foods) {
         const categoryName = food.category_name || food.category || 'ทั่วไป';
 
         return `
-        <a href="food-detail.html?id=${food.id}" class="food-card">
-            <div class="food-card-image-wrapper">
-                <img src="${imageUrl}" alt="${food.name}" class="food-card-image" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'">
+        <a href="food-detail.html?id=${food.id}" class="food-list-item">
+            <div class="food-info">
+                <h3 class="food-title">${food.name}</h3>
+                <p class="food-detail">${food.calories || 0} kcal • ${food.serving_size || '100g'}</p>
             </div>
-            <div class="food-card-content">
-                <h3 class="food-card-title">${food.name}</h3>
-                <p class="food-card-category">${categoryName}</p>
-                <div class="flex items-center justify-between mt-2">
-                    <span class="food-card-calories">${food.calories || 0} kcal</span>
-                    <span class="text-gray text-sm">${food.serving_size || '100g'}</span>
-                </div>
+            <div class="food-action">
+                <span class="btn-icon">➔</span> 
             </div>
         </a>
     `;

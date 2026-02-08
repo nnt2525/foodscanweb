@@ -95,3 +95,56 @@
 .grid-responsive {
     min-height: 200px;
 }
+
+/* ========================================
+   List View Overrides
+   ======================================== */
+#foodsGrid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    grid-template-columns: none !important;
+}
+
+.food-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid var(--gray-100);
+}
+
+.food-list-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    border-color: var(--primary-200);
+}
+
+.food-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.food-detail {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.btn-icon {
+    color: var(--gray-300);
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+}
+
+.food-list-item:hover .btn-icon {
+    color: var(--primary-500);
+    transform: translateX(4px);
+}
