@@ -354,11 +354,8 @@ user_badges     - เหรียญรางวัล
 
 <<<<<<< HEAD
 - **Developer:** [พุฒินนท์ แสนพล หน้าที่ frontend]
-  [นายภูริ สุวรรณวงศ์ หน้าที่ backend]
-  [นายภาณุพงศ์ สุทธกร หน้าที่ database]
-=======
-- **Developer:** [Phutinont Saenphol]
->>>>>>> 2618ff9656de86fe8fa3c5874ccd2b246f61b1d0
+                 [นายภูริ สุวรรณวงศ์ หน้าที่ backend]
+                 [นายภาณุพงศ์ สุทธกร หน้าที่ database]
 - **GitHub:** [@nnt2525](https://github.com/nnt2525)
 
 ---
