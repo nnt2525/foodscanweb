@@ -39,22 +39,35 @@ router.get('/stats', adminAuth, async (req, res) => {
 // Get all users
 router.get('/users', adminAuth, async (req, res) => {
     try {
-        const { page = 1, limit = 20, search } = req.query;
+        const { page = 1, limit = 20, search, role } = req.query;
         const offset = (page - 1) * limit;
         
-        let query = 'SELECT id, email, name, role, created_at FROM users';
+        let query = 'SELECT id, email, name, role, created_at FROM users WHERE 1=1';
+        let countQuery = 'SELECT COUNT(*) as total FROM users WHERE 1=1';
         const params = [];
+        const countParams = [];
         
-        if (search) {
-            query += ' WHERE name LIKE ? OR email LIKE ?';
-            params.push(`%${search}%`, `%${search}%`);
+        // Filter by role
+        if (role && (role === 'admin' || role === 'user')) {
+            query += ' AND role = ?';
+            countQuery += ' AND role = ?';
+            params.push(role);
+            countParams.push(role);
         }
         
-        query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+        // Search filter
+        if (search) {
+            query += ' AND (name LIKE ? OR email LIKE ?)';
+            countQuery += ' AND (name LIKE ? OR email LIKE ?)';
+            params.push(`%${search}%`, `%${search}%`);
+            countParams.push(`%${search}%`, `%${search}%`);
+        }
+        
+        query += ' ORDER BY id ASC LIMIT ? OFFSET ?';
         params.push(parseInt(limit), offset);
         
         const [users] = await db.query(query, params);
-        const [countResult] = await db.query('SELECT COUNT(*) as total FROM users');
+        const [countResult] = await db.query(countQuery, countParams);
         
         res.json({
             success: true,

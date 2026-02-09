@@ -85,7 +85,125 @@
     color: var(--danger);
 }
 
-/* Modal Styles */
+/* ========================================
+   Modal Styles - Override components.css
+   ======================================== */
+
+/* Base modal reset - override components.css */
+#addFoodModal,
+#mealTypeSelectorModal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+    background: none !important;
+    border-radius: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    transform: none !important;
+}
+
+#addFoodModal.hidden,
+#mealTypeSelectorModal.hidden {
+    display: none !important;
+}
+
+/* Backdrop */
+#addFoodModal .modal-backdrop,
+#mealTypeSelectorModal .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1;
+}
+
+/* Modal Content Box - the actual dialog */
+#addFoodModal .modal-content,
+#mealTypeSelectorModal .modal-content {
+    position: relative;
+    z-index: 2;
+    background: white;
+    border-radius: 1.25rem;
+    width: 100%;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow: hidden;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);
+    animation: plannerModalSlideIn 0.3s ease;
+}
+
+#mealTypeSelectorModal .modal-content {
+    max-width: 420px;
+}
+
+@keyframes plannerModalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Modal Header - Green Gradient */
+#addFoodModal .modal-header,
+#mealTypeSelectorModal .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: white;
+    border-bottom: none;
+}
+
+#addFoodModal .modal-header h3,
+#mealTypeSelectorModal .modal-header h3 {
+    color: white;
+    margin: 0;
+}
+
+/* Close Button */
+#addFoodModal .modal-close,
+#mealTypeSelectorModal .modal-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    font-size: 1.25rem;
+    color: white;
+    cursor: pointer;
+    line-height: 1;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    padding: 0;
+}
+
+#addFoodModal .modal-close:hover,
+#mealTypeSelectorModal .modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Modal Body */
+#addFoodModal .modal-body,
+#mealTypeSelectorModal .modal-body {
+    padding: 1.5rem;
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+/* Keep old .modal for backward compat - low priority */
 .modal {
     position: fixed;
     inset: 0;
@@ -100,48 +218,42 @@
     display: none;
 }
 
-.modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    position: relative;
-    background: white;
-    border-radius: 1rem;
-    width: 100%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    /* Animation removed for simpler debugging */
-}
-
 .modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--gray-200);
+    background: linear-gradient(135deg, var(--primary) 0%, #16a34a 100%);
+    color: white;
+}
+
+.modal-header h3 {
+    color: white;
 }
 
 .modal-close {
-    background: none;
+    background: rgba(255, 255, 255, 0.2);
     border: none;
-    font-size: 1.5rem;
-    color: var(--gray-400);
+    font-size: 1.25rem;
+    color: white;
     cursor: pointer;
     line-height: 1;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
 }
 
 .modal-close:hover {
-    color: var(--gray-600);
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .modal-body {
     padding: 1.5rem;
-    max-height: 60vh;
+    max-height: 65vh;
     overflow-y: auto;
 }
 
@@ -178,44 +290,147 @@
     display: none;
 }
 
-/* Search Results */
+/* Search Input Improved */
+.modal-body .form-input {
+    border: 2px solid var(--gray-200);
+    border-radius: 0.75rem;
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.modal-body .form-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+}
+
+/* Search Results Header */
+.search-results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.search-results-count {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.search-results-count strong {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Search Results List */
 .search-results {
-    max-height: 300px;
+    max-height: 350px;
     overflow-y: auto;
+    border-radius: 0.75rem;
+    border: 1px solid var(--gray-200);
+}
+
+.search-results::-webkit-scrollbar {
+    width: 6px;
+}
+
+.search-results::-webkit-scrollbar-track {
+    background: var(--gray-100);
+    border-radius: 3px;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 3px;
+}
+
+.search-results::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-400);
 }
 
 .food-search-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.875rem;
-    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--gray-100);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s;
+}
+
+.food-search-item:last-child {
+    border-bottom: none;
 }
 
 .food-search-item:hover {
-    background: var(--gray-100);
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
 }
 
 .food-search-info {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    flex: 1;
 }
 
 .food-search-name {
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--gray-800);
+    font-size: 0.9375rem;
 }
 
 .food-search-macro {
     font-size: 0.75rem;
     color: var(--gray-500);
+    display: flex;
+    gap: 0.75rem;
+}
+
+.food-search-macro span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
 }
 
 .food-search-calories {
-    font-weight: 600;
+    font-weight: 700;
     color: var(--primary);
+    font-size: 0.9375rem;
+    background: rgba(34, 197, 94, 0.1);
+    padding: 0.375rem 0.75rem;
+    border-radius: 2rem;
+}
+
+/* Empty state */
+.food-search-empty {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--gray-400);
+}
+
+.food-search-empty .icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Load More Button */
+.load-more-btn {
+    width: 100%;
+    padding: 0.875rem;
+    margin-top: 0.5rem;
+    background: var(--gray-100);
+    border: none;
+    border-radius: 0.5rem;
+    color: var(--gray-600);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.load-more-btn:hover {
+    background: var(--gray-200);
 }
 
 /* Meal Type Selector */

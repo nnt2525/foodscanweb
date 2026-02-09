@@ -89,21 +89,34 @@ function renderCaloriesChart(dailyData) {
     const labels = [];
     const calories = [];
 
-    // Get last 7 days
+    // Get last 7 days - keep original format
     const days = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
     for (let i = 6; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
         labels.push(days[date.getDay()]);
 
-        // Find data for this date
-        // Normalize both to YYYY-MM-DD
-        const targetDateStr = date.toISOString().split('T')[0];
+        // Format current date as YYYY-MM-DD in LOCAL timezone
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const targetDateStr = `${year}-${month}-${day}`;
 
-        const dayData = dailyData.find(d => {
+        const dayData = safeDailyData.find(d => {
             if (!d.date) return false;
-            // Handle both string "YYYY-MM-DD" and ISO string "YYYY-MM-DDTHH:mm:ss.sssZ"
-            const dataDateStr = (typeof d.date === 'string' ? d.date : new Date(d.date).toISOString()).split('T')[0];
+            
+            // CRITICAL: API returns UTC dates like "2026-02-08T17:00:00.000Z"
+            // In Thailand (UTC+7), this is actually Feb 9 midnight
+            // We need to convert UTC to local date properly
+            let dataDateStr;
+            
+            // Parse the date and convert to local timezone
+            const parsedDate = new Date(d.date);
+            const localYear = parsedDate.getFullYear();
+            const localMonth = String(parsedDate.getMonth() + 1).padStart(2, '0');
+            const localDay = String(parsedDate.getDate()).padStart(2, '0');
+            dataDateStr = `${localYear}-${localMonth}-${localDay}`;
+            
             return dataDateStr === targetDateStr;
         });
 
@@ -152,7 +165,7 @@ function renderCaloriesChart(dailyData) {
                 },
                 y: {
                     beginAtZero: true,
-                    suggestedMax: 2000, // Suggest a reasonable max to avoid flat lines on low data
+                    suggestedMax: 2000,
                     grid: { color: '#f3f4f6', borderDash: [5, 5] },
                     border: { display: false }
                 }

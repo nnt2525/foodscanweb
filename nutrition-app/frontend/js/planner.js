@@ -211,29 +211,65 @@ function searchFoodsInModal() {
     document.getElementById('searchResults').innerHTML = renderFoodList(filtered);
 }
 
-function renderFoodList(foods) {
-    if (foods.length === 0) {
+function renderFoodList(foods, showAll = false) {
+    const totalCount = foods.length;
+    
+    if (totalCount === 0) {
         return `
-            <div class="text-center text-gray py-8">
-                <p>ยังไม่มีอาหารในระบบ</p>
-                <p class="text-sm mt-2">ลองเพิ่มอาหารของคุณเอง!</p>
+            <div class="food-search-empty">
+                <div class="icon">🍽️</div>
+                <p>ไม่พบอาหารที่ค้นหา</p>
+                <p class="text-sm mt-2">ลองค้นหาใหม่ หรือเพิ่มอาหารของคุณเอง!</p>
             </div>
         `;
     }
 
-    return foods.map(food => `
+    // Limit display items unless showing all
+    const displayLimit = showAll ? totalCount : 50;
+    const displayFoods = foods.slice(0, displayLimit);
+    
+    let html = `
+        <div class="search-results-header">
+            <span class="search-results-count">
+                พบ <strong>${totalCount}</strong> รายการ
+                ${totalCount > displayLimit ? `(แสดง ${displayLimit} รายการแรก)` : ''}
+            </span>
+        </div>
+    `;
+
+    html += displayFoods.map(food => `
         <div class="food-search-item" onclick="addFoodToMeal(${food.id})">
             <div class="food-search-info">
                 <span class="food-search-name">${food.name}</span>
                 <span class="food-search-macro">
-                    ${food.protein ? `P:${food.protein}g` : ''} 
-                    ${food.carbs ? `C:${food.carbs}g` : ''} 
-                    ${food.fat ? `F:${food.fat}g` : ''}
+                    ${food.protein ? `<span>🥩 ${food.protein}g</span>` : ''} 
+                    ${food.carbs ? `<span>🍚 ${food.carbs}g</span>` : ''} 
+                    ${food.fat ? `<span>🧈 ${food.fat}g</span>` : ''}
                 </span>
             </div>
             <span class="food-search-calories">${food.calories} kcal</span>
         </div>
     `).join('');
+
+    // Add load more button if there are more items
+    if (totalCount > displayLimit && !showAll) {
+        html += `
+            <button class="load-more-btn" onclick="showAllFoods()">
+                แสดงทั้งหมด ${totalCount} รายการ
+            </button>
+        `;
+    }
+
+    return html;
+}
+
+// Show all foods without limit
+function showAllFoods() {
+    const query = document.getElementById('modalSearchInput').value.toLowerCase().trim();
+    const filtered = query
+        ? searchFoods.filter(f => f.name && f.name.toLowerCase().includes(query))
+        : searchFoods;
+    document.getElementById('searchResults').innerHTML = renderFoodList(filtered, true);
 }
 
 // ========================================

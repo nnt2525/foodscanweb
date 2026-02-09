@@ -70,7 +70,18 @@
             </header>
 
             <div class="admin-content fade-in">
-                <div id="pendingFoodsGrid" class="grid grid-cols-2 gap-6">
+                <!-- Pending Count Header -->
+                <div id="pendingHeader" class="pending-list-header hidden">
+                    <div class="pending-count-badge">
+                        <span class="count-icon">📋</span>
+                        <span>รายการรออนุมัติ</span>
+                        <span class="count-number" id="pendingCount">0</span>
+                        <span>รายการ</span>
+                    </div>
+                </div>
+
+                <!-- Pending Foods List -->
+                <div id="pendingFoodsList" class="pending-foods-list">
                     <p class="text-gray text-center py-8">กำลังโหลด...</p>
                 </div>
                 

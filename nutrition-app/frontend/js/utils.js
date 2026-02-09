@@ -54,8 +54,30 @@ function showNotification(message, type = 'success', duration = 3000) {
 }
 
 // Format date to Thai
-function formatDate(date) {
-    return date.toLocaleDateString('th-TH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+function formatDate(dateInput, format = 'short') {
+    if (!dateInput) return '-';
+    
+    // Convert to Date object if it's a string
+    const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) return '-';
+    
+    if (format === 'long') {
+        return date.toLocaleDateString('th-TH', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    }
+    
+    // Short format (default)
+    return date.toLocaleDateString('th-TH', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+    });
 }
 
 // Get URL query parameter

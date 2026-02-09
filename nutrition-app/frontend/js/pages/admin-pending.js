@@ -18,76 +18,63 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadPendingFoods() {
-    const grid = document.getElementById('pendingFoodsGrid');
+    const list = document.getElementById('pendingFoodsList');
     const emptyState = document.getElementById('emptyState');
+    const pendingHeader = document.getElementById('pendingHeader');
 
     try {
         const response = await adminAPI.getPendingFoods();
 
         if (response.success && response.data.length > 0) {
             pendingFoods = response.data;
-            document.getElementById('pendingBadge').textContent = pendingFoods.length;
+            const count = pendingFoods.length;
+            
+            // Update count displays
+            document.getElementById('pendingBadge').textContent = count;
+            document.getElementById('pendingCount').textContent = count;
+            
+            // Show header and hide empty state
+            pendingHeader.classList.remove('hidden');
             emptyState.classList.add('hidden');
 
-            grid.innerHTML = pendingFoods.map(food => `
-                <div class="card">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-4">
-                            <div class="avatar avatar-lg" style="background: var(--gray-100);">
-                                🍽️
-                            </div>
-                            <div>
-                                <h3 class="font-bold">${food.name}</h3>
-                                <p class="text-sm text-gray">${food.category_name || 'ไม่ระบุหมวดหมู่'}</p>
-                            </div>
-                        </div>
-                        <span class="status-badge status-pending">รออนุมัติ</span>
+            // Render list items
+            list.innerHTML = pendingFoods.map(food => `
+                <div class="pending-list-item" data-id="${food.id}">
+                    <div class="pending-item-image">
+                        🍽️
                     </div>
-                    
-                    <div class="grid grid-cols-4 gap-4 mb-4 text-center">
-                        <div>
-                            <p class="text-2xl font-bold text-primary">${food.calories}</p>
-                            <p class="text-xs text-gray">แคลอรี่</p>
+                    <div class="pending-item-info">
+                        <div class="pending-item-name">${food.name}</div>
+                        <div class="pending-item-meta">
+                            <span class="pending-item-category">${food.category_name || 'ไม่ระบุหมวดหมู่'}</span>
+                            <span class="pending-item-calories">${food.calories} kcal</span>
+                            <span class="pending-item-nutrients">โปรตีน ${food.protein || 0}g • คาร์บ ${food.carbs || 0}g • ไขมัน ${food.fat || 0}g</span>
                         </div>
-                        <div>
-                            <p class="text-xl font-semibold">${food.protein || 0}g</p>
-                            <p class="text-xs text-gray">โปรตีน</p>
-                        </div>
-                        <div>
-                            <p class="text-xl font-semibold">${food.carbs || 0}g</p>
-                            <p class="text-xs text-gray">คาร์บ</p>
-                        </div>
-                        <div>
-                            <p class="text-xl font-semibold">${food.fat || 0}g</p>
-                            <p class="text-xs text-gray">ไขมัน</p>
+                        <div class="pending-item-submitter">
+                            👤 เพิ่มโดย: ${food.created_by_name || 'ไม่ระบุ'} • 📅 ${formatDate(food.created_at)}
                         </div>
                     </div>
-                    
-                    <div class="text-sm text-gray mb-4">
-                        <p>👤 เพิ่มโดย: ${food.created_by_name || 'ไม่ระบุ'}</p>
-                        <p>📅 ${formatDate(food.created_at)}</p>
-                    </div>
-                    
-                    <div class="flex gap-2">
-                        <button onclick="viewDetail(${food.id})" class="btn btn-sm btn-ghost flex-1">
-                            👁️ ดูรายละเอียด
+                    <div class="pending-item-actions">
+                        <button onclick="viewDetail(${food.id})" class="btn btn-sm btn-ghost" title="ดูรายละเอียด">
+                            👁️
                         </button>
-                        <button onclick="approveFood(${food.id})" class="btn btn-sm btn-approve">
+                        <button onclick="approveFood(${food.id})" class="btn btn-sm btn-approve" title="อนุมัติ">
                             ✓
                         </button>
-                        <button onclick="rejectFood(${food.id})" class="btn btn-sm btn-reject">
+                        <button onclick="rejectFood(${food.id})" class="btn btn-sm btn-reject" title="ปฏิเสธ">
                             ✕
                         </button>
                     </div>
                 </div>
             `).join('');
         } else {
-            grid.innerHTML = '';
+            list.innerHTML = '';
+            pendingHeader.classList.add('hidden');
             emptyState.classList.remove('hidden');
             document.getElementById('pendingBadge').textContent = '0';
         }
     } catch (error) {
-        grid.innerHTML = '<p class="text-danger text-center py-8">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
+        list.innerHTML = '<p class="text-danger text-center py-8">เกิดข้อผิดพลาดในการโหลดข้อมูล</p>';
     }
 }
 
