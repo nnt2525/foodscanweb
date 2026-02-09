@@ -203,8 +203,7 @@ CREATE DATABASE nutritrack;
 USE nutritrack;
 
 # รันไฟล์ migration
-SOURCE src/database/migration_complete.sql;
-SOURCE src/database/nutritrack_seed_foods.sql;
+SOURCE src/database/nutritrack.sql;
 ```
 
 ### 5. รัน Development Server
@@ -231,7 +230,7 @@ http://127.0.0.1:5500/html/index.html
 
 | Role      | Email                       | Password      |
 | --------- | --------------------------- | ------------- |
-| **Admin** | admin@nutritrack.com        | admin123      |
+| **Admin** | admin@email.com        | admin123      |
 | **User**  | testuser_unique@example.com | อัพเดตจากระบบ |
 
 > 💡 สามารถสมัครสมาชิกใหม่ผ่านหน้า Register ได้เลย
