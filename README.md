@@ -6,7 +6,7 @@
 
 1 นาย พุฒินนท์ แสนพล 67022018  
 2 นาย ภาณุพงศ์ สุทธกร 67022052  
-3 นาย ภูริ สุวรรณวงศ์ 67022096
+3 นาย ภูริ สุวรรณวงษ์ 67022096
 
 [![Version](https://img.shields.io/badge/version-2.0-green.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
@@ -354,7 +354,7 @@ user_badges     - เหรียญรางวัล
 
 <<<<<<< HEAD
 - **Developer:** [พุฒินนท์ แสนพล หน้าที่ frontend]
-                 [นายภูริ สุวรรณวงศ์ หน้าที่ backend]
+                 [นายภูริ สุวรรณวงษ์ หน้าที่ backend]
                  [นายภาณุพงศ์ สุทธกร หน้าที่ database]
 - **GitHub:** [@nnt2525](https://github.com/nnt2525)
 
