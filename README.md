@@ -170,6 +170,12 @@ cd foodscanweb/nutrition-app
 cd backend
 npm install
 ```
+### 2. ติดตั้ง Frontend
+
+```bash
+cd frontend
+npm install
+```
 
 ### 3. ตั้งค่า Environment Variables
 
