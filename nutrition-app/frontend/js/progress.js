@@ -260,49 +260,70 @@ function renderAchievements(achievements) {
 // ========================================
 
 // Export to CSV
-function exportToCSV() {
+async function exportToCSV() {
     const user = getCurrentUser();
     const today = new Date().toLocaleDateString('th-TH');
 
-    // Get data for export
-    const meals = getFromLocalStorage('nutritrack_meals', { breakfast: [], lunch: [], dinner: [], snacks: [] });
-
-    // Build CSV content
-    let csvContent = 'วันที่,มื้อ,ชื่ออาหาร,แคลอรี่,โปรตีน,คาร์บส,ไขมัน\n';
-
-    const mealTypes = {
-        breakfast: 'มื้อเช้า',
-        lunch: 'มื้อกลางวัน',
-        dinner: 'มื้อเย็น',
-        snacks: 'ของว่าง'
-    };
-
-    Object.keys(meals).forEach(mealType => {
-        meals[mealType].forEach(food => {
-            csvContent += `${today},${mealTypes[mealType]},${food.name},${food.calories || 0},${food.protein || 0},${food.carbs || 0},${food.fat || 0}\n`;
+    try {
+        // Fetch meal data from API for today
+        const todayStr = new Date().toISOString().split('T')[0];
+        const response = await fetch(`${API_BASE_URL}/meals/daily/${todayStr}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('nutritrack_token')}`
+            }
         });
-    });
 
-    // Add summary
-    const totalCalories = Object.values(meals).flat().reduce((sum, f) => sum + (f.calories || 0), 0);
-    const totalProtein = Object.values(meals).flat().reduce((sum, f) => sum + (f.protein || 0), 0);
-    const totalCarbs = Object.values(meals).flat().reduce((sum, f) => sum + (f.carbs || 0), 0);
-    const totalFat = Object.values(meals).flat().reduce((sum, f) => sum + (f.fat || 0), 0);
+        let meals = { breakfast: [], lunch: [], dinner: [], snacks: [] };
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.data && data.data.meals) {
+                meals = data.data.meals;
+            }
+        }
 
-    csvContent += `\n${today},รวม,-,${totalCalories},${totalProtein},${totalCarbs},${totalFat}\n`;
+        // Build CSV content
+        let csvContent = 'วันที่,มื้อ,ชื่ออาหาร,แคลอรี่,โปรตีน,คาร์บส,ไขมัน\n';
 
-    // Download file
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `NutriTrack_Report_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
+        const mealTypes = {
+            breakfast: 'มื้อเช้า',
+            lunch: 'มื้อกลางวัน',
+            dinner: 'มื้อเย็น',
+            snacks: 'ของว่าง'
+        };
 
-    showNotification('ดาวน์โหลด CSV สำเร็จ!', 'success');
+        Object.keys(meals).forEach(mealType => {
+            if (meals[mealType] && meals[mealType].length > 0) {
+                meals[mealType].forEach(food => {
+                    csvContent += `${today},${mealTypes[mealType]},${food.name},${food.calories || 0},${food.protein || 0},${food.carbs || 0},${food.fat || 0}\n`;
+                });
+            }
+        });
+
+        // Add summary
+        const totalCalories = Object.values(meals).flat().reduce((sum, f) => sum + (parseFloat(f.calories) || 0), 0);
+        const totalProtein = Object.values(meals).flat().reduce((sum, f) => sum + (parseFloat(f.protein) || 0), 0);
+        const totalCarbs = Object.values(meals).flat().reduce((sum, f) => sum + (parseFloat(f.carbs) || 0), 0);
+        const totalFat = Object.values(meals).flat().reduce((sum, f) => sum + (parseFloat(f.fat) || 0), 0);
+
+        csvContent += `\n${today},รวม,-,${Math.round(totalCalories)},${Math.round(totalProtein)},${Math.round(totalCarbs)},${Math.round(totalFat)}\n`;
+
+        // Download file
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `NutriTrack_Report_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+
+        showNotification('ดาวน์โหลด CSV สำเร็จ!', 'success');
+    } catch (error) {
+        console.error('CSV Export Error:', error);
+        showNotification('ไม่สามารถสร้าง CSV ได้ กรุณาลองใหม่อีกครั้ง', 'error');
+    }
 }
 
 // Export to PDF (using browser print)
-function exportToPDF() {
+async function exportToPDF() {
     const user = getCurrentUser();
     const today = new Date().toLocaleDateString('th-TH', {
         year: 'numeric',
@@ -310,93 +331,114 @@ function exportToPDF() {
         day: 'numeric'
     });
 
-    // Get data
-    const meals = getFromLocalStorage('nutritrack_meals', { breakfast: [], lunch: [], dinner: [], snacks: [] });
-    const totalCalories = Object.values(meals).flat().reduce((sum, f) => sum + (f.calories || 0), 0);
-    const totalProtein = Object.values(meals).flat().reduce((sum, f) => sum + (f.protein || 0), 0);
-    const totalCarbs = Object.values(meals).flat().reduce((sum, f) => sum + (f.carbs || 0), 0);
-    const totalFat = Object.values(meals).flat().reduce((sum, f) => sum + (f.fat || 0), 0);
+    try {
+        // Fetch meal data from API for today
+        const todayStr = new Date().toISOString().split('T')[0];
+        const response = await fetch(`${API_BASE_URL}/meals/daily/${todayStr}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('nutritrack_token')}`
+            }
+        });
 
-    // Create printable HTML
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>NutriTrack Report - ${today}</title>
-            <style>
-                * { font-family: 'Segoe UI', Tahoma, sans-serif; }
-                body { padding: 40px; max-width: 800px; margin: 0 auto; }
-                h1 { color: #22c55e; border-bottom: 3px solid #22c55e; padding-bottom: 10px; }
-                h2 { color: #333; margin-top: 30px; }
-                .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
-                .stat { background: #f9fafb; padding: 20px; border-radius: 10px; text-align: center; }
-                .stat-value { font-size: 28px; font-weight: bold; color: #22c55e; }
-                .stat-label { color: #6b7280; font-size: 14px; }
-                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-                th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
-                th { background: #f3f4f6; font-weight: 600; }
-                .meal-header { background: #22c55e; color: white; font-weight: bold; }
-                .footer { margin-top: 40px; text-align: center; color: #9ca3af; font-size: 12px; }
-                @media print { body { padding: 20px; } }
-            </style>
-        </head>
-        <body>
-            <h1>🥗 รายงานโภชนาการ NutriTrack</h1>
-            <p><strong>ชื่อ:</strong> ${user?.name || 'ผู้ใช้'} | <strong>วันที่:</strong> ${today}</p>
-            
-            <h2>📊 สรุปโภชนาการวันนี้</h2>
-            <div class="summary">
-                <div class="stat">
-                    <div class="stat-value">${formatNumber(totalCalories)}</div>
-                    <div class="stat-label">แคลอรี่ (kcal)</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" style="color: #3b82f6;">${totalProtein}g</div>
-                    <div class="stat-label">โปรตีน</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" style="color: #f59e0b;">${totalCarbs}g</div>
-                    <div class="stat-label">คาร์โบไฮเดรต</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" style="color: #8b5cf6;">${totalFat}g</div>
-                    <div class="stat-label">ไขมัน</div>
-                </div>
-            </div>
-            
-            <h2>🍽️ รายละเอียดมื้ออาหาร</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ชื่ออาหาร</th>
-                        <th>แคลอรี่</th>
-                        <th>โปรตีน</th>
-                        <th>คาร์บส</th>
-                        <th>ไขมัน</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${generateMealRows(meals)}
-                </tbody>
-            </table>
-            
-            <div class="footer">
-                <p>สร้างโดย NutriTrack - ระบบจัดการโภชนาการอัจฉริยะ</p>
-                <p>วันที่พิมพ์: ${new Date().toLocaleString('th-TH')}</p>
-            </div>
-        </body>
-        </html>
-    `);
+        let meals = { breakfast: [], lunch: [], dinner: [], snacks: [] };
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.data && data.data.meals) {
+                meals = data.data.meals;
+            }
+        }
 
-    printWindow.document.close();
+        // Calculate totals
+        const totalCalories = Object.values(meals).flat().reduce((sum, f) => sum + (parseFloat(f.calories) || 0), 0);
+        const totalProtein = Object.values(meals).flat().reduce((sum, f) => sum + (parseFloat(f.protein) || 0), 0);
+        const totalCarbs = Object.values(meals).flat().reduce((sum, f) => sum + (parseFloat(f.carbs) || 0), 0);
+        const totalFat = Object.values(meals).flat().reduce((sum, f) => sum + (parseFloat(f.fat) || 0), 0);
 
-    // Wait for content to load then print
-    setTimeout(() => {
-        printWindow.print();
-    }, 500);
+        // Create printable HTML
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>NutriTrack Report - ${today}</title>
+                <style>
+                    * { font-family: 'Segoe UI', Tahoma, sans-serif; }
+                    body { padding: 40px; max-width: 800px; margin: 0 auto; }
+                    h1 { color: #22c55e; border-bottom: 3px solid #22c55e; padding-bottom: 10px; }
+                    h2 { color: #333; margin-top: 30px; }
+                    .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
+                    .stat { background: #f9fafb; padding: 20px; border-radius: 10px; text-align: center; }
+                    .stat-value { font-size: 28px; font-weight: bold; color: #22c55e; }
+                    .stat-label { color: #6b7280; font-size: 14px; }
+                    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+                    th { background: #f3f4f6; font-weight: 600; }
+                    .meal-header { background: #22c55e; color: white; font-weight: bold; }
+                    .footer { margin-top: 40px; text-align: center; color: #9ca3af; font-size: 12px; }
+                    @media print { body { padding: 20px; } }
+                </style>
+            </head>
+            <body>
+                <h1>🥗 รายงานโภชนาการ NutriTrack</h1>
+                <p><strong>ชื่อ:</strong> ${user?.name || 'ผู้ใช้'} | <strong>วันที่:</strong> ${today}</p>
+                
+                <h2>📊 สรุปโภชนาการวันนี้</h2>
+                <div class="summary">
+                    <div class="stat">
+                        <div class="stat-value">${formatNumber(Math.round(totalCalories))}</div>
+                        <div class="stat-label">แคลอรี่ (kcal)</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" style="color: #3b82f6;">${Math.round(totalProtein)}g</div>
+                        <div class="stat-label">โปรตีน</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" style="color: #f59e0b;">${Math.round(totalCarbs)}g</div>
+                        <div class="stat-label">คาร์โบไฮเดรต</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" style="color: #8b5cf6;">${Math.round(totalFat)}g</div>
+                        <div class="stat-label">ไขมัน</div>
+                    </div>
+                </div>
+                
+                <h2>🍽️ รายละเอียดมื้ออาหาร</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ชื่ออาหาร</th>
+                            <th>แคลอรี่</th>
+                            <th>โปรตีน</th>
+                            <th>คาร์บส</th>
+                            <th>ไขมัน</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${generateMealRows(meals)}
+                    </tbody>
+                </table>
+                
+                <div class="footer">
+                    <p>สร้างโดย NutriTrack - ระบบจัดการโภชนาการอัจฉริยะ</p>
+                    <p>วันที่พิมพ์: ${new Date().toLocaleString('th-TH')}</p>
+                </div>
+            </body>
+            </html>
+        `);
 
-    showNotification('เปิดหน้าต่างพิมพ์ PDF แล้ว!', 'success');
+        printWindow.document.close();
+
+        // Wait for content to load then print
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
+
+        showNotification('เปิดหน้าต่างพิมพ์ PDF แล้ว!', 'success');
+    } catch (error) {
+        console.error('PDF Export Error:', error);
+        showNotification('ไม่สามารถสร้าง PDF ได้ กรุณาลองใหม่อีกครั้ง', 'error');
+    }
 }
 
 // Helper function for PDF meal rows
