@@ -148,12 +148,28 @@ async function removeMeal(type, itemId) {
     showNotification('ลบรายการแล้ว', 'info');
 }
 
-function clearAllMeals() {
-    if (confirm('ต้องการล้างรายการทั้งหมด?')) {
-        saveToLocalStorage('nutritrack_meals', { breakfast: [], lunch: [], dinner: [], snacks: [] });
-        renderMealsFromLocalStorage();
-        showNotification('ล้างรายการทั้งหมดแล้ว', 'success');
+async function clearAllMeals() {
+    if (!confirm('ต้องการล้างรายการทั้งหมด?')) {
+        return;
     }
+
+    // Try to delete from backend first
+    if (currentMealPlanId) {
+        try {
+            await mealPlansAPI.clear(currentMealPlanId);
+            await loadMeals();
+            showNotification('ล้างรายการทั้งหมดแล้ว', 'success');
+            return;
+        } catch (error) {
+            console.error('Failed to clear meals from backend:', error);
+            // Continue to fallback localStorage clear
+        }
+    }
+
+    // Fallback to localStorage
+    saveToLocalStorage('nutritrack_meals', { breakfast: [], lunch: [], dinner: [], snacks: [] });
+    renderMealsFromLocalStorage();
+    showNotification('ล้างรายการทั้งหมดแล้ว', 'success');
 }
 
 // ========================================
