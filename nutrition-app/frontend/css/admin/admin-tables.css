@@ -1,0 +1,180 @@
+/* ========================================
+   NutriTrack - Admin Tables Styles
+   Data tables, search, and pagination
+   Used by: users.html, foods.html
+   ======================================== */
+
+/* Admin Table */
+.data-table,
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.admin-table th,
+.admin-table td,
+.data-table th,
+.data-table td {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.admin-table th,
+.data-table th {
+    background: var(--gray-50);
+    font-weight: 600;
+    color: var(--gray-700);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.admin-table tr:last-child td,
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table tr:hover td,
+.data-table tr:hover td {
+    background: var(--gray-50);
+}
+
+/* Table Wrapper for Horizontal Scroll */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Search Bar Layout */
+.search-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+.search-bar .form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-bar select {
+    flex: 0 0 auto;
+    min-width: 120px;
+}
+
+/* ========================================
+   Pagination Styles
+   ======================================== */
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(.active):not(:disabled) {
+    background: var(--gray-100);
+    border-color: var(--gray-300);
+}
+
+.pagination-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+/* ========================================
+   Responsive Breakpoints
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Table Responsive */
+    .data-table,
+    .admin-table {
+        font-size: 0.875rem;
+    }
+
+    .admin-table th,
+    .admin-table td,
+    .data-table th,
+    .data-table td {
+        padding: 0.75rem 1rem;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-bar {
+        flex-direction: column;
+    }
+
+    .search-bar .form-group,
+    .search-bar select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* Responsive Pagination */
+    .pagination {
+        gap: 0.25rem;
+    }
+
+    .pagination-btn {
+        min-width: 36px;
+        height: 36px;
+        padding: 0.375rem 0.5rem;
+        font-size: 0.8125rem;
+    }
+
+    .pagination span {
+        min-width: 36px;
+        height: 36px;
+    }
+}

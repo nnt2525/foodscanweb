@@ -1,0 +1,155 @@
+/* ========================================
+   NutriTrack - Admin Pending Foods Styles
+   Specific styles for pending-foods.html
+   ======================================== */
+
+.pending-list-header {
+    margin-bottom: 1.5rem;
+}
+
+.pending-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 1px solid var(--primary);
+    border-radius: 0.75rem;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+.pending-count-badge .count-icon {
+    font-size: 1.25rem;
+}
+
+.pending-count-badge .count-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    background: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.pending-foods-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.pending-list-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.pending-list-item:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15);
+    transform: translateY(-1px);
+}
+
+.pending-item-image {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gray-100);
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+}
+
+.pending-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.pending-item-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 0.25rem;
+}
+
+.pending-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--gray-600);
+    margin-bottom: 0.25rem;
+}
+
+.pending-item-category {
+    background: var(--gray-100);
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.pending-item-calories {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.pending-item-nutrients {
+    color: var(--gray-500);
+}
+
+.pending-item-submitter {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+.pending-item-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.pending-item-actions .btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+}
+
+/* ========================================
+   Responsive - Mobile Adjustments
+   ======================================== */
+
+@media (max-width: 768px) {
+    .pending-list-item {
+        flex-wrap: wrap;
+        padding: 1rem;
+    }
+
+    .pending-item-info {
+        flex-basis: calc(100% - 60px);
+    }
+
+    .pending-item-actions {
+        flex-basis: 100%;
+        justify-content: flex-end;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--gray-100);
+    }
+
+    .pending-item-meta {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
