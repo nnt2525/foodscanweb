@@ -300,7 +300,7 @@ http://127.0.0.1:5500/html/index.html
 ### Frontend
 
 | Technology | Usage |
-+| --------------- | -------------------------------- |
+| --------------- | ----------------------------- |
 | HTML5 | Semantic markup |
 | CSS3 | Custom properties, Flexbox, Grid |
 | JavaScript ES6+ | Vanilla JS, Async/Await |
@@ -309,14 +309,14 @@ http://127.0.0.1:5500/html/index.html
 ### Backend
 
 | Technology  | Usage         |
-| ----------- | ------------- | --------------------- |
+| ----------- | ------------- | 
 | Node.js 18+ | Runtime       |
 | Express.js  | Web framework |
-| MySQL 8.0   | Database      |
-| +           | JWT           | Authentication        |
-| +           | bcryptjs      | Password hashing      |
-| +           | cors          | Cross-origin          |
-| +           | dotenv        | Environment variables |
+| MySQL 8.0   | Database      ||           
+| JWT           | Authentication        |
+| bcryptjs      | Password hashing      |
+| cors          | Cross-origin          |
+| dotenv        | Environment variables |
 
 ---
 
