@@ -2,22 +2,18 @@
 
 ## 👥 สมาชิกกลุ่ม
 
-ลำดับ ชื่อ-นามสกุล รหัสนักศึกษา
+### รายชื่อนิสิต
 
-1 นาย พุฒินนท์ แสนพล 67022018  
-2 นาย ภาณุพงศ์ สุทธกร 67022052  
-3 นาย ภูริ สุวรรณวงษ์ 67022096
+| ลำดับ | ชื่อ-นามสกุล          | รหัสนิสิต  | ความรับผิดชอบ                        |
+| :---: | :-------------------- | :--------: | :----------------------------------- |
+|   1   | [นาย พุฒินนท์ แสนพล]  | [67022018] | Backend Development, Database Design |
+|   2   | [นาย ภาณุพงศ์ สุทธกร] | [67022052] | Frontend Development, UI/UX Design   |
+|   3   | [นาย ภูริ สุวรรณวงษ์] | [67022096] | API Integration, Testing             |
 
-[![Version](https://img.shields.io/badge/version-2.0-green.svg)]()
+[![Version](https://img.shields.io/badge/version-2.1-green.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
 [![Node](https://img.shields.io/badge/node-18+-brightgreen.svg)]()
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-blue.svg)]()
-
-ระบบติดตามโภชนาการและวางแผนอาหารครบวงจร พร้อมฐานข้อมูลอาหารไทยกว่า **850+ รายการ**
-
-> **🌟 Latest Update (Feb 9, 2026):** แก้ไข Modal UI (centered, gradient header), เพิ่ม Role Filter สำหรับผู้ใช้, แก้ไข Timezone ในกราฟความคืบหน้า, และปรับปรุง UX ทั้งระบบ
-
----
 
 ## 📸 Preview
 
@@ -40,7 +36,7 @@
 | 📈 **สถิติความคืบหน้า**  | กราฟแนวโน้ม 7 วัน (Chart.js)                     |
 | 🏆 **Gamification**      | เหรียญรางวัลเมื่อทำตามเป้าหมาย                   |
 | ⚖️ **ติดตามน้ำหนัก**     | บันทึก + คำแนะนำ BMI                             |
-| 📤 **Export รายงาน**     | CSV / PDF                                        |
+| 📤 **Export รายงาน**     | CSV / PDF (Real-time Data)                       |
 | ➕ **เพิ่มอาหารใหม่**    | User สามารถเพิ่มอาหารใหม่ (รอ Admin อนุมัติ)     |
 
 ### 🛠️ สำหรับ Admin
@@ -105,9 +101,12 @@ nutrition-app/
 │   │   ├── layout.css          # Grid + Container
 │   │   ├── components.css      # Buttons, Cards, Forms
 │   │   ├── utilities.css       # Helper classes
-│   │   ├── animations.css      # Transitions
 │   │   ├── responsive.css      # Mobile-first
-│   │   └── admin.css           # Admin Panel styles
+│   │   └── admin/              # Admin Panel modular styles
+│   │       ├── admin-layout.css
+│   │       ├── admin-dashboard.css
+│   │       ├── admin-tables.css
+│   │       └── admin-components.css
 │   │
 │   └── js/
 │       ├── config.js           # API configuration
@@ -170,14 +169,15 @@ cd foodscanweb/nutrition-app
 cd backend
 npm install
 ```
-### 2. ติดตั้ง Frontend
+
+### 3. ติดตั้ง Frontend
 
 ```bash
 cd frontend
 npm install
 ```
 
-### 3. ตั้งค่า Environment Variables
+### 4. ตั้งค่า Environment Variables
 
 สร้างไฟล์ `.env` ใน folder `backend/`:
 
@@ -198,7 +198,7 @@ JWT_SECRET=your_super_secret_key_here
 JWT_EXPIRES_IN=7d
 ```
 
-### 4. ตั้งค่า Database
+### 5. ตั้งค่า Database
 
 ```bash
 # เข้า MySQL
@@ -212,7 +212,7 @@ USE nutritrack;
 SOURCE src/database/nutritrack.sql;
 ```
 
-### 5. รัน Development Server
+### 6. รัน Development Server
 
 ```bash
 # Terminal 1 - Backend (Port 3001)
@@ -224,7 +224,7 @@ cd frontend
 npm run dev
 ```
 
-### 6. เปิดเว็บไซต์
+### 7. เปิดเว็บไซต์
 
 ```
 http://127.0.0.1:5500/html/index.html
@@ -236,7 +236,7 @@ http://127.0.0.1:5500/html/index.html
 
 | Role      | Email                       | Password      |
 | --------- | --------------------------- | ------------- |
-| **Admin** | admin@email.com        | admin123      |
+| **Admin** | admin@email.com             | admin123      |
 | **User**  | testuser_unique@example.com | อัพเดตจากระบบ |
 
 > 💡 สามารถสมัครสมาชิกใหม่ผ่านหน้า Register ได้เลย
@@ -273,10 +273,10 @@ http://127.0.0.1:5500/html/index.html
 
 ### 📊 Progress (`/api/progress`)
 
-| Method | Endpoint  | Description |
-| ------ | --------- | ----------- |
-| GET    | `/weekly` | สรุป 7 วัน  |
-| GET    | `/daily`  | สรุปรายวัน  |
+| Method | Endpoint | Description |
++| ------ | --------- | ----------- |
+| GET | `/weekly` | สรุป 7 วัน |
+| GET | `/daily` | สรุปรายวัน |
 
 ### 🛠️ Admin (`/api/admin`) - ต้อง Login เป็น Admin
 
@@ -299,24 +299,24 @@ http://127.0.0.1:5500/html/index.html
 
 ### Frontend
 
-| Technology      | Usage                            |
-| --------------- | -------------------------------- |
-| HTML5           | Semantic markup                  |
-| CSS3            | Custom properties, Flexbox, Grid |
-| JavaScript ES6+ | Vanilla JS, Async/Await          |
-| Chart.js        | กราฟและแผนภูมิ                   |
+| Technology | Usage |
++| --------------- | -------------------------------- |
+| HTML5 | Semantic markup |
+| CSS3 | Custom properties, Flexbox, Grid |
+| JavaScript ES6+ | Vanilla JS, Async/Await |
+| Chart.js | กราฟและแผนภูมิ |
 
 ### Backend
 
-| Technology  | Usage                 |
-| ----------- | --------------------- |
-| Node.js 18+ | Runtime               |
-| Express.js  | Web framework         |
-| MySQL 8.0   | Database              |
-| JWT         | Authentication        |
-| bcryptjs    | Password hashing      |
-| cors        | Cross-origin          |
-| dotenv      | Environment variables |
+| Technology  | Usage         |
+| ----------- | ------------- | --------------------- |
+| Node.js 18+ | Runtime       |
+| Express.js  | Web framework |
+| MySQL 8.0   | Database      |
+| +           | JWT           | Authentication        |
+| +           | bcryptjs      | Password hashing      |
+| +           | cors          | Cross-origin          |
+| +           | dotenv        | Environment variables |
 
 ---
 
@@ -338,6 +338,13 @@ user_badges     - เหรียญรางวัล
 ---
 
 ## 📝 Changelog
+
+### v2.1 (Feb 11, 2026) - Current
+
+- ✅ **Performance Optimization:** ลบแอนิเมชันทั้งหมดในระบบ (No-Animations) เพื่อความลื่นไหลสูงสุด
+- ✅ **Reports Fixed:** แก้ไขระบบ Export PDF/CSV ให้ดึงข้อมูล Real-time จาก Backend API
+- ✅ **Code Refactoring:** ปรับโครงสร้าง CSS Admin ให้เป็น Modular (admin-layout, admin-dashboard, etc.)
+- ✅ **Clean Up:** ลบไฟล์ที่ไม่จำเป็นและ dependencies ที่ไม่ได้ใช้
 
 ### v2.0 (Feb 2026)
 
